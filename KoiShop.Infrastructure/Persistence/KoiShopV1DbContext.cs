@@ -196,11 +196,11 @@ namespace KoiShop.Infrastructure.Persistence
                     .ValueGeneratedOnAdd()
                     .HasColumnName("KoiID");
                 entity.Property(e => e.Certificate).HasColumnType("text");
-                entity.Property(e => e.Description).HasColumnType("text");
+                entity.Property(e => e.Description).HasColumnName("Description").IsUnicode(true);
                 entity.Property(e => e.FishTypeId).HasColumnName("FishTypeID");
                 entity.Property(e => e.Gender)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
                 entity.Property(e => e.Image).HasColumnType("text");
                 entity.Property(e => e.Name)
                     .HasMaxLength(200)
@@ -210,7 +210,7 @@ namespace KoiShop.Infrastructure.Persistence
                     .IsUnicode(false);
                 entity.Property(e => e.Personality)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
                 entity.Property(e => e.Status)
                     .HasMaxLength(200)
                     .IsUnicode(false);

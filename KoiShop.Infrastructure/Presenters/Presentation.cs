@@ -15,6 +15,7 @@ namespace KoiShop.Infrastructure.Presenters
 {
     public static class Presentation
     {
+        //Register service for authorize and cors 
         public static void AddPresentations(this IServiceCollection services, IConfiguration configuration)
         {
             //add cors

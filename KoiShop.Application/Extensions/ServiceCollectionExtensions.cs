@@ -12,8 +12,10 @@ namespace KoiShop.Application.Extensions
     {
         public static void AddApplication(this IServiceCollection services)
         {
+            //Register service for JWTToken
             services.AddScoped<IJwtTokenService,JwtTokenService>();
             services.AddHttpContextAccessor();
+            //Resgiter service for MediatR(CQRS design pattern)
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(
             typeof(ServiceCollectionExtensions).Assembly));
         }

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.JwtToken
 {
+    //Setting JWTtoken
     public class JwtTokenService(IConfiguration _configuration, UserManager<User> userManager) : IJwtTokenService
     {
         public async Task<string> GenerateToken(User user)
