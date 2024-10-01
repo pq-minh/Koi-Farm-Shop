@@ -20,14 +20,19 @@ namespace KoiShop.Application.Users.Command.RegisterUser
         {
             var user = new User
             {
+                FirstName  = request.RegisterRQ.FirstName,
+                LastName = request.RegisterRQ.LastName,
                 Email = request.RegisterRQ.Email,
-                UserName = request.RegisterRQ.Email
+                PhoneNumber = request.RegisterRQ.PhoneNumber,
+                UserName = request.RegisterRQ.Email,        
             };
+           
             if (request.RegisterRQ.ConfirmPassword != request.RegisterRQ.Password)
             {
                 throw new ArgumentException("Passwords do not match.");
             }
            var result = await identityUser.CreateAsync(user, request.RegisterRQ.Password);
+            
             if (result.Succeeded)
             {
                 return true; 

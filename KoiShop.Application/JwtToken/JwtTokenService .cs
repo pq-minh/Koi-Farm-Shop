@@ -17,15 +17,14 @@ namespace KoiShop.Application.JwtToken
     {
         public async Task<string> GenerateToken(User user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var roles = await userManager.GetRolesAsync(user);
-            var claims = new List<Claim>
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+                var roles = await userManager.GetRolesAsync(user);
+                var claims = new List<Claim>
          {
         new Claim(JwtRegisteredClaimNames.Sub, user.Id), // ID người dùng
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Unique identifier cho token
         };
-
             // Thêm roles vào claims
             claims.AddRange(roles.Select(role => new Claim("role", role)));
 

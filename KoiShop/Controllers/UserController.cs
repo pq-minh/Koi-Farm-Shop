@@ -33,13 +33,6 @@ namespace KoiShop.Controllers
             }
             return Created();
         }
-
-        //[Authorize(AuthenticationSchemes = "Bearer")]
-        //[HttpPost("assing-role")]
-        //public async Task<IActionResult> AssignRole()
-        //{
-        //    var roles  = new r
-        //        var role = identityRole.SetRoleNameAsync
-        //}
+    
     }
 }

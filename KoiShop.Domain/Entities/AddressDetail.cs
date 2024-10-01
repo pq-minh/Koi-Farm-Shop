@@ -13,4 +13,5 @@ public partial class AddressDetail
     public string? UserId { get; set; }
     public virtual User User { get; set; }
     public string? StreetName { get; set; }
+    public string? Ward {  get; set; }
 }

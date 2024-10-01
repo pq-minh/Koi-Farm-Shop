@@ -1,17 +1,19 @@
 using KoiShop.Application.Extensions;
 using KoiShop.Infrastructure.Extensions;
 using KoiShop.Infrastructure.Presenters;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
+using KoiShop.Infrastructure.Seeder;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+
 namespace KoiShop
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-           
+
             //builder.Services.AddCors(options =>
             //{
             //    options.AddPolicy("AllowSpecificOrigin", builder =>
@@ -24,7 +26,7 @@ namespace KoiShop
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            
+
             builder.Services.AddSwaggerGen();
             //jwt authentication
             //builder.Services.AddAuthentication(options =>
@@ -51,8 +53,8 @@ namespace KoiShop
             //{
             //    Options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
             //});
-            
-           
+
+
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplication();
             builder.Services.AddPresentations(builder.Configuration);
@@ -63,7 +65,9 @@ namespace KoiShop
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            
+            var scope = app.Services.CreateScope();
+            var seeder = scope.ServiceProvider.GetRequiredService<IUserSeeder>();
+            await seeder.Seed();
             app.UseHttpsRedirection();
             //cors
             app.UseRouting();

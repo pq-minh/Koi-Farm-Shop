@@ -2,6 +2,7 @@
 using KoiShop.Domain.Respositories;
 using KoiShop.Infrastructure.Persistence;
 using KoiShop.Infrastructure.Respositories;
+using KoiShop.Infrastructure.Seeder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,7 @@ namespace KoiShop.Infrastructure.Extensions
         {
             var connectionString = configuration.GetConnectionString("KoiShopDB");
             services.AddScoped<IKoiRepository, KoiRepository>();
+            services.AddScoped<IUserSeeder, UserSeeder>();
             services.AddDbContext<KoiShopV1DbContext>(options => options.UseSqlServer(connectionString));
             services.AddIdentity<User, IdentityRole>()
                .AddEntityFrameworkStores<KoiShopV1DbContext>().AddRoles<IdentityRole>();

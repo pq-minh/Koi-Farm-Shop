@@ -54,6 +54,9 @@ namespace KoiShop.Infrastructure.Persistence
                 entity.Property(e => e.StreetName)
                     .HasMaxLength(200)
                     .IsUnicode(true);
+                entity.Property(e => e.Ward)
+                    .HasMaxLength(200)
+                    .IsUnicode(true);
                 entity.HasOne(ad => ad.User)
                       .WithMany(u => u.AddressDetails)
                      .HasForeignKey(ad => ad.UserId);
