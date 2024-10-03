@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="Command\" />
+    <Folder Include="Users\Command\ChangePassword\" />
   </ItemGroup>
 
 </Project>

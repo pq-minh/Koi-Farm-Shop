@@ -12,7 +12,7 @@ namespace KoiShop.Application.Users.Queries.Login
     {
         public async Task<string> Handle(LoginUserQuery request, CancellationToken cancellationToken)
         {
-            var user = await identityUser.FindByNameAsync(request.Login.Email);
+            var user = await identityUser.FindByEmailAsync(request.Login.Email);
             if (user != null && await identityUser.CheckPasswordAsync(user, request.Login.Password))
             {           
                var token = jwtTokenService.GenerateToken(user);

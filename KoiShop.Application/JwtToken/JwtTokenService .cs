@@ -23,10 +23,15 @@ namespace KoiShop.Application.JwtToken
                 var claims = new List<Claim>
          {
         new Claim(JwtRegisteredClaimNames.Sub, user.Id), // ID người dùng
+        new Claim("FirstName",user.FirstName),
+        new Claim("LastName",user.LastName),
+        new Claim("Point",user.Point.ToString()),
+        new Claim("PhoneNumber",user.PhoneNumber),
+        new Claim("Email",user.Email),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Unique identifier cho token
         };
             // Thêm roles vào claims
-            claims.AddRange(roles.Select(role => new Claim("role", role)));
+            claims.AddRange(roles.Select(role => new Claim("role:", role)));
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],

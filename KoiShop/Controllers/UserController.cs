@@ -5,6 +5,9 @@ using KoiShop.Domain.Entities;
 using MediatR;
 using KoiShop.Application.Users.Queries.Login;
 using KoiShop.Application.Users.Command.RegisterUser;
+using KoiShop.Application.Users.Command.UpdateUser;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 namespace KoiShop.Controllers
 {
     [ApiController]
@@ -33,6 +36,13 @@ namespace KoiShop.Controllers
             }
             return Created();
         }
-    
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPatch("update")]
+        public async Task<IActionResult> UpdateDetails(UpdateUserCommands command)
+        {
+            var token = await mediator.Send(command);
+            return Ok(new { Token = token });
+        }
+
     }
 }
