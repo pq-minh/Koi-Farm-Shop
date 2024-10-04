@@ -42,4 +42,6 @@ public partial class Koi
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+    public string? UserId { get; set; }
+    public virtual User? User { get; set; }
 }

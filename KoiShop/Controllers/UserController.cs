@@ -8,6 +8,7 @@ using KoiShop.Application.Users.Command.RegisterUser;
 using KoiShop.Application.Users.Command.UpdateUser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using KoiShop.Application.Users.Command.ChangePassword;
 namespace KoiShop.Controllers
 {
     [ApiController]
@@ -44,5 +45,13 @@ namespace KoiShop.Controllers
             return Ok(new { Token = token });
         }
 
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("changepassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand changePasswordCommand)
+        {
+            var result = await mediator.Send(changePasswordCommand);
+            return Ok(new { Result = result });
+        }
     }
 }

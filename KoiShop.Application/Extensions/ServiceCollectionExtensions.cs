@@ -1,11 +1,8 @@
-﻿using KoiShop.Application.JwtToken;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using KoiShop.Application.JwtToken;
 using KoiShop.Application.Users;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static KoiShop.Application.Users.UserContext;
 
 namespace KoiShop.Application.Extensions
@@ -21,6 +18,8 @@ namespace KoiShop.Application.Extensions
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(
             typeof(ServiceCollectionExtensions).Assembly));
             services.AddScoped<IUserContext, UserContext>();
+            services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly).AddFluentValidationAutoValidation();
+
         }
     }
 }

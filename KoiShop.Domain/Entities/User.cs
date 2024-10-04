@@ -26,7 +26,9 @@ namespace KoiShop.Domain.Entities
 
         public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 
+        public virtual ICollection<Koi> Kois { get; set; } = new List<Koi>();
 
+        public virtual ICollection<BatchKoi> BatchKois { get; set; } = new List<BatchKoi>();
 
     }
 }

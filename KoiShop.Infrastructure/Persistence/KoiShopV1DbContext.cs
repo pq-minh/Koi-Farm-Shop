@@ -34,6 +34,7 @@ namespace KoiShop.Infrastructure.Persistence
         public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public virtual DbSet<CartItem> CartItems { get; set; }
 
+        public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<Post> Posts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -96,7 +97,20 @@ namespace KoiShop.Infrastructure.Persistence
              }
 
             ) ;
+            modelBuilder.Entity<Payment>(entity =>
+            {
+                entity.HasKey(e => e.PaymentID);
+                entity.Property(e => e.PaymentID)
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("PaymentID");
+                entity.Property(e => e.CreateDate).HasColumnName("CreateDate");
+                entity.Property(e => e.OrderId).HasColumnName("OrderID");
+                entity.Property(e => e.PaymenMethod).HasColumnName("PaymentMethod");
+                entity.Property(e => e.Status).HasColumnName("Status").IsUnicode(true);
 
+                entity.HasOne(d => d.Order).WithMany(p => p.Payments)
+                    .HasForeignKey(d => d.OrderId);
+            });
             modelBuilder.Entity<Post>(entity => {   
                 entity.HasKey(e => e.PostID);
                 entity.Property(e => e.PostID)
@@ -131,17 +145,17 @@ namespace KoiShop.Infrastructure.Persistence
                 entity.Property(e => e.Description).HasColumnType("text");
                 entity.Property(e => e.Gender)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
                 entity.Property(e => e.Image).HasColumnType("text");
                 entity.Property(e => e.Name)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
                 entity.Property(e => e.Origin)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
                 entity.Property(e => e.Personality)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
                 entity.Property(e => e.Quantity)
                     .HasMaxLength(200)
                     .IsUnicode(false);
@@ -150,12 +164,14 @@ namespace KoiShop.Infrastructure.Persistence
                     .IsUnicode(false);
                 entity.Property(e => e.Status)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
                 entity.Property(e => e.Weight).HasColumnName("weight");
 
                 entity.HasOne(d => d.BatchType).WithMany(p => p.BatchKois)
                     .HasForeignKey(d => d.BatchTypeId)
                     .HasConstraintName("FK__BatchKoi__BatchT__4D94879B");
+                entity.HasOne(d => d.User).WithMany(p => p.BatchKois)
+                    .HasForeignKey(d => d.UserId);
             });
 
             modelBuilder.Entity<BatchKoiCategory>(entity =>
@@ -169,7 +185,7 @@ namespace KoiShop.Infrastructure.Persistence
                     .HasColumnName("BatchTypeID");
                 entity.Property(e => e.TypeBatch)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
             });
 
             modelBuilder.Entity<Discount>(entity =>
@@ -186,7 +202,7 @@ namespace KoiShop.Infrastructure.Persistence
                 entity.Property(e => e.EndDate).HasColumnName("end_Date");
                 entity.Property(e => e.Name).HasMaxLength(200);
                 entity.Property(e => e.StartDate).HasColumnName("start_Date");
-                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.Status).HasColumnName("status").IsUnicode(true);
             });
 
             modelBuilder.Entity<Koi>(entity =>
@@ -216,11 +232,13 @@ namespace KoiShop.Infrastructure.Persistence
                     .IsUnicode(true);
                 entity.Property(e => e.Status)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.HasOne(d => d.FishType).WithMany(p => p.Kois)
                     .HasForeignKey(d => d.FishTypeId)
                     .HasConstraintName("FK__Koi__FishTypeID__4CA06362");
+                entity.HasOne(d => d.User).WithMany(p => p.Kois)
+                    .HasForeignKey(d => d.UserId);
             });
 
             modelBuilder.Entity<KoiCategory>(entity =>
@@ -234,7 +252,7 @@ namespace KoiShop.Infrastructure.Persistence
                     .HasColumnName("FishTypeID");
                 entity.Property(e => e.TypeFish)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
             });
 
             modelBuilder.Entity<Order>(entity =>
@@ -247,12 +265,10 @@ namespace KoiShop.Infrastructure.Persistence
                     .ValueGeneratedOnAdd()
                     .HasColumnName("OrderID");
                 entity.Property(e => e.DiscountId).HasColumnName("DiscountID");
-                entity.Property(e => e.PaymentMethod)
-                    .HasMaxLength(200)
-                    .IsUnicode(false);
-                entity.Property(e => e.PaymentStatus)
-                    .HasMaxLength(200)
-                    .IsUnicode(false);
+                entity.Property(e => e.TotalAmount).HasColumnName("TotalAmount");
+                entity.Property(e => e.OrderStatus).HasColumnName("OrderStatus").IsUnicode(true);
+                entity.Property(e => e.CreateDate)
+                    .HasColumnName("CreateDate");
                 entity.HasOne(ad => ad.User)
                       .WithMany(u => u.Orders)
                      .HasForeignKey(ad => ad.UserId);
