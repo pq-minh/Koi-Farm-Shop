@@ -1,4 +1,4 @@
-﻿using KoiShop.Application.Queries.GetAllKoi;
+﻿
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +9,11 @@ namespace KoiShop.Controllers
     [Route("api/kois")]
     public class KoiController(IMediator mediator) : ControllerBase
     {
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var kois = await mediator.Send(new GetAllKoiQuery());
-            return Ok(kois);
-        }
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    //var kois = await mediator.Send(new GetAllKoiQuery());
+        //    //return Ok(kois);
+        //}
     }
 }

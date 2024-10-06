@@ -18,6 +18,7 @@ namespace KoiShop.Infrastructure.Extensions
         {
             var connectionString = configuration.GetConnectionString("KoiShopDB");
             services.AddScoped<IKoiRepository, KoiRepository>();
+            services.AddScoped<IAddressDetailRepository, AddressDetailsRepository>();
             services.AddScoped<IUserSeeder, UserSeeder>();
             services.AddDbContext<KoiShopV1DbContext>(options => options.UseSqlServer(connectionString));
             services.AddIdentity<User, IdentityRole>()

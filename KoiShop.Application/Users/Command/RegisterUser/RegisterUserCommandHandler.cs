@@ -1,4 +1,5 @@
 ﻿using KoiShop.Application.JwtToken;
+using KoiShop.Domain.Constant;
 using KoiShop.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -20,11 +21,13 @@ namespace KoiShop.Application.Users.Command.RegisterUser
         {
             var user = new User
             {
-                FirstName  = request.RegisterRQ.FirstName,
+                FirstName = request.RegisterRQ.FirstName,
                 LastName = request.RegisterRQ.LastName,
                 Email = request.RegisterRQ.Email,
                 PhoneNumber = request.RegisterRQ.PhoneNumber,
-                UserName = request.RegisterRQ.Email,        
+                UserName = request.RegisterRQ.Email,
+                Point = 0,
+                Status = "IsActived"
             };
            
             if (request.RegisterRQ.ConfirmPassword != request.RegisterRQ.Password)
@@ -35,6 +38,7 @@ namespace KoiShop.Application.Users.Command.RegisterUser
             
             if (result.Succeeded)
             {
+                await identityUser.AddToRoleAsync(user,UserRoles.Customer);
                 return true; 
             }
             throw new InvalidOperationException("User registration failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));

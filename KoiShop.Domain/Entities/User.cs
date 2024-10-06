@@ -30,5 +30,6 @@ namespace KoiShop.Domain.Entities
 
         public virtual ICollection<BatchKoi> BatchKois { get; set; } = new List<BatchKoi>();
 
+      
     }
 }

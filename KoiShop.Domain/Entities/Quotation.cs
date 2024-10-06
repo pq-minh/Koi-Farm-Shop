@@ -16,6 +16,6 @@ public partial class Quotation
     public string? Status { get; set; }
 
     public string? UserId { get; set; }
-    public virtual User User { get; set; }
+    public virtual User? User { get; set; }
     public virtual Request? Request { get; set; }
 }

@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Command\" />
+    <Folder Include="Users\Command\UpdateAddress\" />
   </ItemGroup>
 
 </Project>

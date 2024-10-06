@@ -53,7 +53,10 @@ namespace KoiShop.Infrastructure.Presenters
             {
                 Options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
             });
-
+            services.AddControllersWithViews()
+            .AddNewtonsoftJson(options =>
+                 options.SerializerSettings.
+                 ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
     }
 }

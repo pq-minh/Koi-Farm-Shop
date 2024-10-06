@@ -24,7 +24,7 @@ public partial class Request
     public string? Status { get; set; }
 
     public string? UserId { get; set; }
-    public virtual User User { get; set; }
+    public virtual User? User { get; set; }
     public virtual Package? Package { get; set; }
 
     public virtual ICollection<Quotation> Quotations { get; set; } = new List<Quotation>();

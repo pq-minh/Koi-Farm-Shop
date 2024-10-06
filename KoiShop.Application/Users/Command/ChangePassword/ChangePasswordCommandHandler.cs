@@ -33,6 +33,9 @@ namespace KoiShop.Application.Users.Command.ChangePassword
             {
                 await signInManager.SignOutAsync();
                 return "ChangePasswordConfirm";
+            } else
+            {
+                return "Old Password incorrect";
             }
             var errors = string.Join(", ", result.Errors.Select(e => e.Description));
             throw new Exception($"Password change failed: {errors}");
