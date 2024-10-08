@@ -20,5 +20,10 @@ namespace KoiShop.Application.Service
         {
             return await _koiRepository.GetAllKois();
         }
+
+        public async Task<IEnumerable<Koi>> GetAllKoiWithCondition(string koiName, double? from, double? to, string sortBy, int pageNumber, int pageSize)
+        {
+            return await _koiRepository.GetKoiWithCondition(koiName, from, to, sortBy, pageNumber, pageSize);
+        }
     }
 }

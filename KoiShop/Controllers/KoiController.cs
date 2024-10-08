@@ -28,5 +28,14 @@ namespace KoiShop.Controllers
             var allKoi = await _koiService.GetAllKoi();
             return Ok(allKoi);
         }
+        [HttpGet("GetAllKoiWithCondition")]  //có 2 cách viết thêm tham số 
+                                             //1. HttpGet("GetAllKoiWithCondition/{KoiName}")
+                                             //2.
+        public async Task<IActionResult> GetKoiWithCondition(string? koiName, double? from, double? to, string? sortBy, int pageNumber, int pageSize)
+        {
+            var allKoiWithCondition = await _koiService.GetAllKoiWithCondition(koiName, from, to, sortBy, pageNumber, pageSize);
+            return Ok(allKoiWithCondition);
+        }
+        
     }
 }

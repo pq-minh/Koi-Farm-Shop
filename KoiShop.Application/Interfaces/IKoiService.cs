@@ -9,6 +9,8 @@ namespace KoiShop.Application.Interfaces
 {
     public interface IKoiService
     {
-        public Task<IEnumerable<Koi>> GetAllKoi();
+        Task<IEnumerable<Koi>> GetAllKoi();
+        Task<IEnumerable<Koi>> GetAllKoiWithCondition(string koiName, double? from, double? to, string sortBy, int pageNumber, int pageSize);
+
     }
 }
