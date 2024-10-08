@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Domain.Respositories
 {
-   public interface IKoiRepository
+    public interface IBatchKoiRepository
     {
-        Task<IEnumerable<Koi>> GetAllKoi();
-        Task<IEnumerable<Koi>> GetAllKois();
+        Task<IEnumerable<BatchKoi>> GetAllBatch();
     }
 }

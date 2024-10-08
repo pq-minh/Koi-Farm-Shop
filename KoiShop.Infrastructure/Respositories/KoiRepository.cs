@@ -10,12 +10,22 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Infrastructure.Respositories
 {
-    internal class KoiRepository(KoiShopV1DbContext koiShopV1DbContext) : IKoiRepository
+    internal class KoiRepository: IKoiRepository
     {
+        private readonly KoiShopV1DbContext _KoiShopV1DbContext;
+        public KoiRepository(KoiShopV1DbContext KoiShopV1DbContext)
+        {
+            _KoiShopV1DbContext = KoiShopV1DbContext;
+        }
         public async Task<IEnumerable<Koi>> GetAllKoi()
         {
-            var koi = await koiShopV1DbContext.Kois.ToListAsync();
+            var koi = await _KoiShopV1DbContext.Kois.ToListAsync();
             return koi;
+        }
+        
+        public async Task<IEnumerable<Koi>> GetAllKois()
+        {
+            return await _KoiShopV1DbContext.Kois.ToListAsync();
         }
     }
 }

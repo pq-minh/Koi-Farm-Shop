@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KoiShop.Domain.Respositories
+namespace KoiShop.Application.Interfaces
 {
-   public interface IKoiRepository
+    public interface IBatchKoiService
     {
-        Task<IEnumerable<Koi>> GetAllKoi();
-        Task<IEnumerable<Koi>> GetAllKois();
+        Task<IEnumerable<BatchKoi>> GetAllBatchKoi();
     }
 }
