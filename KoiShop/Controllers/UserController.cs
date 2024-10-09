@@ -71,12 +71,6 @@ namespace KoiShop.Controllers
         }
 
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("updateAddress")]
-        public async Task<IActionResult> UpdateAddress(CreateUserAddressCommand command)
-        {
-            var result = await mediator.Send(command);
-            return Ok(new { Result = result });
-        }
+       
     }
 }

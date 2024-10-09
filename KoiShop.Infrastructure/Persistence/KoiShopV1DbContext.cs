@@ -61,6 +61,8 @@ namespace KoiShop.Infrastructure.Persistence
                 entity.HasOne(ad => ad.User)
                       .WithMany(u => u.AddressDetails)
                      .HasForeignKey(ad => ad.UserId);
+                entity.Property(e => e.Status).HasColumnName("Status").IsUnicode(true);
+
             });
             modelBuilder.Entity<ShoppingCart>(entity =>
                {

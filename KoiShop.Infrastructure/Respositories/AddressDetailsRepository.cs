@@ -1,11 +1,8 @@
 ﻿using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using KoiShop.Infrastructure.Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using KoiShop.Application.AddressDetail.Dtos;
 
 namespace KoiShop.Infrastructure.Respositories
 {
@@ -16,6 +13,16 @@ namespace KoiShop.Infrastructure.Respositories
             koiShopV1DbContext.AddressDetails?.AddAsync(entity);
             await koiShopV1DbContext.SaveChangesAsync();
             return entity.AddressId;
+        }   
+
+        public async Task<IEnumerable<AddressDetail>> GetAll(string userID)
+        {
+            var addresses = await koiShopV1DbContext.AddressDetails
+                .Where(address => address.UserId == userID)
+                .ToListAsync<KoiShop.Domain.Entities.AddressDetail>();
+
+            return addresses;
         }
+
     }
 }

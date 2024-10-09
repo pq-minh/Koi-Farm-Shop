@@ -19,6 +19,7 @@ namespace KoiShop.Application.Extensions
             typeof(ServiceCollectionExtensions).Assembly));
             services.AddScoped<IUserContext, UserContext>();
             services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly).AddFluentValidationAutoValidation();
+            services.AddAutoMapper(typeof(ServiceCollectionExtensions).Assembly);
 
         }
     }

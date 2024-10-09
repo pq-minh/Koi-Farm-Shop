@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Infrastructure.Respositories
 {
-    internal class KoiRepository(KoiShopV1DbContext koiShopV1DbContext) : IKoiRepository
+    public class KoiRepository(KoiShopV1DbContext koiShopV1DbContext) : IKoiRepository
     {
         public async Task<IEnumerable<Koi>> GetAllKoi()
         {

@@ -1,14 +1,9 @@
-﻿using KoiShop.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using KoiShop.Domain.Entities ;
 namespace KoiShop.Domain.Respositories
 {
     public interface IAddressDetailRepository
     {
         Task<int> Create(AddressDetail entity);
+        Task<IEnumerable<AddressDetail>> GetAll(string userId);
     }
 }

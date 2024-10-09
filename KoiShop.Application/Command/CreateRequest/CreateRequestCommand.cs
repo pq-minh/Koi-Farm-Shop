@@ -1,4 +1,4 @@
-﻿using KoiShop.Application.Package.Dtos;
+﻿using KoiShop.Application.Dtos.PackageDtos;
 using KoiShop.Domain.Entities;
 using MediatR;
 using System;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.Command.CreateRequest
 {
-    public class CreateRequestCommand :IRequest<bool>
+    public class CreateRequestCommand :IRequest<Koi>
     {
         public int KoiId { get; set; }
 
@@ -38,7 +38,6 @@ namespace KoiShop.Application.Command.CreateRequest
         public double? Price { get; set; }
 
         public string? Certificate { get; set; }
-
 
         public virtual ICollection<PackageDto> Packages { get; set; } = new List<PackageDto>();
 

@@ -30,7 +30,7 @@ namespace KoiShop.Application.Users.Command.UpdateAddress
             {
                 throw new Exception("User not found.");
             }
-            var newAddress = new AddressDetail
+            var newAddress = new KoiShop.Domain.Entities.AddressDetail
             {
                 City = request.City,
                 Dictrict = request.Dictrict,

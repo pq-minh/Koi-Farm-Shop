@@ -1,6 +1,10 @@
-@KoiShop_HostAddress = http://localhost:5167
+@KoiShop_HostAddress = https://localhost:7228
 
 GET {{KoiShop_HostAddress}}/weatherforecast/
 Accept: application/json
 
+###
+
+GET {{KoiShop_HostAddress}} 
+Accept: application/json
 ###
