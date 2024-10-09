@@ -29,13 +29,17 @@ namespace KoiShop.Infrastructure.Respositories
             return await _KoiShopV1DbContext.Kois.ToListAsync();
         }
 
-        public async Task<IEnumerable<Koi>> GetKoiWithCondition(string koiName, double? from, double? to, string sortBy, int pageNumber, int pageSize)
+        public async Task<IEnumerable<Koi>> GetKoiWithCondition(string koiName, string typeFish, double? from, double? to, string sortBy, int pageNumber, int pageSize)
         {
-            var allKoi = _KoiShopV1DbContext.Kois.AsQueryable();
+            var allKoi = _KoiShopV1DbContext.Kois.Include(k => k.FishType).AsQueryable();
             #region Filtering
             if (!string.IsNullOrEmpty(koiName))
             {
                 allKoi = allKoi.Where(k => k.Name.ToLower().Contains(koiName.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(typeFish))
+            {
+                allKoi = allKoi.Where(k => k.FishType.TypeFish.ToLower().Contains(typeFish.ToLower()));
             }
             if (from.HasValue)
             {

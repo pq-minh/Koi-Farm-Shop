@@ -1,4 +1,5 @@
-﻿using KoiShop.Application.Interfaces;
+﻿using KoiShop.Application.Dtos;
+using KoiShop.Application.Interfaces;
 using KoiShop.Application.Queries.GetAllKoi;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -30,10 +31,10 @@ namespace KoiShop.Controllers
         }
         [HttpGet("GetAllKoiWithCondition")]  //có 2 cách viết thêm tham số 
                                              //1. HttpGet("GetAllKoiWithCondition/{KoiName}")
-                                             //2.
-        public async Task<IActionResult> GetKoiWithCondition(string? koiName, double? from, double? to, string? sortBy, int pageNumber, int pageSize)
+                                             //2. [FromQuery] string koiName
+        public async Task<IActionResult> GetKoiWithCondition([FromQuery] KoiFilterDto koiFilterDto)
         {
-            var allKoiWithCondition = await _koiService.GetAllKoiWithCondition(koiName, from, to, sortBy, pageNumber, pageSize);
+            var allKoiWithCondition = await _koiService.GetAllKoiWithCondition(koiFilterDto);
             return Ok(allKoiWithCondition);
         }
         

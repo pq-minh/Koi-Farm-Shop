@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using KoiShop.Application.Interfaces;
+using KoiShop.Application.Dtos;
+using KoiShop.Application.Service;
 
 namespace KoiShop.Controllers
 {
@@ -19,6 +21,12 @@ namespace KoiShop.Controllers
         {
             var batchKoi = _batchKoiService.GetAllBatchKoi();
             return Ok(batchKoi);
+        }
+        [HttpGet("GetAllBatchKoiWithCondition")]  
+        public async Task<IActionResult> GetKoiWithCondition([FromQuery] KoiFilterDto koiFilterDto)
+        {
+            var allKoiWithCondition = await _batchKoiService.GetAllBatchKoiWithCondition(koiFilterDto);
+            return Ok(allKoiWithCondition);
         }
     }
 }

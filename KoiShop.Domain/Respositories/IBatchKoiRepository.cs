@@ -10,5 +10,6 @@ namespace KoiShop.Domain.Respositories
     public interface IBatchKoiRepository
     {
         Task<IEnumerable<BatchKoi>> GetAllBatch();
+        Task<IEnumerable<BatchKoi>> GetBatchKoiWithCondition(string koiName, string typeFish, double? from, double? to, string sortBy, int pageNumber, int pageSize);
     }
 }

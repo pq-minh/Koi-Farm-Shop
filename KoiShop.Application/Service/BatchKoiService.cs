@@ -1,4 +1,6 @@
-﻿using KoiShop.Application.Interfaces;
+﻿using AutoMapper;
+using KoiShop.Application.Dtos;
+using KoiShop.Application.Interfaces;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using System;
@@ -11,15 +13,24 @@ namespace KoiShop.Application.Service
 {
     class BatchKoiService : IBatchKoiService
     {
+        private readonly IMapper _mapper;
         private readonly IBatchKoiRepository _repository;
-        public BatchKoiService(IBatchKoiRepository repository)
+        public BatchKoiService(IBatchKoiRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<BatchKoi>> GetAllBatchKoi()
         {
             return await _repository.GetAllBatch();
+        }
+
+        public async Task<IEnumerable<BatchKoiDto>> GetAllBatchKoiWithCondition(KoiFilterDto koiFilterDto)
+        {
+            var allBatchKoi = await _repository.GetBatchKoiWithCondition(koiFilterDto.KoiName, koiFilterDto.TypeFish, koiFilterDto.From, koiFilterDto.To, koiFilterDto.SortBy, koiFilterDto.PageNumber, koiFilterDto.PageSize);
+            var allBatchKoiDto = _mapper.Map<IEnumerable<BatchKoiDto>>(allBatchKoi);
+            return allBatchKoiDto;
         }
     }
 }
