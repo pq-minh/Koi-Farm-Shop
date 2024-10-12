@@ -22,5 +22,16 @@ namespace KoiShop.Infrastructure.Respositories
             await koiShopV1DbContext.SaveChangesAsync();
             return entity;
         }
+
+       public async Task<IEnumerable<Request>> GetAllRequest(string userId)
+        {
+          var result =  await koiShopV1DbContext.Requests.Where(us => us.UserId == userId).Include(pk => pk.Package)
+                .ThenInclude(k => k.Koi).ToListAsync();
+            if (result == null)
+            {
+                return null;
+            }
+            return result;
+        }
     }
 }

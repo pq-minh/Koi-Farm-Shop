@@ -14,7 +14,7 @@ namespace KoiShop.Controllers
     {
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("createAddress")]
+        [HttpPost("create-address")]
         public async Task<IActionResult> CreateAddress(CreateUserAddressCommand command)
         {
             var result = await mediator.Send(command);
@@ -22,7 +22,7 @@ namespace KoiShop.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("getAllAddress")]
+        [HttpGet("getall-address")]
         public async Task<IActionResult> GetAllAddress()
         {
             var result = await mediator.Send( new GetAllAddressQuery() );

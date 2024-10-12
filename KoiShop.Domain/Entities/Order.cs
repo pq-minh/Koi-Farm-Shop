@@ -15,7 +15,9 @@ public partial class Order
 
     public int? DiscountId { get; set; }
 
+    public string? ShippingAddress { get; set; }
 
+    public string? PhoneNumber { get; set; }
     public string? UserId { get; set; }
     public virtual User? User { get; set; }
 

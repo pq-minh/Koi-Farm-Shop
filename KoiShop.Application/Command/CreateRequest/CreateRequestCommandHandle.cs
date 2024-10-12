@@ -35,7 +35,7 @@ namespace KoiShop.Application.Command.CreateRequest
                 Gender = request.Gender,
                 Image = request.Image,
                 Age = request.Age,
-                Weight = request.Weight,
+                Weight =  request.Weight,
                 Size = request.Size,
                 Personality = request.Personality,
                 Status = request.Status,
@@ -57,8 +57,6 @@ namespace KoiShop.Application.Command.CreateRequest
                         Status = req.Status,
                         Quotations = req.Quotations.Select(qt => new Quotation
                         {
-                            UserId = "ce23b5a4-3934-448b-8cdc-ce3e0146ff60",
-                            User = dbUser,
                             CreateDate = req.CreatedDate,
                             Price = qt.Price,
                             Status = qt.Status,

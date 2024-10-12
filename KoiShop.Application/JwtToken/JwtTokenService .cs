@@ -31,7 +31,7 @@ namespace KoiShop.Application.JwtToken
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Unique identifier cho token
         };
             // Thêm roles vào claims
-            claims.AddRange(roles.Select(role => new Claim("role:", role)));
+            claims.AddRange(roles.Select(role => new Claim("role", role)));
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],

@@ -10,5 +10,7 @@ namespace KoiShop.Domain.Respositories
     public interface IRequestRepository
     {
         Task<Koi> CreateRequest(Koi entity);
+
+        Task<IEnumerable<Request>> GetAllRequest(string userID);
     }
 }

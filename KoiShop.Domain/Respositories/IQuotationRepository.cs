@@ -1,4 +1,5 @@
-﻿using KoiShop.Domain.Entities;
+﻿using KoiShop.Domain.Constant;
+using KoiShop.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,7 @@ namespace KoiShop.Domain.Respositories
     public interface IQuotationRepository
     {
         Task<Quotation> UpdatePriceQuotation(Quotation quotation);
+
+        Task<IEnumerable<QuotationWithKoi>> GetQuotation(string userid);
     }
 }

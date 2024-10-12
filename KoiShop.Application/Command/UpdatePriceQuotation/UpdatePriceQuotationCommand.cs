@@ -15,5 +15,7 @@ namespace KoiShop.Application.Command.UpdatePriceQuotation
         public int? RequestId { get; set; }
         public double? Price { get; set; }
 
+        public string? Note { get; set; }
+
     }
 }

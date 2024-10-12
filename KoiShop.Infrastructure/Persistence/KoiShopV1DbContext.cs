@@ -268,6 +268,8 @@ namespace KoiShop.Infrastructure.Persistence
                     .HasColumnName("OrderID");
                 entity.Property(e => e.DiscountId).HasColumnName("DiscountID");
                 entity.Property(e => e.TotalAmount).HasColumnName("TotalAmount");
+                entity.Property(e => e.ShippingAddress).HasColumnName("ShippingAddress").IsUnicode(true);
+                entity.Property(e => e.PhoneNumber).HasColumnName("PhoneNumber");
                 entity.Property(e => e.OrderStatus).HasColumnName("OrderStatus").IsUnicode(true);
                 entity.Property(e => e.CreateDate)
                     .HasColumnName("CreateDate");
@@ -332,6 +334,7 @@ namespace KoiShop.Infrastructure.Persistence
                     .HasColumnName("QuotationID");
                 entity.Property(e => e.RequestId).HasColumnName("RequestID");
                 entity.Property(e => e.Status).HasMaxLength(255);
+                entity.Property(e => e.Note).HasColumnName("Note").IsUnicode(true);
 
                 entity.HasOne(d => d.Request).WithMany(p => p.Quotations)
                     .HasForeignKey(d => d.RequestId)
