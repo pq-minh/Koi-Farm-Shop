@@ -1,0 +1,30 @@
+﻿using KoiFarmShop.Domain.Entities;
+using System;
+using System.Collections.Generic;
+
+namespace KoiFarmShop.Domain.Entities
+{
+
+    public partial class Review
+    {
+        public int ReviewId { get; set; }
+
+        public DateOnly? CreateDate { get; set; }
+
+        public int? Rating { get; set; }
+
+        public string? Comments { get; set; }
+
+        public int? KoiId { get; set; }
+
+        public int? BatchKoiId { get; set; }
+
+        public string? UserId { get; set; }
+
+        public virtual BatchKoi? BatchKoi { get; set; }
+
+        public virtual Koi? Koi { get; set; }
+
+        public virtual AspNetUser? User { get; set; }
+    }
+}
