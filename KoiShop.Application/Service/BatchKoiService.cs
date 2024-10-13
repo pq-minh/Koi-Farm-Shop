@@ -11,6 +11,7 @@ namespace KoiShop.Application.Service
 {
     public class BatchKoiService : IBatchKoiService
     {
+        // abc
         private readonly IBatchKoiRepository _batchKoiRepository;
 
         public BatchKoiService(IBatchKoiRepository batchKoiRepository)
