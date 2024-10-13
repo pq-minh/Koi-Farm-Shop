@@ -1,0 +1,66 @@
+﻿using KoiShop.Domain.Constant;
+using KoiShop.Domain.Entities;
+using KoiShop.Domain.Respositories;
+using KoiShop.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace KoiShop.Infrastructure.Respositories
+{
+    public class QuotationRepository(KoiShopV1DbContext koiShopV1DbContext) : IQuotationRepository
+    {
+        public async Task<Quotation> UpdatePriceQuotation(Quotation entity)
+        {
+            var quotation = await koiShopV1DbContext.Quotations.FindAsync(entity.QuotationId);
+            var request = await koiShopV1DbContext.Requests.FindAsync(entity.RequestId);
+            if (request == null || quotation == null)      
+            {
+                return null;
+            }
+            quotation.Price = entity.Price;
+            quotation.Note = entity.Note;
+            quotation.Status = "Confirm";
+            request.AgreementPrice = entity.Price;
+            request.Status = "Confirm";
+            koiShopV1DbContext.Update(quotation);
+            koiShopV1DbContext.Update(request);
+            await koiShopV1DbContext.SaveChangesAsync();
+            return entity;
+        }
+        public async Task<IEnumerable<QuotationWithKoi>> GetQuotation(string userid)
+        {
+            var quotationsWithKoi = await koiShopV1DbContext.Kois
+         .Include(ft => ft.FishType)
+         .Include(k => k.Packages)
+             .ThenInclude(pk => pk.Requests)
+                 .ThenInclude(rq => rq.Quotations)
+         .SelectMany(k => k.Packages
+             .SelectMany(p => p.Requests                   
+                 .SelectMany(r => r.Quotations
+                     .Where(q => q.UserId == userid || q.UserId == null)
+                        .Select(q => new QuotationWithKoi
+                        {
+                            QuotationId = q.QuotationId,
+                            RequestId = q.RequestId,
+                            CreateDate = q.CreateDate,
+                            Price = q.Price,
+                            Status = q.Status,
+                            UserId = q.UserId,
+                            Note = q.Note,
+                            KoiName = k.Name,
+                            KoiImage = k.Image,
+                            KoiAge = k.Age,
+                            KoiWeight = k.Weight,
+                            KoiSize = k.Size,
+                            FishType = k.FishType
+                        }))))
+         .ToListAsync();
+
+            return quotationsWithKoi;
+        }
+    }
+}
