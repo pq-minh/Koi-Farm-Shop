@@ -17,11 +17,11 @@ public partial class Discount
 
     public int? Used { get; set; }
 
-    public DateOnly? CreateDate { get; set; }
+    public DateTime? CreateDate { get; set; }
 
-    public DateOnly? StartDate { get; set; }
+    public DateTime? StartDate { get; set; }
 
-    public DateOnly? EndDate { get; set; }
+    public DateTime? EndDate { get; set; }
 
     public int? Status { get; set; }
 

@@ -9,13 +9,13 @@ public partial class Request
 
     public int? PackageId { get; set; }
 
-    public DateOnly? CreatedDate { get; set; }
+    public DateTime? CreatedDate { get; set; }
 
     public int? RelationalRequestId { get; set; }
 
-    public DateOnly? ConsignmentDate { get; set; }
+    public DateTime? ConsignmentDate { get; set; }
 
-    public DateOnly? EndDate { get; set; }
+    public DateTime? EndDate { get; set; }
 
     public double? AgreementPrice { get; set; }
 

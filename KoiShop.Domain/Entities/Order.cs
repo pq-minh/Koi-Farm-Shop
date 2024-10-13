@@ -9,7 +9,7 @@ public partial class Order
 
     public float? TotalAmount { get; set; }
 
-    public DateOnly? CreateDate { get; set; }
+    public DateTime? CreateDate { get; set; }
 
     public string? OrderStatus { get; set; }
 
