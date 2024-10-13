@@ -21,9 +21,11 @@ namespace KoiShop.Application.Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<BatchKoi>> GetAllBatchKoi()
+        public async Task<IEnumerable<BatchKoiDto>> GetAllBatchKoi()
         {
-            return await _repository.GetAllBatch();
+            var allBatch = await _repository.GetAllBatch();
+            var allBatchDto = _mapper.Map<IEnumerable<BatchKoiDto>>(allBatch);
+            return allBatchDto;
         }
 
         public async Task<IEnumerable<BatchKoiDto>> GetAllBatchKoiWithCondition(KoiFilterDto koiFilterDto)

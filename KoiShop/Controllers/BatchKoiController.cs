@@ -19,7 +19,7 @@ namespace KoiShop.Controllers
         [HttpGet("GetBatchKoi")]
         public async Task<IActionResult> GetBatchKoi()
         {
-            var batchKoi = _batchKoiService.GetAllBatchKoi();
+            var batchKoi = await _batchKoiService.GetAllBatchKoi();
             return Ok(batchKoi);
         }
         [HttpGet("GetAllBatchKoiWithCondition")]  

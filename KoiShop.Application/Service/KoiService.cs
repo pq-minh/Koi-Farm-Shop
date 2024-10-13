@@ -20,9 +20,11 @@ namespace KoiShop.Application.Service
             _koiRepository = koiRepository;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<Koi>> GetAllKoi()
+        public async Task<IEnumerable<KoiDto>> GetAllKoi()
         {
-            return await _koiRepository.GetAllKois();
+            var allkoi = await _koiRepository.GetAllKois();
+            var allKoiDto = _mapper.Map<IEnumerable<KoiDto>>(allkoi);
+            return allKoiDto;
         }
 
         public async Task<IEnumerable<KoiDto>> GetAllKoiWithCondition(KoiFilterDto koiFilterDto)

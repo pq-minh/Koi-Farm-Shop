@@ -9,7 +9,7 @@ namespace KoiShop.Domain.Entities
     public class Payment
     {
         public int? PaymentID { get; set; }
-        public DateOnly ? CreateDate { get; set; }
+        public DateTime ? CreateDate { get; set; }
 
         public string? PaymenMethod { get; set;}
 

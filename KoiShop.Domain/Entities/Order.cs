@@ -9,12 +9,11 @@ public partial class Order
 
     public float? TotalAmount { get; set; }
 
-    public DateOnly? CreateDate { get; set; }
+    public DateTime? CreateDate { get; set; }
 
     public string? OrderStatus { get; set; }
 
     public int? DiscountId { get; set; }
-
 
     public string? UserId { get; set; }
     public virtual User? User { get; set; }

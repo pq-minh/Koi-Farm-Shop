@@ -10,7 +10,7 @@ namespace KoiShop.Application.Interfaces
 {
     public interface IBatchKoiService
     {
-        Task<IEnumerable<BatchKoi>> GetAllBatchKoi();
+        Task<IEnumerable<BatchKoiDto>> GetAllBatchKoi();
         Task<IEnumerable<BatchKoiDto>> GetAllBatchKoiWithCondition(KoiFilterDto koiFilterDto);
     }
 }

@@ -18,6 +18,7 @@ namespace KoiShop.Application.Extensions
             services.AddScoped<IKoiService, KoiService>();
             services.AddScoped<IBatchKoiService, BatchKoiService>();
             services.AddScoped<IKoiAndBatchKoiService, KoiAndBatchKoiService>();
+            services.AddScoped<ICartService, CartService>();
             //Register service for JWTToken
             services.AddScoped<IJwtTokenService,JwtTokenService>();
             services.AddHttpContextAccessor();

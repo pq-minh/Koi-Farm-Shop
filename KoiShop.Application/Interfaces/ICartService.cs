@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.Interfaces
 {
-    public interface IKoiService
+    public interface ICartService
     {
-        Task<IEnumerable<KoiDto>> GetAllKoi();
-        Task<IEnumerable<KoiDto>> GetAllKoiWithCondition(KoiFilterDto koiFilterDto);
-
+        Task<IEnumerable<CartDtos>> GetCart();
+        Task<CartEnum> AddCarts(CartDtoV1 cart);
     }
 }
