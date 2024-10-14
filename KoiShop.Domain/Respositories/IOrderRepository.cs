@@ -9,7 +9,11 @@ namespace KoiShop.Domain.Respositories
 {
     public interface IOrderRepository
     {
-        Task<bool> AddToOrder(Order cart);
-        Task<bool> AddPayment(string method, string status);
+        Task<IEnumerable<OrderDetail>> GetOrderDetail();
+        Task<bool> AddToOrder(List<CartItem> carts);
+        Task<bool> AddPayment(string method);
+        Task<bool> AddToOrderDetailFromShop(CartItem cart, int orderId);
+        Task<bool> AddToOrderDetailFromCart(List<CartItem> carts);
+        Task<bool> UpdateCartAfterBuy(List<CartItem> carts);
     }
 }

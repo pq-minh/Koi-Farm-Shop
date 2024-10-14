@@ -32,9 +32,45 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return Enumerable.Empty<CartItem>();
             }
-            var cartItem = await _koiShopV1DbContext.CartItems.
+            var cartItems = await _koiShopV1DbContext.CartItems.
                 Where(ci => (ci.ShoppingCartId == shoppingCart.ShoppingCartID) && (ci.Status == "Save")).ToListAsync();
-            return cartItem;
+            foreach (var cartItem in cartItems)
+            {
+                double currentPrice = await GetCurrentPrice(cartItem);
+
+                if (cartItem.UnitPrice != (float)currentPrice)
+                {
+                    cartItem.UnitPrice = (float)currentPrice;
+                    cartItem.TotalPrice = cartItem.Quantity * cartItem.UnitPrice;
+                    _koiShopV1DbContext.CartItems.Update(cartItem);
+                }
+            }
+            await _koiShopV1DbContext.SaveChangesAsync();
+            return cartItems;
+        }
+        public async Task<double> GetCurrentPrice(CartItem cart)
+        {
+            double currentPrice = 0;
+            if (cart != null)
+            {
+                if (cart.KoiId.HasValue)
+                {
+                    currentPrice = (double)await _koiShopV1DbContext.Kois
+                        .Where(k => k.KoiId == cart.KoiId)
+                        .Select(k => k.Price)
+                        .FirstOrDefaultAsync();
+                    return currentPrice;
+                }
+                else if (cart.BatchKoiId.HasValue)
+                {
+                    currentPrice = (double)await _koiShopV1DbContext.BatchKois
+                        .Where(b => b.BatchKoiId == cart.BatchKoiId)
+                        .Select(b => b.Price)
+                        .FirstOrDefaultAsync();
+                    return currentPrice;
+                }
+            }
+            return currentPrice;
         }
         public async Task<bool> AddItemToCart(CartItem cart)
         {
@@ -52,24 +88,34 @@ namespace KoiShop.Infrastructure.Respositories
               (c.ShoppingCartId == shoppingCart.ShoppingCartID));
             if (exsitFish != null)
             {
+                var currentPrice = await GetCurrentPrice(cart);
+                if (exsitFish.UnitPrice != (float)currentPrice)
+                {
+                    exsitFish.UnitPrice = (float)currentPrice;
+                    exsitFish.TotalPrice = (float)currentPrice * exsitFish.Quantity;
+                }
                 if (cart.BatchKoiId.HasValue && cart.BatchKoiId == exsitFish.BatchKoiId)
                 {
-                    exsitFish.Quantity += cart.Quantity;
-                    exsitFish.UnitPrice += cart.UnitPrice;
+                    exsitFish.Quantity += 1;
                     exsitFish.TotalPrice = exsitFish.Quantity * exsitFish.UnitPrice;
-                    _koiShopV1DbContext.Update(exsitFish);
+                    _koiShopV1DbContext.CartItems.Update(exsitFish);
                     await _koiShopV1DbContext.SaveChangesAsync();
                 }
+                exsitFish.Status = "Save";
+                _koiShopV1DbContext.CartItems.Update(exsitFish);
+                await _koiShopV1DbContext.SaveChangesAsync();
             }
             else
             {
                 #region Checkprice
                 double price = 0;
-                if (cart.KoiId.HasValue) {
-                     price = (double) await _koiShopV1DbContext.Kois.Where(k => k.KoiId == cart.KoiId).Select(k => k.Price).
-                        FirstOrDefaultAsync();
+                if (cart.KoiId.HasValue)
+                {
+                    price = (double)await _koiShopV1DbContext.Kois.Where(k => k.KoiId == cart.KoiId).Select(k => k.Price).
+                       FirstOrDefaultAsync();
                 }
-                if (cart.BatchKoiId.HasValue) {
+                else if (cart.BatchKoiId.HasValue)
+                {
                     price = (double)await _koiShopV1DbContext.BatchKois.Where(b => b.BatchKoiId == cart.BatchKoiId).Select(b => b.Price).
                             FirstOrDefaultAsync();
                 }
@@ -80,7 +126,7 @@ namespace KoiShop.Infrastructure.Respositories
                     BatchKoiId = cart.BatchKoiId,
                     Quantity = 1,
                     UnitPrice = (float)price,
-                    TotalPrice = (float)price * cart.Quantity,
+                    TotalPrice = (float)(price * 1),
                     Status = "Save",
                     ShoppingCartId = shoppingCart.ShoppingCartID
                 };
@@ -88,8 +134,22 @@ namespace KoiShop.Infrastructure.Respositories
                 await _koiShopV1DbContext.SaveChangesAsync();
             }
             return true;
-
         }
-
+        public async Task<bool> RemoveCart(CartItem cart)
+        {
+            var userId = _userContext.GetCurrentUser().Id;
+            var shoppingCart = await _koiShopV1DbContext.ShoppingCarts.Where(sc => sc.UserId == userId).FirstOrDefaultAsync();
+            var exsitFish = _koiShopV1DbContext.CartItems.FirstOrDefault(c => ((cart.KoiId.HasValue && cart.KoiId == c.KoiId) || (cart.BatchKoiId.HasValue && cart.BatchKoiId == c.BatchKoiId)) &&
+              (c.ShoppingCartId == shoppingCart.ShoppingCartID));
+            if (exsitFish != null)
+            {
+                exsitFish.Status = "Removed";
+                var remove = _koiShopV1DbContext.CartItems.Update(exsitFish);
+                await _koiShopV1DbContext.SaveChangesAsync();
+                return true;
+            }
+            else
+                return false;
+        }
     }
 }

@@ -12,5 +12,6 @@ namespace KoiShop.Application.Interfaces
     {
         Task<IEnumerable<CartDtos>> GetCart();
         Task<CartEnum> AddCarts(CartDtoV1 cart);
+        Task<CartEnum> RemoveCart(CartDtoV1 cart);
     }
 }

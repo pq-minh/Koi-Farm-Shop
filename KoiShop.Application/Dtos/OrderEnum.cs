@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.Dtos
 {
-    public enum CartEnum
+    public enum OrderEnum
     {
         Success,
         UserNotAuthenticated,
         NotLoggedInYet,
         InvalidParameters,
         ItemUpdated,
-        NotRemovedInYet,
+        NotAddOrderInYet,
+        FailUpdateCart,
+        FailAddPayment,
+        FailAdd,
         Fail
     }
 }

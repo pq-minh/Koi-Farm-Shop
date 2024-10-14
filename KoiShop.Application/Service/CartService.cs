@@ -31,6 +31,11 @@ namespace KoiShop.Application.Service
         }
         public async Task<IEnumerable<CartDtos>> GetCart()
         {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+
             var allCart = await _cartsRepository.GetCart();
             var cart = _mapper.Map<IEnumerable<CartDtos>>(allCart);
             return cart;
@@ -57,5 +62,28 @@ namespace KoiShop.Application.Service
             else
                 return CartEnum.Fail;
         }
+        public async Task<CartEnum> RemoveCart(CartDtoV1 cart)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                return CartEnum.NotLoggedInYet;
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return CartEnum.UserNotAuthenticated;
+            }
+            if (cart.KoiId == null && cart.BatchKoiId == null)
+            {
+                return CartEnum.InvalidParameters;
+            }
+            var cartItem = _mapper.Map<CartItem>(cart);
+            var add = await _cartsRepository.RemoveCart(cartItem);
+            if (add)
+                return CartEnum.Success;
+            else
+                return CartEnum.Fail;
+        }
+
     }
 }
