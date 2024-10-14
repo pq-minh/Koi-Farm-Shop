@@ -4,6 +4,7 @@ using KoiShop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KoiShop.Infrastructure.Migrations
 {
     [DbContext(typeof(KoiShopV1DbContext))]
-    partial class KoiShopV1DbContextModelSnapshot : ModelSnapshot
+    [Migration("20241014160409_batchKoi")]
+    partial class batchKoi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,11 +79,6 @@ namespace KoiShop.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BatchKoiId"));
 
-                    b.Property<string>("Age")
-                        .HasMaxLength(200)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<int?>("BatchTypeId")
                         .HasColumnType("int")
                         .HasColumnName("BatchTypeID");
@@ -111,6 +109,11 @@ namespace KoiShop.Infrastructure.Migrations
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Personality")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<double?>("Price")
                         .HasColumnType("float");
 
@@ -132,9 +135,9 @@ namespace KoiShop.Infrastructure.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Weight")
+                    b.Property<double?>("Weight")
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("float")
                         .HasColumnName("weight");
 
                     b.HasKey("BatchKoiId")

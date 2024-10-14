@@ -144,7 +144,7 @@ namespace KoiShop.Infrastructure.Persistence
                     .HasColumnName("BatchKoiID");
                 entity.Property(e => e.BatchTypeId).HasColumnName("BatchTypeID");
                 entity.Property(e => e.Certificate).HasColumnType("text");
-                entity.Property(e => e.Description).HasColumnType("text");
+                entity.Property(e => e.Description).HasColumnName("Description").IsUnicode(true);
                 entity.Property(e => e.Gender)
                     .HasMaxLength(200)
                     .IsUnicode(true);
@@ -155,19 +155,19 @@ namespace KoiShop.Infrastructure.Persistence
                 entity.Property(e => e.Origin)
                     .HasMaxLength(200)
                     .IsUnicode(true);
-                entity.Property(e => e.Personality)
+                entity.Property(e => e.Age)
                     .HasMaxLength(200)
                     .IsUnicode(true);
                 entity.Property(e => e.Quantity)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
                 entity.Property(e => e.Size)
                     .HasMaxLength(200)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
                 entity.Property(e => e.Status)
                     .HasMaxLength(200)
                     .IsUnicode(true);
-                entity.Property(e => e.Weight).HasColumnName("weight");
+                entity.Property(e => e.Weight).HasColumnName("weight").IsUnicode(true);
 
                 entity.HasOne(d => d.BatchType).WithMany(p => p.BatchKois)
                     .HasForeignKey(d => d.BatchTypeId)

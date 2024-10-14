@@ -13,7 +13,7 @@ public partial class BatchKoi
 
     public string? Quantity { get; set; }
 
-    public double? Weight { get; set; }
+    public string? Weight { get; set; }
 
     public string? Size { get; set; }
 
@@ -21,7 +21,7 @@ public partial class BatchKoi
 
     public string? Gender { get; set; }
 
-    public string? Personality { get; set; }
+    public string? Age { get; set; }
 
     public string? Certificate { get; set; }
 
