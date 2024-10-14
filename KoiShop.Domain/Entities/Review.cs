@@ -7,7 +7,7 @@ public partial class Review
 {
     public int ReviewId { get; set; }
 
-    public DateOnly? CreateDate { get; set; }
+    public DateTime? CreateDate { get; set; }
 
     public int? Rating { get; set; }
 
