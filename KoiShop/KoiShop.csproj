@@ -11,9 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KoiShop.Application\KoiShop.Application.csproj">
-      <Private>True</Private>
-    </ProjectReference>
+    <ProjectReference Include="..\KoiShop.Application\KoiShop.Application.csproj" />
     <ProjectReference Include="..\KoiShop.Infrastructure\KoiShop.Infrastructure.csproj">
       <Private>True</Private>
     </ProjectReference>
