@@ -26,7 +26,12 @@ namespace KoiShop.Application.Service
             var allKoiDto = _mapper.Map<IEnumerable<KoiDto>>(allkoi);
             return allKoiDto;
         }
-
+        public async Task<KoiDto> GetKoi (int id)
+        {
+            var koi = await _koiRepository.GetKoi(id);
+            var koidto = _mapper.Map<KoiDto>(koi);
+            return koidto;
+        }
         public async Task<IEnumerable<KoiDto>> GetAllKoiWithCondition(KoiFilterDto koiFilterDto)
         {
             var allKoi = await _koiRepository.GetKoiWithCondition(koiFilterDto.KoiName, koiFilterDto.TypeFish, koiFilterDto.From, koiFilterDto.To, koiFilterDto.SortBy, koiFilterDto.PageNumber, koiFilterDto.PageSize);

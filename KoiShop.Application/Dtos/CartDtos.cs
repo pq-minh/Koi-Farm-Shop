@@ -28,5 +28,6 @@ namespace KoiShop.Application.Dtos
     {
         public int? KoiId { get; set; }
         public int? BatchKoiId { get; set; }
+        public int? Quantity { get; set; }
     }
 }

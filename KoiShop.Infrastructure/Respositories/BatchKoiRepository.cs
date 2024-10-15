@@ -19,9 +19,12 @@ namespace KoiShop.Infrastructure.Repositories
         }
         public async Task<IEnumerable<BatchKoi>> GetAllBatch()
         {
-            return await _context.BatchKois.ToListAsync();
+            return await _context.BatchKois.Include(bk => bk.BatchType).ToListAsync();
         }
-
+        public async Task<BatchKoi> GetBatchKoi(int id)
+        {
+            return await _context.BatchKois.Where(b => b.BatchKoiId == id).Include(k => k.BatchType).FirstOrDefaultAsync();
+        }
         public async Task<IEnumerable<BatchKoi>> GetBatchKoiWithCondition(string batchKoiName, string typeBatch, double? from, double? to, string sortBy, int pageNumber, int pageSize)
         {
             var allBatchKoi = _context.BatchKois.Include(bk => bk.BatchType).AsQueryable();

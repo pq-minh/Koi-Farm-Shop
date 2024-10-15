@@ -26,7 +26,12 @@ namespace KoiShop.Infrastructure.Respositories
 
         public async Task<IEnumerable<Koi>> GetAllKois()
         {
-            return await _KoiShopV1DbContext.Kois.ToListAsync();
+            return await _KoiShopV1DbContext.Kois.Include(k => k.FishType).ToListAsync();
+        }
+
+        public async Task<Koi> GetKoi (int id)
+        {
+            return await _KoiShopV1DbContext.Kois.Where(k => k.KoiId == id).Include(k => k.FishType).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Koi>> GetKoiWithCondition(string koiName, string typeFish, double? from, double? to, string sortBy, int pageNumber, int pageSize)

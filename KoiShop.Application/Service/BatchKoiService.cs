@@ -28,6 +28,13 @@ namespace KoiShop.Application.Service
             return allBatchDto;
         }
 
+        public async Task<BatchKoiDto> GetBatchKoi(int id)
+        {
+            var koi = await _repository.GetBatchKoi(id);
+            var koidto = _mapper.Map<BatchKoiDto>(koi);
+            return koidto;
+        }
+
         public async Task<IEnumerable<BatchKoiDto>> GetAllBatchKoiWithCondition(KoiFilterDto koiFilterDto)
         {
             var allBatchKoi = await _repository.GetBatchKoiWithCondition(koiFilterDto.KoiName, koiFilterDto.TypeFish, koiFilterDto.From, koiFilterDto.To, koiFilterDto.SortBy, koiFilterDto.PageNumber, koiFilterDto.PageSize);

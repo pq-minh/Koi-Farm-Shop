@@ -11,6 +11,7 @@ namespace KoiShop.Application.Interfaces
     public interface IKoiService
     {
         Task<IEnumerable<KoiDto>> GetAllKoi();
+        Task<KoiDto> GetKoi(int id);
         Task<IEnumerable<KoiDto>> GetAllKoiWithCondition(KoiFilterDto koiFilterDto);
 
     }

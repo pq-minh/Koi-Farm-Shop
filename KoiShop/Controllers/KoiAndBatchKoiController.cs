@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KoiShop.Controllers
 {
-    [Route("api/KoiAndBatchKoi")]
+    [Route("api/[controller]s")]
     [ApiController]
     public class KoiAndBatchKoiController : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace KoiShop.Controllers
         {
             _koiAndBatchKoiService = koiAndBatchKoiService;
         }
-        [HttpGet("GetAllKoiAndBatch")]
+        [HttpGet]
         public async Task<IActionResult> GetAllKoiAndBatch([FromQuery] KoiFilterDto koiFilterDto)
         {
             var allKoiAndBatch = await _koiAndBatchKoiService.GetAllKoiAndBatch(koiFilterDto);

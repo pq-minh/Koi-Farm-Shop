@@ -8,8 +8,8 @@ namespace KoiShop.Controllers
 {
 
     [ApiController]
-    [Route("api/kois")]
-    public class KoiController: ControllerBase
+    [Route("api/[controller]s")]
+    public class KoiController : ControllerBase
     {
         //[HttpGet]
         //public async Task<IActionResult> GetAll()
@@ -23,13 +23,19 @@ namespace KoiShop.Controllers
             _koiService = koiService;
         }
 
-        [HttpGet("GetAllKoi")]
-        public async Task<IActionResult> GetKoi()
+        [HttpGet]
+        public async Task<IActionResult> GetKois()
         {
             var allKoi = await _koiService.GetAllKoi();
             return Ok(allKoi);
         }
-        [HttpGet("GetAllKoiWithCondition")]  //có 2 cách viết thêm tham số 
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetKoi(int id)
+        {
+            var koi = await _koiService.GetKoi(id);
+            return Ok(koi);
+        }
+        [HttpGet("modify")]  //có 2 cách viết thêm tham số 
                                              //1. HttpGet("GetAllKoiWithCondition/{KoiName}")
                                              //2. [FromQuery] string koiName
         public async Task<IActionResult> GetKoiWithCondition([FromQuery] KoiFilterDto koiFilterDto)

@@ -13,11 +13,12 @@ namespace KoiShop.Application.Profiles
     {
         public MapProfile()
         {
-            CreateMap<Koi, KoiDto>();
-            CreateMap<BatchKoi, BatchKoiDto>();
+            CreateMap<Koi, KoiDto>().ForMember(dest => dest.TypeFish, opt => opt.MapFrom(src => src.FishType.TypeFish));
+            CreateMap<BatchKoi, BatchKoiDto>().ForMember(d => d.TypeBatch, o => o.MapFrom(s => s.BatchType.TypeBatch));
             CreateMap<CartItem, CartDtos>();
             CreateMap<CartDtoV1, CartItem>();
             CreateMap<CartDtoV2, CartItem>();
+            CreateMap<OrderDetail, OrderDto>();
         }
     }
 }

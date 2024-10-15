@@ -56,7 +56,8 @@ namespace KoiShop.Application.Service
             }
             foreach (var cart in carts)
             {
-                if (cart.KoiId == null && cart.BatchKoiId == null)
+                if ((cart.KoiId == null && cart.BatchKoiId == null) || (cart.KoiId.HasValue && cart.KoiId <= 0) || (cart.BatchKoiId.HasValue && cart.BatchKoiId <= 0) ||
+                    (cart.KoiId.HasValue && cart.BatchKoiId.HasValue))
                 {
                     return OrderEnum.InvalidParameters;
                 }

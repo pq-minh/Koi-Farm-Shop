@@ -11,6 +11,7 @@ namespace KoiShop.Application.Interfaces
     public interface IBatchKoiService
     {
         Task<IEnumerable<BatchKoiDto>> GetAllBatchKoi();
+        Task<BatchKoiDto> GetBatchKoi(int id);
         Task<IEnumerable<BatchKoiDto>> GetAllBatchKoiWithCondition(KoiFilterDto koiFilterDto);
     }
 }

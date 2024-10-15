@@ -8,7 +8,7 @@ namespace KoiShop.Controllers
 {
     
     [ApiController]
-    [Route("/api/BatchKoi")]
+    [Route("/api/[controller]s")]
     public class BatchKoiController : ControllerBase
     {
         private readonly IBatchKoiService _batchKoiService;
@@ -16,13 +16,19 @@ namespace KoiShop.Controllers
         {
             _batchKoiService = batchKoiService;
         }
-        [HttpGet("GetBatchKoi")]
+        [HttpGet]
         public async Task<IActionResult> GetBatchKoi()
         {
             var batchKoi = await _batchKoiService.GetAllBatchKoi();
             return Ok(batchKoi);
         }
-        [HttpGet("GetAllBatchKoiWithCondition")]  
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetKoi(int id)
+        {
+            var koi = await _batchKoiService.GetBatchKoi(id);
+            return Ok(koi);
+        }
+        [HttpGet("modify")]  
         public async Task<IActionResult> GetKoiWithCondition([FromQuery] KoiFilterDto koiFilterDto)
         {
             var allKoiWithCondition = await _batchKoiService.GetAllBatchKoiWithCondition(koiFilterDto);
