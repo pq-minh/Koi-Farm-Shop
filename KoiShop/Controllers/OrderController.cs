@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KoiShop.Controllers
 {
-    [Route("api/[controller]s")]
+    [Route("api/orders")]
     [ApiController]
     public class OrderController : ControllerBase
     {

@@ -8,7 +8,7 @@ namespace KoiShop.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]s")]
+    [Route("api/kois")]
     public class KoiController : ControllerBase
     {
         //[HttpGet]
