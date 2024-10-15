@@ -13,7 +13,7 @@ namespace KoiShop.Infrastructure.Respositories
             koiShopV1DbContext.AddressDetails?.AddAsync(entity);
             await koiShopV1DbContext.SaveChangesAsync();
             return entity.AddressId;
-        }   
+        }
 
         public async Task<IEnumerable<AddressDetail>> GetAll(string userID)
         {
