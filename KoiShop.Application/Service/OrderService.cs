@@ -73,7 +73,7 @@ namespace KoiShop.Application.Service
             var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtos>>(orderDetail);
             return orderDetailDto;
         }
-        public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method)
+        public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method, int? discountId)
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
             {
@@ -93,7 +93,7 @@ namespace KoiShop.Application.Service
                 }
             }
             var cartItems = _mapper.Map<List<CartItem>>(carts);
-            var order = await _orderRepository.AddToOrder(cartItems);
+            var order = await _orderRepository.AddToOrder(cartItems, discountId);
             if (order)
             {
                 var orderDetail = await _orderRepository.AddToOrderDetailFromCart(cartItems);

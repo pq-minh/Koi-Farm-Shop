@@ -37,7 +37,8 @@ namespace KoiShop.Controllers
         {
             var carts = orderDto.Carts;
             var method = orderDto.Method;
-            var result = await _orderService.AddOrders(carts, method);
+            var discountId = orderDto.DiscountId;
+            var result = await _orderService.AddOrders(carts, method, discountId);
             switch (result)
             {
                 case OrderEnum.Success:

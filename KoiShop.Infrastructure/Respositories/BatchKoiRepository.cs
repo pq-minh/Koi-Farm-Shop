@@ -23,11 +23,11 @@ namespace KoiShop.Infrastructure.Repositories
         }
         public async Task<BatchKoi> GetBatchKoi(int id)
         {
-            return await _KoiShopV1DbContext.BatchKois.Where(b => b.BatchKoiId == id).Include(k => k.BatchType).FirstOrDefaultAsync();
+            return await _KoiShopV1DbContext.BatchKois.Where(b => b.BatchKoiId == id && b.Status == "OnSale").Include(k => k.BatchType).FirstOrDefaultAsync();
         }
         public async Task<IEnumerable<BatchKoi>> GetBatchKoiWithCondition(string batchKoiName, string typeBatch, double? from, double? to, string sortBy, int pageNumber, int pageSize)
         {
-            var allBatchKoi = _KoiShopV1DbContext.BatchKois.Include(bk => bk.BatchType).AsQueryable();
+            var allBatchKoi = _KoiShopV1DbContext.BatchKois.Where(bk => bk.Status == "OnSale").Include(bk => bk.BatchType).AsQueryable();
             #region Filter
             if (!string.IsNullOrEmpty(batchKoiName))
             {

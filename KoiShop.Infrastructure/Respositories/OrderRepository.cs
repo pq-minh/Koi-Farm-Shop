@@ -113,7 +113,7 @@ namespace KoiShop.Infrastructure.Respositories
             else
                 return false;
         }
-        public async Task<bool> AddToOrder(List<CartItem> carts)
+        public async Task<bool> AddToOrder(List<CartItem> carts, int? discountId)
         {
             var user = _userContext.GetCurrentUser();
             var count = carts.Count();
@@ -140,6 +140,11 @@ namespace KoiShop.Infrastructure.Respositories
                     totalPrice = quantity * (float)cartItem.UnitPrice;
                     totalAmount += totalPrice;
                 }
+            }
+            var pricePercentDiscount = await CheckDiscount(discountId);
+            if (pricePercentDiscount != null && pricePercentDiscount > 0)
+            {
+                totalAmount = totalAmount - (totalAmount * (float)pricePercentDiscount);
             }
             order.TotalAmount = totalAmount;
             _koiShopV1DbContext.Orders.Update(order);
@@ -254,9 +259,27 @@ namespace KoiShop.Infrastructure.Respositories
             }
             return true;
         }
-        public async Task<bool> UpdateDiscount(int discountId)
+        public async Task<IEnumerable<Discount>> GetDiscount(int? discountId)
         {
-            return true;
+            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0).ToListAsync();
+            return discount;
+        }
+        private async Task<double> CheckDiscount(int? disountId)
+        {
+            if (disountId == null || disountId == 0)
+            {
+                return (double)0;
+            }
+            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.DiscountId == disountId).FirstOrDefaultAsync();
+            if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now)
+            {
+                var pricePercent = (double) discount.DiscountRate;
+                discount.TotalQuantity--;
+                _koiShopV1DbContext.Discounts.Update(discount);
+                await _koiShopV1DbContext.SaveChangesAsync();
+                return pricePercent;
+            }
+            return (double)0;
         }
     }
 }
