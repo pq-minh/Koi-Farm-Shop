@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.Dtos
 {
+    //gdfgfd
     public class BatchKoiDto
     {
         public int BatchKoiId { get; set; }
