@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.Dtos
 {
-    //gdfgfd
     public class BatchKoiDto
     {
         public int BatchKoiId { get; set; }
@@ -16,6 +15,7 @@ namespace KoiShop.Application.Dtos
         public string? Description { get; set; }
 
         public string? Quantity { get; set; }
+
         public string? Weight { get; set; }
 
         public string? Size { get; set; }

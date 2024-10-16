@@ -1,5 +1,6 @@
 ﻿using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
+using KoiShop.Infrastructure.Migrations;
 using KoiShop.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -34,6 +35,27 @@ namespace KoiShop.Infrastructure.Respositories
                 return Enumerable.Empty<OrderDetail>();
             }
             var orderdetail = await _koiShopV1DbContext.OrderDetails.Where(od => orders.Select(o => o.OrderId).Contains((int)od.OrderId)).ToListAsync();
+            return orderdetail;
+        }
+        public async Task<IEnumerable<Order>> GetOrder()
+        {
+            var userId = _userContext.GetCurrentUser().Id;
+            var orders = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId).ToListAsync();
+            if (orders == null)
+            {
+                return Enumerable.Empty<Order>();
+            }
+            return orders;
+        }
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetailById(int orderId)
+        {
+            var userId = _userContext.GetCurrentUser().Id;
+            var orders = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId).ToListAsync();
+            if (orders == null)
+            {
+                return Enumerable.Empty<OrderDetail>();
+            }
+            var orderdetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.OrderId == orderId).ToListAsync();
             return orderdetail;
         }
         public async Task<bool> AddToOrderDetailFromCart(List<CartItem> carts)
@@ -194,6 +216,46 @@ namespace KoiShop.Infrastructure.Respositories
             };
             _koiShopV1DbContext.Payments.Add(payment);
             await _koiShopV1DbContext.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts)
+        {
+            if (carts == null)
+            { 
+                return false; 
+            }
+
+            foreach (var cart in carts)
+            {
+
+
+                if ((cart.KoiId.HasValue && (cart.BatchKoiId == null || !cart.BatchKoiId.HasValue)) ||
+                    (cart.BatchKoiId.HasValue && (cart.KoiId == null || !cart.KoiId.HasValue)))
+                {
+                    if (cart.KoiId.HasValue)
+                    {
+                        var koi = await _koiShopV1DbContext.Kois.Where(k => k.KoiId == cart.KoiId).FirstOrDefaultAsync();
+                        koi.Status = "Sold";
+                        _koiShopV1DbContext.Kois.Update(koi);
+                        await _koiShopV1DbContext.SaveChangesAsync();
+                        return true;
+                    }
+                    else
+                    {
+                        var batchKoi = await _koiShopV1DbContext.BatchKois.Where(bk => bk.BatchKoiId == cart.BatchKoiId).FirstOrDefaultAsync();
+                        batchKoi.Status = "Sold";
+                        _koiShopV1DbContext.BatchKois.Update(batchKoi);
+                        await _koiShopV1DbContext.SaveChangesAsync();
+                        return true;
+                    }
+                }
+                else
+                    return false;
+            }
+            return true;
+        }
+        public async Task<bool> UpdateDiscount(int discountId)
+        {
             return true;
         }
     }

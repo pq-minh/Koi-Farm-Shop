@@ -48,7 +48,7 @@ namespace KoiShop.Infrastructure.Respositories
             await _koiShopV1DbContext.SaveChangesAsync();
             return cartItems;
         }
-        public async Task<double> GetCurrentPrice(CartItem cart)
+        private async Task<double> GetCurrentPrice(CartItem cart)
         {
             double currentPrice = 0;
             if (cart != null)

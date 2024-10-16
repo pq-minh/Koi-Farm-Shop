@@ -14,6 +14,7 @@ namespace KoiShop.Application.Service
 {
     class BatchKoiService : IBatchKoiService
     {
+        private readonly IMapper _mapper;
         private readonly IBatchKoiRepository _batchKoiRepository;
         private readonly FirebaseService _firebaseService;
         private readonly IMapper _mapper;
@@ -64,7 +65,7 @@ namespace KoiShop.Application.Service
         public async Task<bool> UpdateBatchKoi(BatchKoi batchKoi)
         {
             return await _batchKoiRepository.UpdateBatchKoiAsync(batchKoi);
-        }
+    }
         public async Task<BatchKoi> GetBatchKoiById(int id)
         {
             return await _batchKoiRepository.GetBatchKoiByIdAsync(id);
@@ -107,7 +108,7 @@ namespace KoiShop.Application.Service
             if (!contain) return false;
 
             return true;
-        }
+}
 
         public async Task<BatchKoi> ValidateUpdateBatchKoiDto(int batchKoiId, UpdateBatchKoiDto batchKoiDto)
         {

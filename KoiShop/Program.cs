@@ -92,8 +92,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectio
             app.UseHttpsRedirection();
             //cors
             app.UseRouting();
-            app.UseCors("AllowAll");
-            //app.UseCors("AllowSpecificOrigin");
+            app.UseCors("AllowSpecificOrigin");
             //author
             app.UseAuthentication();
             app.UseAuthorization();
