@@ -10,6 +10,8 @@ namespace KoiShop.Application.Interfaces
     public interface IOrderService
     {
         Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method);
-        Task<IEnumerable<OrderDto>> GetOrderDetail();
+        Task<IEnumerable<OrderDetailDtos>> GetOrderDetail();
+        Task<IEnumerable<OrderDtos>> GetOrder();
+        Task<IEnumerable<OrderDetailDtos>> GetOrderDetailById(int? id);
     }
 }

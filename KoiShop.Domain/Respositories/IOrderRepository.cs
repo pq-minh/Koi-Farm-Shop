@@ -10,10 +10,13 @@ namespace KoiShop.Domain.Respositories
     public interface IOrderRepository
     {
         Task<IEnumerable<OrderDetail>> GetOrderDetail();
+        Task<IEnumerable<Order>> GetOrder();
+        Task<IEnumerable<OrderDetail>> GetOrderDetailById(int orderId);
         Task<bool> AddToOrder(List<CartItem> carts);
         Task<bool> AddPayment(string method);
         Task<bool> AddToOrderDetailFromShop(CartItem cart, int orderId);
         Task<bool> AddToOrderDetailFromCart(List<CartItem> carts);
         Task<bool> UpdateCartAfterBuy(List<CartItem> carts);
+        Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts);
     }
 }

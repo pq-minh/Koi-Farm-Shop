@@ -12,22 +12,22 @@ namespace KoiShop.Infrastructure.Repositories
 {
     public class BatchKoiRepository : IBatchKoiRepository
     {
-        private readonly KoiShopV1DbContext _context;
+        private readonly KoiShopV1DbContext _KoiShopV1DbContext;
         public BatchKoiRepository(KoiShopV1DbContext context)
         {
-            _context = context;
+            _KoiShopV1DbContext = context;
         }
         public async Task<IEnumerable<BatchKoi>> GetAllBatch()
         {
-            return await _context.BatchKois.Where(bk => bk.Status == "OnSale").Include(bk => bk.BatchType).ToListAsync();
+            return await _KoiShopV1DbContext.BatchKois.Where(bk => bk.Status == "OnSale").Include(bk => bk.BatchType).ToListAsync();
         }
         public async Task<BatchKoi> GetBatchKoi(int id)
         {
-            return await _context.BatchKois.Where(b => b.BatchKoiId == id).Include(k => k.BatchType).FirstOrDefaultAsync();
+            return await _KoiShopV1DbContext.BatchKois.Where(b => b.BatchKoiId == id).Include(k => k.BatchType).FirstOrDefaultAsync();
         }
         public async Task<IEnumerable<BatchKoi>> GetBatchKoiWithCondition(string batchKoiName, string typeBatch, double? from, double? to, string sortBy, int pageNumber, int pageSize)
         {
-            var allBatchKoi = _context.BatchKois.Include(bk => bk.BatchType).AsQueryable();
+            var allBatchKoi = _KoiShopV1DbContext.BatchKois.Include(bk => bk.BatchType).AsQueryable();
             #region Filter
             if (!string.IsNullOrEmpty(batchKoiName))
             {
