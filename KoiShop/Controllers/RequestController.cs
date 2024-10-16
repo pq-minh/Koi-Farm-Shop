@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using KoiShop.Application.Command.CreateRequest;
 using MediatR;
 using KoiShop.Application.Queries.GetAllRequest;
+using KoiShop.Application.Command.DecisionRequest;
 namespace KoiShop.Controllers
 {
 
@@ -24,6 +25,15 @@ namespace KoiShop.Controllers
         public async Task<IActionResult> GetRequest()
         {
             var result = await mediator.Send(new GetAllRequestQuery() );
+            return Ok(result);
+        }
+
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("decision-request")]
+        public async Task<IActionResult> RequestDecision([FromBody] DecisionRequestCommand decisionRequestCommand)
+        {
+            var result = await mediator.Send(decisionRequestCommand);
             return Ok(result);
         }
     }

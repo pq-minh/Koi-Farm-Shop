@@ -33,5 +33,53 @@ namespace KoiShop.Infrastructure.Respositories
             }
             return result;
         }
+
+
+        public async Task<string> DecisionRequest(int rqID, string decision)
+        {
+
+            var request = await koiShopV1DbContext.Requests.FindAsync(rqID);
+
+
+            if (request == null)
+            {
+                throw new KeyNotFoundException($"Request with ID {rqID} not found.");
+            }
+
+            var package = await koiShopV1DbContext.Packages.FindAsync(request.PackageId);
+            if (package == null)
+            {
+                throw new KeyNotFoundException($"Package with ID {request.PackageId} not found.");
+            }
+
+            var kois = await koiShopV1DbContext.Kois.FindAsync(package.KoiId);
+            if (kois == null)
+            {
+                throw new KeyNotFoundException($"Koi with ID {package.KoiId} not found.");
+            }
+
+            if (decision == "agree")
+            {
+                request.Status = "Completed";
+                kois.Status = "OnSale";
+            }
+            else if (decision == "reject")
+            {
+                request.Status = "Rejected";
+                kois.Status = "Canceled";
+            }
+            else
+            {
+                throw new ArgumentException("Invalid decision. Use 'agree' or 'reject'.", nameof(decision));
+            }
+
+            koiShopV1DbContext.Update(request);
+            koiShopV1DbContext.Update(kois);
+
+            await koiShopV1DbContext.SaveChangesAsync();
+
+
+            return request.Status;
+        }
     }
 }

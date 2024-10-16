@@ -12,5 +12,6 @@ namespace KoiShop.Domain.Respositories
         Task<Koi> CreateRequest(Koi entity);
 
         Task<IEnumerable<Request>> GetAllRequest(string userID);
+        Task<string> DecisionRequest(int rqID,string decision);
     }
 }

@@ -18,11 +18,11 @@ namespace KoiShop.Application.Command.UpdatePriceQuotation
         IQuotationRepository quotationRepository ,
         IMapper mapper) : IRequestHandler<UpdatePriceQuotationCommand, Quotation>
     {
-        public Task<Quotation> Handle(UpdatePriceQuotationCommand request, CancellationToken cancellationToken)
+        public async Task<Quotation> Handle(UpdatePriceQuotationCommand request, CancellationToken cancellationToken)
         {
             var user = userContext.GetCurrentUser();
             var quotation = mapper.Map<Quotation>(request);
-            var result = quotationRepository.UpdatePriceQuotation(quotation);
+            var result = await quotationRepository.UpdatePriceQuotation(quotation);
             return result;
         }
     }
