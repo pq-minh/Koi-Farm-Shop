@@ -6,6 +6,10 @@
       "resourceId": null,
       "type": "mssql.onprem",
       "connectionId": "ConnectionStrings:KoiShopDB"
+    },
+    "apis1": {
+      "ignored": "true",
+      "type": "apis.azure"
     }
   }
 }

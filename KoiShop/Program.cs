@@ -63,11 +63,7 @@ namespace KoiShop
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(
-                    c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "KoiShop"); 
-                    c.RoutePrefix = string.Empty;
-                }
-                );  
+                app.UseSwaggerUI();
             }
             var scope = app.Services.CreateScope();
             var seeder = scope.ServiceProvider.GetRequiredService<IUserSeeder>();
@@ -75,7 +71,7 @@ namespace KoiShop
             app.UseHttpsRedirection();
             //cors
             app.UseRouting();
-            
+            app.UseCors("AllowSpecificOrigin");
             //author
             app.UseAuthentication();
             app.UseAuthorization();
