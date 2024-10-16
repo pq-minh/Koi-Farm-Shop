@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace KoiShop.Controllers
 {
     [ApiController]
-    [Route("api/batchkoi-management")]
+    [Route("api/batchkois/management")]
     public class BatchKoiManagementController : ControllerBase
     {
         private readonly IBatchKoiService _batchKoiService;
@@ -20,22 +20,22 @@ namespace KoiShop.Controllers
         }
 
         // Koi Methods =============================================================================================
-        [HttpGet("get-batchkoi")]
+        [HttpGet]
         public async Task<IActionResult> GetAllBatchKoi()
         {
-            var all = await _batchKoiService.GetAllBatchKoi();
+            var all = await _batchKoiService.GetAllBatchKoiStaff();
             if (all == null) return NotFound();
             return Ok(all);
         }
 
-        [HttpGet("get-batchkoi/{batchKoiId}")]
+        [HttpGet("{batchKoiId:int}")]
         public async Task<IActionResult> GetKoiById(int batchKoiId)
         {
             var koi = await _batchKoiService.GetBatchKoiById(batchKoiId);
             return Ok(koi);
         }
 
-        [HttpPost("add-batchkoi")]
+        [HttpPost]
         public async Task<IActionResult> AddBatchKoi([FromForm] AddBatchKoiDto batchKoiDto)
         {
             if (!await _batchKoiService.ValidateAddBatchKoiDtoInfo(batchKoiDto))
@@ -59,7 +59,7 @@ namespace KoiShop.Controllers
         }
 
 
-        [HttpPut("update-batchkoi/{batchKoiId}")]
+        [HttpPut("{batchKoiId:int}")]
         public async Task<IActionResult> UpdateBatchKoi(int batchKoiId, [FromForm] UpdateBatchKoiDto batchKoiDto)
         {
             BatchKoi batchKoi = await _batchKoiService.ValidateUpdateBatchKoiDto(batchKoiId, batchKoiDto);
@@ -79,7 +79,7 @@ namespace KoiShop.Controllers
         }
 
         // KoiCategory Methods ======================================================================================
-        [HttpGet("get-batchkoi-category")]
+        [HttpGet("category")]
         public async Task<IActionResult> GetAllBatchKoiCategory()
         {
             var all = await _batchKoiService.GetAllBatchKoiCategory();

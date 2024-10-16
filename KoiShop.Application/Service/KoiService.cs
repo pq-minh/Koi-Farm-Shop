@@ -17,7 +17,6 @@ namespace KoiShop.Application.Service
         private readonly IMapper _mapper;
         private readonly IKoiRepository _koiRepository;
         private readonly FirebaseService _firebaseService;
-        private readonly IMapper _mapper;
 
         public KoiService(IKoiRepository koiRepository, FirebaseService firebaseService, IMapper mapper)
         {

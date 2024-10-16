@@ -9,7 +9,7 @@ namespace KoiShop.Controllers
 {
 
     [ApiController]
-    [Route("api/koi-management")]
+    [Route("api/kois/management")]
     public class KoiManagementController : ControllerBase
     {
         //[HttpGet]
@@ -28,15 +28,15 @@ namespace KoiShop.Controllers
         }
 
         // Koi Methods =============================================================================================
-        [HttpGet("get-koi")]
-        public async Task<IActionResult> GetAllKoi()
+        [HttpGet]
+        public async Task<IActionResult> GetAllKoiStaff()
         {
             var allKoi = await _koiService.GetAllKoi();
             if (allKoi == null) return NotFound();
             return Ok(allKoi);
         }
 
-        [HttpGet("get-koi/{koiId}")]
+        [HttpGet("{koiId:int}")]
         public async Task<IActionResult> GetKoiById(int koiId)
         {
             var koi = await _koiService.GetKoiById(koiId);
@@ -44,7 +44,7 @@ namespace KoiShop.Controllers
         }
 
 
-        [HttpPost("add-koi")]
+        [HttpPost]
         public async Task<IActionResult> AddKoi([FromForm] AddKoiDto koiDto)
         {
             if (!await _koiService.ValidateAddKoiDtoInfo(koiDto))
@@ -68,7 +68,7 @@ namespace KoiShop.Controllers
         }
 
 
-        [HttpPut("update-koi/{koiId}")]
+        [HttpPut("{koiId:int}")]
         public async Task<IActionResult> UpdateKoi(int koiId, [FromForm] UpdateKoiDto koiDto)
         {
             Koi koi = await _koiService.ValidateUpdateKoiDto(koiId, koiDto);
@@ -88,7 +88,7 @@ namespace KoiShop.Controllers
         }
 
         // KoiCategory Methods ======================================================================================
-        [HttpGet("get-koi-category")]
+        [HttpGet("category")]
         public async Task<IActionResult> GetAllKoiCategory()
         {
             var all = await _koiService.GetAllKoiCategory();

@@ -1,10 +1,8 @@
 using KoiShop.Application.Extensions;
 using KoiShop.Infrastructure.Extensions;
-using KoiShop.Infrastructure.Persistence;
 using KoiShop.Infrastructure.Presenters;
 using KoiShop.Infrastructure.Seeder;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -15,7 +13,7 @@ namespace KoiShop
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            
+
             //builder.Services.AddCors(options =>
             //{
             //    options.AddPolicy("AllowSpecificOrigin", builder =>
@@ -55,25 +53,6 @@ namespace KoiShop
             //{
             //    Options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
             //});
-            builder.Services.AddDbContext<KoiShopV1DbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            builder.Services.AddControllers().AddJsonOptions(options => {
-                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-            });
-            builder.Logging.ClearProviders();
-            builder.Logging.AddConsole();
-            builder.Logging.AddDebug();
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll",
-                    builder =>
-                    {
-                        builder.AllowAnyOrigin()
-                               .AllowAnyMethod()
-                               .AllowAnyHeader();
-                    });
-            });
 
 
             builder.Services.AddInfrastructure(builder.Configuration);
