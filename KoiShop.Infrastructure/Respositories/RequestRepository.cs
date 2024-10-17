@@ -45,7 +45,11 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 throw new KeyNotFoundException($"Request with ID {rqID} not found.");
             }
-
+            var quotation = await koiShopV1DbContext.Quotations.FindAsync(request.RequestId);
+            if (quotation == null)
+            {
+                throw new KeyNotFoundException($"Quotation with ID {quotation.QuotationId} not found.");
+            }
             var package = await koiShopV1DbContext.Packages.FindAsync(request.PackageId);
             if (package == null)
             {
@@ -62,11 +66,13 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 request.Status = "Completed";
                 kois.Status = "OnSale";
+                quotation.Status = "Completed";
             }
             else if (decision == "reject")
             {
                 request.Status = "Rejected";
                 kois.Status = "Canceled";
+                quotation.Status = "Rejected";
             }
             else
             {

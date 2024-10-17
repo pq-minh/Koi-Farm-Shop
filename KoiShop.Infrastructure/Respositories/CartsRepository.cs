@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Dropbox.Api.Files.SearchMatchType;
 using static KoiShop.Application.Users.UserContext;
 
 namespace KoiShop.Infrastructure.Respositories
@@ -150,6 +151,20 @@ namespace KoiShop.Infrastructure.Respositories
             }
             else
                 return false;
+        }
+
+        public async Task<Dictionary<int, (string Name, string Description, string ImgUrl)>> GetKoiNamesAsync(IEnumerable<int> koiIds)
+        {
+            return await _koiShopV1DbContext.Kois
+                .Where(kn => koiIds.Contains(kn.KoiId))
+                .ToDictionaryAsync(kn => kn.KoiId, kn => (kn.Name, kn.Description, kn.Image));
+        }
+
+        public async Task<Dictionary<int, (string Name, string Description, string ImgUrl)>> GetBatchKoiNamesAsync(IEnumerable<int> batchKoiIds)
+        {
+            return await _koiShopV1DbContext.BatchKois
+                .Where(bk => batchKoiIds.Contains(bk.BatchKoiId))
+                .ToDictionaryAsync(kn => kn.BatchKoiId, kn => (kn.Name, kn.Description, kn.Image));
         }
     }
 }
