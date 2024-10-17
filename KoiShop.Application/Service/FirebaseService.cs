@@ -39,20 +39,6 @@ namespace KoiShop.Application.Service
                 }
             }
         }
-
-        public async Task<FirebaseToken> VerifyTokenAsync(string token)
-        {
-            try
-            {
-                return await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
-            }
-            catch (FirebaseAuthException ex)
-            {
-                _logger.LogError(ex, "Invalid Token!");
-                throw;
-            }
-        }
-
         public async Task<string> UploadFileToFirebaseStorageAsync(IFormFile file, string directory)
         {
             directory = directory.Trim('/');
