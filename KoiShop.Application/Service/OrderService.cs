@@ -28,7 +28,7 @@ namespace KoiShop.Application.Service
             _userContext = userContext;
             _userStore = userStore;
         }
-        public async Task<IEnumerable<OrderDto>> GetOrderDetail()
+        public async Task<IEnumerable<OrderDetailDtos>> GetOrderDetail()
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
             {
@@ -37,13 +37,43 @@ namespace KoiShop.Application.Service
             var userId = _userContext.GetCurrentUser().Id;
             if (userId == null)
             {
-                return Enumerable.Empty<OrderDto>();
+                return Enumerable.Empty<OrderDetailDtos>();
             }
             var od = await _orderRepository.GetOrderDetail();
-            var oddto = _mapper.Map<IEnumerable<OrderDto>>(od);
+            var oddto = _mapper.Map<IEnumerable<OrderDetailDtos>>(od);
             return oddto;
         }
-        public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method)
+        public async Task<IEnumerable<OrderDtos>> GetOrder()
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return Enumerable.Empty<OrderDtos>();
+            }
+            var order = await _orderRepository.GetOrder();
+            var orderDto = _mapper.Map<IEnumerable<OrderDtos>>(order);
+            return orderDto;
+        }
+        public async Task<IEnumerable<OrderDetailDtos>> GetOrderDetailById(int? id)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null || id == null)
+            {
+                return Enumerable.Empty<OrderDetailDtos>();
+            }
+            var orderDetail = await _orderRepository.GetOrderDetailById((int)id);
+            var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtos>>(orderDetail);
+            return orderDetailDto;
+        }
+        public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method, int? discountId)
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
             {
@@ -63,23 +93,31 @@ namespace KoiShop.Application.Service
                 }
             }
             var cartItems = _mapper.Map<List<CartItem>>(carts);
-            var order = await _orderRepository.AddToOrder(cartItems);
+            var order = await _orderRepository.AddToOrder(cartItems, discountId);
             if (order)
             {
                 var orderDetail = await _orderRepository.AddToOrderDetailFromCart(cartItems);
                 if (orderDetail)
                 {
-                    var cartstatus = await _orderRepository.UpdateCartAfterBuy(cartItems);
-                    if (cartstatus)
+                    var cartStatus = await _orderRepository.UpdateCartAfterBuy(cartItems);
+                    if (cartStatus)
                     {
-                        var payment = await _orderRepository.AddPayment(method);
-                        if (payment)
+                        var koiandBatchStatus = await _orderRepository.UpdateKoiAndBatchStatus(cartItems);
+                        if (koiandBatchStatus)
                         {
-                            return OrderEnum.Success;
+                            var payment = await _orderRepository.AddPayment(method);
+                            if (payment)
+                            {
+                                return OrderEnum.Success;
+                            }
+                            else
+                            {
+                                return OrderEnum.FailAddPayment;
+                            }
                         }
                         else
                         {
-                            return OrderEnum.FailAddPayment;
+                            return OrderEnum.FailUpdateFish;
                         }
                     }
                     else

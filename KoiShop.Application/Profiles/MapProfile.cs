@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using KoiShop.Application.Dtos;
+using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,10 @@ namespace KoiShop.Application.Profiles
             CreateMap<CartItem, CartDtos>();
             CreateMap<CartDtoV1, CartItem>();
             CreateMap<CartDtoV2, CartItem>();
-            CreateMap<OrderDetail, OrderDto>();
+            CreateMap<OrderDetail, OrderDetailDtos>();
+            CreateMap<Order, OrderDtos>();
+            CreateMap<AddKoiDto, Koi > ();
+            CreateMap<AddBatchKoiDto, BatchKoi> ();
         }
     }
 }

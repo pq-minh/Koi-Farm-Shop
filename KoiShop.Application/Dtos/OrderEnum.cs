@@ -14,6 +14,7 @@ namespace KoiShop.Application.Dtos
         InvalidParameters,
         ItemUpdated,
         NotAddOrderInYet,
+        FailUpdateFish,
         FailUpdateCart,
         FailAddPayment,
         FailAdd,

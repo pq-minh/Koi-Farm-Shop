@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KoiShop.Controllers
 {
-    [Route("api/[controller]s")]
+    [Route("api/orders")]
     [ApiController]
     public class OrderController : ControllerBase
     {
@@ -14,18 +14,31 @@ namespace KoiShop.Controllers
         {
             _orderService = orderService;
         }
+        //[HttpGet]
+        //public async Task<IActionResult> GetOrderDetail()
+        //{
+        //    var result = await _orderService.GetOrderDetail();
+        //    return Ok(result);
+        //}
         [HttpGet]
-        public async Task<IActionResult> GetOrderDetail()
+        public async Task<IActionResult> GetOrder()
         {
-            var result = await _orderService.GetOrderDetail();
+            var result = await _orderService.GetOrder();
+            return Ok(result);
+        }
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetOrder(int id)
+        {
+            var result = await _orderService.GetOrderDetailById(id);
             return Ok(result);
         }
         [HttpPost]
-        public async Task<IActionResult> AddOrder([FromBody]OrderDtoV1 orderDto)
+        public async Task<IActionResult> AddOrder([FromBody] OrderDtoV1 orderDto)
         {
             var carts = orderDto.Carts;
             var method = orderDto.Method;
-            var result = await _orderService.AddOrders(carts, method);
+            var discountId = orderDto.DiscountId;
+            var result = await _orderService.AddOrders(carts, method, discountId);
             switch (result)
             {
                 case OrderEnum.Success:
@@ -36,6 +49,8 @@ namespace KoiShop.Controllers
                     return BadRequest("Add have bug!!");
                 case OrderEnum.FailUpdateCart:
                     return BadRequest("Update cart have bug");
+                case OrderEnum.FailUpdateFish:
+                    return BadRequest("Fail update fish");
                 case OrderEnum.FailAddPayment:
                     return BadRequest("Add payment have bug");
                 case OrderEnum.NotLoggedInYet:

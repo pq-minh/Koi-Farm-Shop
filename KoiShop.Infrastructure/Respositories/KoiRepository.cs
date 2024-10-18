@@ -25,17 +25,17 @@ namespace KoiShop.Infrastructure.Respositories
 
         public async Task<IEnumerable<Koi>> GetAllKois()
         {
-            return await _KoiShopV1DbContext.Kois.Include(k => k.FishType).ToListAsync();
+            return await _KoiShopV1DbContext.Kois.Where(k => k.Status == "OnSale").Include(k => k.FishType).ToListAsync();
         }
 
-        public async Task<Koi> GetKoi (int id)
+        public async Task<Koi> GetKoi (int id)   
         {
-            return await _KoiShopV1DbContext.Kois.Where(k => k.KoiId == id).Include(k => k.FishType).FirstOrDefaultAsync();
+            return await _KoiShopV1DbContext.Kois.Where(k => k.KoiId == id && k.Status == "OnSale").Include(k => k.FishType).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Koi>> GetKoiWithCondition(string koiName, string typeFish, double? from, double? to, string sortBy, int pageNumber, int pageSize)
         {
-            var allKoi = _KoiShopV1DbContext.Kois.Include(k => k.FishType).AsQueryable();
+            var allKoi = _KoiShopV1DbContext.Kois.Where(k => k.Status == "OnSale").Include(k => k.FishType).AsQueryable();
             #region Filtering
             if (!string.IsNullOrEmpty(koiName))
             {
@@ -83,5 +83,46 @@ namespace KoiShop.Infrastructure.Respositories
 
             return await allKoi.ToListAsync();
         }
+
+        // Staff =================================================================================
+
+        // Koi Methods ============================================================================================
+        public async Task<IEnumerable<Koi>> GetAllKoiAsync()
+        {
+            return await _KoiShopV1DbContext.Kois.ToListAsync();
+        }
+        public async Task<bool> AddKoiAsync(Koi koi)
+        {
+            _KoiShopV1DbContext.Kois.Add(koi);
+            var result = await _KoiShopV1DbContext.SaveChangesAsync();
+            return result > 0;
+        }
+        public async Task<Koi> GetKoiByIdAsync(int id)
+        {
+            return await _KoiShopV1DbContext.Kois.FindAsync(id);
+        }
+
+        public async Task<bool> UpdateKoiAsync(Koi koi)
+        {
+            _KoiShopV1DbContext.Kois.Update(koi);
+            var result = await _KoiShopV1DbContext.SaveChangesAsync();
+            return result > 0;
+        }
+
+        // KoiCategory Methods =====================================================================================
+        public async Task<IEnumerable<KoiCategory>> GetAllKoiCategoryAsync()
+        {
+            return await _KoiShopV1DbContext.KoiCategories.ToListAsync();
+        }
+        public async Task<KoiCategory> GetKoiCategoryByIdAsync(int id)
+        {
+            return await _KoiShopV1DbContext.KoiCategories.FindAsync(id);
+        }
+        public async Task<List<Koi>> GetKoiInKoiCategoryAsync(int fishTypeId)
+        {
+            return await _KoiShopV1DbContext.Kois.Where(koi => koi.FishTypeId == fishTypeId).ToListAsync();
+        }
+
+
     }
 }

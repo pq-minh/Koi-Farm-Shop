@@ -12,22 +12,22 @@ namespace KoiShop.Infrastructure.Repositories
 {
     public class BatchKoiRepository : IBatchKoiRepository
     {
-        private readonly KoiShopV1DbContext _context;
+        private readonly KoiShopV1DbContext _KoiShopV1DbContext;
         public BatchKoiRepository(KoiShopV1DbContext context)
         {
-            _context = context;
+            _KoiShopV1DbContext = context;
         }
         public async Task<IEnumerable<BatchKoi>> GetAllBatch()
         {
-            return await _context.BatchKois.Include(bk => bk.BatchType).ToListAsync();
+            return await _KoiShopV1DbContext.BatchKois.Where(bk => bk.Status == "OnSale").Include(bk => bk.BatchType).ToListAsync();
         }
         public async Task<BatchKoi> GetBatchKoi(int id)
         {
-            return await _context.BatchKois.Where(b => b.BatchKoiId == id).Include(k => k.BatchType).FirstOrDefaultAsync();
+            return await _KoiShopV1DbContext.BatchKois.Where(b => b.BatchKoiId == id && b.Status == "OnSale").Include(k => k.BatchType).FirstOrDefaultAsync();
         }
         public async Task<IEnumerable<BatchKoi>> GetBatchKoiWithCondition(string batchKoiName, string typeBatch, double? from, double? to, string sortBy, int pageNumber, int pageSize)
         {
-            var allBatchKoi = _context.BatchKois.Include(bk => bk.BatchType).AsQueryable();
+            var allBatchKoi = _KoiShopV1DbContext.BatchKois.Where(bk => bk.Status == "OnSale").Include(bk => bk.BatchType).AsQueryable();
             #region Filter
             if (!string.IsNullOrEmpty(batchKoiName))
             {
@@ -74,6 +74,43 @@ namespace KoiShop.Infrastructure.Repositories
             #endregion
 
             return await allBatchKoi.ToListAsync();
+        }
+
+        // BatchKoi Methods ===========================================================================================
+        public async Task<IEnumerable<BatchKoi>> GetAllBatchKoiAsync()
+        {
+            return await _KoiShopV1DbContext.BatchKois.ToListAsync();
+        }
+        public async Task<bool> AddBatchKoiAsync(BatchKoi batchKoi)
+        {
+            _KoiShopV1DbContext.BatchKois.Add(batchKoi);
+            var result = await _KoiShopV1DbContext.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<bool> UpdateBatchKoiAsync(BatchKoi batchKoi)
+        {
+            _KoiShopV1DbContext.BatchKois.Update(batchKoi);
+            var result = await _KoiShopV1DbContext.SaveChangesAsync();
+            return result > 0;
+        }
+        public async Task<BatchKoi> GetBatchKoiByIdAsync(int id)
+        {
+            return await _KoiShopV1DbContext.BatchKois.FindAsync(id);
+        }
+
+        // BatchKoiCategory Methods ===========================================================================================
+        public async Task<IEnumerable<BatchKoiCategory>> GetAllBatchKoiCategoryAsync()
+        {
+            return await _KoiShopV1DbContext.BatchKoiCategories.ToListAsync();
+        }
+        public async Task<BatchKoiCategory> GetBatchKoiCategoryByIdAsync(int id)
+        {
+            return await _KoiShopV1DbContext.BatchKoiCategories.FindAsync(id);
+        }
+        public async Task<List<BatchKoi>> GetBatchKoiInBatchKoiCategoryAsync(int batchTypeId)
+        {
+            return await _KoiShopV1DbContext.BatchKois.Where(batchKoi => batchKoi.BatchTypeId == batchTypeId).ToListAsync();
         }
     }
 }

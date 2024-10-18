@@ -8,7 +8,7 @@ namespace KoiShop.Controllers
 {
     
     [ApiController]
-    [Route("/api/[controller]s")]
+    [Route("/api/batchkois")]
     public class BatchKoiController : ControllerBase
     {
         private readonly IBatchKoiService _batchKoiService;

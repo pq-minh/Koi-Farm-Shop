@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.Dtos
 {
-    public class OrderDto
+    public class OrderDetailDtos
     {
         public int? OrderDetailsId { get; set; }
 
@@ -17,10 +17,5 @@ namespace KoiShop.Application.Dtos
         public int? BatchKoiId { get; set; }
 
         public int? ToTalQuantity { get; set; }
-    }
-    public class OrderDtoV1
-    {
-        public List<CartDtoV2> Carts { get; set; }
-        public string Method { get; set; }
     }
 }
