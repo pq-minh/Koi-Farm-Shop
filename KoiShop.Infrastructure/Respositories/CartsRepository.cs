@@ -164,7 +164,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 if (status == "Add")
                 {
-                    cart.Quantity += 1;//
+                    cart.Quantity += 1;
                     _koiShopV1DbContext.CartItems.Update(cart);
                     return true;
                 }
