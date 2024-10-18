@@ -6,6 +6,7 @@ using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,5 +124,18 @@ namespace KoiShop.Application.Service
                 return CartEnum.Fail;
         }
 
+        public async Task<bool> ChangeBatchQuantity(string? status, int? batchKoiId)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            if (status.IsNullOrEmpty() || batchKoiId == null || batchKoiId <= 0)
+            {
+                return false;
+            }
+            var batch = await _cartsRepository.ChangeBatchQuantity(status, (int)batchKoiId);
+            return  true;
+        }
     }
 }

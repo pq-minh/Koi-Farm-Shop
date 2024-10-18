@@ -27,5 +27,7 @@ namespace KoiShop.Application.Dtos
         public List<CartDtoV2> Carts { get; set; }
         public string Method { get; set; }
         public int DiscountId { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Address { get; set; }
     }
 }

@@ -166,5 +166,36 @@ namespace KoiShop.Infrastructure.Respositories
                 .Where(bk => batchKoiIds.Contains(bk.BatchKoiId))
                 .ToDictionaryAsync(kn => kn.BatchKoiId, kn => (kn.Name, kn.Description, kn.Image));
         }
+        public async Task<bool> ChangeBatchQuantity(string? status, int batchKoiId)
+        {
+            var userId = _userContext.GetCurrentUser().Id;
+            if (status == null)
+            {
+                return false;
+            }
+            var shoppingCart = await _koiShopV1DbContext.ShoppingCarts.Where(sc => sc.UserId == userId).FirstOrDefaultAsync();
+            var cart = await _koiShopV1DbContext.CartItems.Where(c => c.BatchKoiId == batchKoiId && c.Status == "Save").FirstOrDefaultAsync();
+            if (cart != null)
+            {
+                if (status == "Add")
+                {
+                    cart.Quantity += 1;
+                    _koiShopV1DbContext.CartItems.Update(cart);
+                    return true;
+                }
+                else if (status == "Minus")
+                {
+                    cart.Quantity -= 1;
+                    _koiShopV1DbContext.CartItems.Update(cart);
+                    return true;
+                }
+                await _koiShopV1DbContext.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
