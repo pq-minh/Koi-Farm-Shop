@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using static KoiShop.Application.Users.UserContext;
 using KoiShop.Domain.Respositories;
 using KoiShop.Application.Dtos;
+using Microsoft.IdentityModel.Tokens;
+using PhoneNumbers;
 
 namespace KoiShop.Application.Service
 {
@@ -73,7 +75,7 @@ namespace KoiShop.Application.Service
             var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtos>>(orderDetail);
             return orderDetailDto;
         }
-        public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method, int? discountId)
+        public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method, int? discountId, string? phoneNumber, string? address)
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
             {
@@ -92,8 +94,12 @@ namespace KoiShop.Application.Service
                     return OrderEnum.InvalidParameters;
                 }
             }
+            if (phoneNumber == null || address.IsNullOrEmpty() || !IsPhoneNumberValid(phoneNumber, "VN"))
+            {
+                return OrderEnum.InvalidTypeParameters;
+            }
             var cartItems = _mapper.Map<List<CartItem>>(carts);
-            var order = await _orderRepository.AddToOrder(cartItems, discountId);
+            var order = await _orderRepository.AddToOrder(cartItems, discountId, phoneNumber, address);
             if (order)
             {
                 var orderDetail = await _orderRepository.AddToOrderDetailFromCart(cartItems);
@@ -133,5 +139,25 @@ namespace KoiShop.Application.Service
             else
                 return OrderEnum.Fail;
         }
+
+        private bool IsPhoneNumberValid(string phoneNumber, string regionCode)
+        {
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+            {
+                return false;
+            }
+
+            try
+            {
+                var phoneNumberUtil = PhoneNumberUtil.GetInstance();
+                var parsedNumber = phoneNumberUtil.Parse(phoneNumber, regionCode);
+                return phoneNumberUtil.IsValidNumber(parsedNumber);
+            }
+            catch (NumberParseException)
+            {
+                return false;
+            }
+        }
+
     }
 }

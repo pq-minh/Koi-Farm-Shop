@@ -38,7 +38,9 @@ namespace KoiShop.Controllers
             var carts = orderDto.Carts;
             var method = orderDto.Method;
             var discountId = orderDto.DiscountId;
-            var result = await _orderService.AddOrders(carts, method, discountId);
+            var phoneNumber = orderDto.PhoneNumber;
+            var address = orderDto.Address;
+            var result = await _orderService.AddOrders(carts, method, discountId, phoneNumber, address);
             switch (result)
             {
                 case OrderEnum.Success:
@@ -57,6 +59,8 @@ namespace KoiShop.Controllers
                     return Unauthorized("User is not login");
                 case OrderEnum.InvalidParameters:
                     return BadRequest("Miss a important parameter");
+                case OrderEnum.InvalidTypeParameters:
+                    return BadRequest("PhoneNumBer or address is not authenticated");
                 case OrderEnum.UserNotAuthenticated:
                     return Unauthorized("User is not authenticated.");
                 default:

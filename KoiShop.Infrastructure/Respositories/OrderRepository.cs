@@ -113,7 +113,7 @@ namespace KoiShop.Infrastructure.Respositories
             else
                 return false;
         }
-        public async Task<bool> AddToOrder(List<CartItem> carts, int? discountId)
+        public async Task<bool> AddToOrder(List<CartItem> carts, int? discountId, string? phoneNumber, string? address)
         {
             var user = _userContext.GetCurrentUser();
             var count = carts.Count();
@@ -125,7 +125,9 @@ namespace KoiShop.Infrastructure.Respositories
                 TotalAmount = 0,
                 CreateDate = DateTime.Now,
                 OrderStatus = "Pending",
-                UserId = user.Id
+                UserId = user.Id,
+                PhoneNumber = phoneNumber,
+                ShippingAddress = address
             };
             _koiShopV1DbContext.Orders.Add(order);
             await _koiShopV1DbContext.SaveChangesAsync();
@@ -232,8 +234,6 @@ namespace KoiShop.Infrastructure.Respositories
 
             foreach (var cart in carts)
             {
-
-
                 if ((cart.KoiId.HasValue && (cart.BatchKoiId == null || !cart.BatchKoiId.HasValue)) ||
                     (cart.BatchKoiId.HasValue && (cart.KoiId == null || !cart.KoiId.HasValue)))
                 {
@@ -259,10 +259,26 @@ namespace KoiShop.Infrastructure.Respositories
             }
             return true;
         }
-        public async Task<IEnumerable<Discount>> GetDiscount(int? discountId)
+        public async Task<IEnumerable<Discount>> GetDiscount()
         {
-            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0).ToListAsync();
+            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate).ToListAsync();
             return discount;
+        }
+        public async Task<IEnumerable<Discount>> GetDiscountForUser()
+        {
+            var userId = _userContext.GetCurrentUser();
+            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
+            var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate).ToListAsync();
+            if (order != null)
+            {
+                var availableDiscount = validDiscounts.Where(d => !order.Contains(d.DiscountId)).ToList();
+                return availableDiscount;  
+            }
+            else
+            {
+                return validDiscounts;
+            }
+            
         }
         private async Task<double> CheckDiscount(int? disountId)
         {
