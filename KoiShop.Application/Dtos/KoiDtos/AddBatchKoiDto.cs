@@ -23,7 +23,7 @@ namespace KoiShop.Application.Dtos.KoiDtos
 
         public string Gender { get; set; }
 
-        public string Certificate { get; set; }
+        public IFormFile Certificate { get; set; }
 
         public IFormFile ImageFile { get; set; }
 

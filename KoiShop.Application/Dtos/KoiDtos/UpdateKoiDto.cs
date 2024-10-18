@@ -21,6 +21,6 @@ namespace KoiShop.Application.Dtos.KoiDtos
         public string? Personality { get; set; }
         public string? Status { get; set; }
         public double? Price { get; set; }
-        public string? Certificate { get; set; }
+        public IFormFile? Certificate { get; set; }
     }
 }

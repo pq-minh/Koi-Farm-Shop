@@ -39,22 +39,19 @@ namespace KoiShop.Controllers
         public async Task<IActionResult> AddBatchKoi([FromForm] AddBatchKoiDto batchKoiDto)
         {
             if (!await _batchKoiService.ValidateAddBatchKoiDtoInfo(batchKoiDto))
-            {
                 return BadRequest("You have not entered Batch Koi information or the Batch Koi info is invalid.");
-            }
 
-            // upload ảnh lên firebase và trả về url ảnh
-            var imageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(batchKoiDto.ImageFile, "KoiFishImage");
+            var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(batchKoiDto.ImageFile, "KoiFishImage");
+            var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(batchKoiDto.ImageFile, "KoiFishCertificate");
 
-            if(imageUrl == null)
-            {
+            if (koiImageUrl == null || cerImageUrl == null)
                 return BadRequest("You have not entered Batch Koi information or the Batch Koi info is invalid.");
-            }
-            var result = await _batchKoiService.AddBatchKoi(batchKoiDto, imageUrl);
+
+            var result = await _batchKoiService.AddBatchKoi(batchKoiDto, koiImageUrl, cerImageUrl);
+
             if (!result)
-            {
                 return BadRequest("Failed to add Batch Koi.");
-            }
+
             return Ok("Batch Koi added successfully.");
         }
 

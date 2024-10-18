@@ -5,6 +5,7 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using KoiShop.Application.Dtos;
 
 namespace KoiShop.Application.Service
 {
@@ -57,7 +58,6 @@ namespace KoiShop.Application.Service
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "An error occurred while uploading the file.");
                     throw; 
                 }
             }
@@ -68,18 +68,34 @@ namespace KoiShop.Application.Service
             try
             {
                 var firebaseStorage = new FirebaseStorage(_firebaseStorageBucket);
-                filePath = filePath.TrimEnd('/');
+                filePath = filePath.Trim('/');
                 
                 await firebaseStorage.Child(filePath).DeleteAsync();
                 return true; 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while deleting the file.");
                 return false; 
             }
         }
 
+        public async Task<string> GetRelativeFilePath(string filePath)
+        {
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                // Tách đường dẫn tuyệt đối thành đường dẫn tương đối vì Firebase chỉ nhận vào đường dẫn tương đối
+                // ví dụ url: /o/KoiFishImage%2Fca6c022b-4247-426b-99a0-03bf1d94c534_Screenshot%202024-10-17%20203637.png?
+                var startIndex = filePath.IndexOf("/o/") + 3; // 3 là độ dài của chuỗi "/o/"
+                var endIndex = filePath.IndexOf("?");
+
+                if (startIndex < 3 || endIndex <= startIndex)
+                    return null;
+
+                var relativeFilePath = Uri.UnescapeDataString(filePath.Substring(startIndex, endIndex - startIndex));
+                return relativeFilePath;
+            }
+            return null;
+        }
 
 
     }

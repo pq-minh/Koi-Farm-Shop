@@ -4,6 +4,7 @@ using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Application.Interfaces;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,10 +55,11 @@ namespace KoiShop.Application.Service
             return await _batchKoiRepository.GetAllBatchKoiAsync();
         }
 
-        public async Task<bool> AddBatchKoi(AddBatchKoiDto batchKoiDto, string imageUrl)
+        public async Task<bool> AddBatchKoi(AddBatchKoiDto batchKoiDto, string koiImageUrl, string cerImageUrl)
         {
             var batchKoi = _mapper.Map<BatchKoi>(batchKoiDto);
-            batchKoi.Image = imageUrl;
+            batchKoi.Image = koiImageUrl;
+            batchKoi.Certificate = cerImageUrl;
             return await _batchKoiRepository.AddBatchKoiAsync(batchKoi);
         }
 
@@ -86,7 +88,6 @@ namespace KoiShop.Application.Service
             if (string.IsNullOrEmpty(batchKoi.Size)) return false;
             if (string.IsNullOrEmpty(batchKoi.Status)) return false;
             if (batchKoi.Price <= 0) return false;
-            if (string.IsNullOrEmpty(batchKoi.Certificate)) return false;
 
             return true;
         }
@@ -107,7 +108,7 @@ namespace KoiShop.Application.Service
             if (!contain) return false;
 
             return true;
-}
+        }
 
         public async Task<BatchKoi> ValidateUpdateBatchKoiDto(int batchKoiId, UpdateBatchKoiDto batchKoiDto)
         {
@@ -136,31 +137,34 @@ namespace KoiShop.Application.Service
             if (!string.IsNullOrEmpty(batchKoiDto.Size)) currentBatchKoi.Size = batchKoiDto.Size;
             if (!string.IsNullOrEmpty(batchKoiDto.Status)) currentBatchKoi.Status = batchKoiDto.Status;
             if (batchKoiDto.Price.HasValue && batchKoiDto.Price > 0) currentBatchKoi.Price = batchKoiDto.Price;
-            if (!string.IsNullOrEmpty(batchKoiDto.Certificate)) currentBatchKoi.Certificate = batchKoiDto.Certificate;
 
-            // update image
-            if (batchKoiDto.ImageFile != null)
-            {
-                string oldImagePath = currentBatchKoi.Image;
+            string batchKoiImage = await ValidateBatchKoiImage(batchKoiDto.ImageFile, currentBatchKoi.Image, "KoiFishImage");
+            string batchKoiCertificate = await ValidateBatchKoiImage(batchKoiDto.ImageFile, currentBatchKoi.Certificate, "KoiFishCertificate");
 
-                // tách đg dẫn tuyệt đối thành đg dẫn tg đối  vì Firebase chỉ nhận vào đg dẫn tg đối
-                var startIndex = oldImagePath.IndexOf("/o/") + 3; // 3 là độ dài của chuỗi "/o/"
-                var endIndex = oldImagePath.IndexOf("?");
-                var filePath = Uri.UnescapeDataString(oldImagePath.Substring(startIndex, endIndex - startIndex));
+            if (batchKoiImage == null || batchKoiCertificate == null)
+                return null;
 
-                // xóa ảnh cũ trong firebase
-                var result = await _firebaseService.DeleteFileInFirebaseStorageAsync(filePath);
-                if (!result)
-                    return null;
-
-                // tải ảnh mới lên firebase
-                currentBatchKoi.Image = await _firebaseService.UploadFileToFirebaseStorageAsync(batchKoiDto.ImageFile, "KoiFishImage");
-
-                if (currentBatchKoi.Image == null)
-                    return null;
-            }
+            currentBatchKoi.Image = batchKoiImage;
+            currentBatchKoi.Certificate = batchKoiCertificate;
 
             return currentBatchKoi;
+        }
+
+        public async Task<string> ValidateBatchKoiImage(IFormFile image, string oldImagePath, string path)
+        {
+            string currentImagePath = null;
+            if (image != null)
+            {
+                string filePath = await _firebaseService.GetRelativeFilePath(oldImagePath);
+                if (filePath != null)       // xóa ảnh cũ trong firebase
+                    await _firebaseService.DeleteFileInFirebaseStorageAsync(filePath);
+ 
+                // upload ảnh mới lên firebase
+                currentImagePath = await _firebaseService.UploadFileToFirebaseStorageAsync(image, path);
+                if (currentImagePath == null)
+                    return null;
+            }
+            return currentImagePath;
         }
 
         // BatchKoiCategory Methods ====================================================================================

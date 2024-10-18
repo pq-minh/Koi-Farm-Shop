@@ -1,4 +1,5 @@
-﻿using KoiShop.Application.Dtos.KoiDtos;
+﻿using KoiShop.Application.Dtos;
+using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Application.Interfaces;
 using KoiShop.Application.Service;
 using KoiShop.Domain.Entities;
@@ -48,22 +49,18 @@ namespace KoiShop.Controllers
         public async Task<IActionResult> AddKoi([FromForm] AddKoiDto koiDto)
         {
             if (!await _koiService.ValidateAddKoiDtoInfo(koiDto))
-            {
                 return BadRequest("You have not entered Koi information or the Koi info is invalid.");
-            }
 
-            // upload ảnh lên firebase và trả về url ảnh
-            var imageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(koiDto.ImageFile, "KoiFishImage");
+            var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(koiDto.ImageFile, "KoiFishImage");
+            var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(koiDto.ImageFile, "KoiFishCertificate");
 
-            if (imageUrl == null)
-            {
+            if (koiImageUrl == null || cerImageUrl == null)
                 return BadRequest("You have not entered Koi information or the Koi info is invalid.");
-            }
-            var result = await _koiService.AddKoi(koiDto, imageUrl);
+
+            var result = await _koiService.AddKoi(koiDto, koiImageUrl, cerImageUrl);
             if (!result)
-            {
                 return BadRequest("Failed to add Koi.");
-            }
+
             return Ok("Koi added successfully.");
         }
 
