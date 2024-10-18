@@ -29,6 +29,7 @@ namespace KoiShop.Application.Interfaces
         Task<bool> ValidateFishTypeIdInKoi(int FishTypeId);
         Task<Koi> ValidateUpdateKoiDto(int koiId, UpdateKoiDto koiDto);
         Task<string> ValidateKoiImage(IFormFile image, string oldImagePath, string path);
+        Task<bool> UpdateKoiStatus(int koiId, string status);
 
         // KoiCategory Methods ======================================================================================
         Task<IEnumerable<KoiCategory>> GetAllKoiCategory();

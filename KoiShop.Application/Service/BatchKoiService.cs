@@ -167,6 +167,16 @@ namespace KoiShop.Application.Service
             return currentImagePath;
         }
 
+        public async Task<bool> UpdateBatchKoiStatus(int batchkoiId, string status)
+        {
+            var batchKoi = await _batchKoiRepository.GetBatchKoiByIdAsync(batchkoiId);
+            if (batchKoi == null) return false;
+
+            batchKoi.Status = status;
+
+            return await _batchKoiRepository.UpdateBatchKoiAsync(batchKoi); ;
+        }
+
         // BatchKoiCategory Methods ====================================================================================
 
         public async Task<IEnumerable<BatchKoiCategory>> GetAllBatchKoiCategory()

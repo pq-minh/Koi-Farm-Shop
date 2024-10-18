@@ -26,6 +26,7 @@ namespace KoiShop.Application.Interfaces
         Task<bool> ValidateBatchTypeIdInBatchKoi(int batchTypeId);
         Task<BatchKoi> ValidateUpdateBatchKoiDto(int batchKoiId, UpdateBatchKoiDto batchKoiDto);
         Task<string> ValidateBatchKoiImage(IFormFile image, string oldImagePath, string path);
+        Task<bool> UpdateBatchKoiStatus(int batchkoiId, string status);
         // BatchKoiCategory Methods ====================================================================================
         Task<IEnumerable<BatchKoiCategory>> GetAllBatchKoiCategory();
         Task<List<BatchKoi>> GetBatchKoiInBatchKoiCategory(int batchTypeId);

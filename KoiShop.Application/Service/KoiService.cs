@@ -168,6 +168,16 @@ namespace KoiShop.Application.Service
             return currentImagePath;
         }
 
+        public async Task<bool> UpdateKoiStatus(int koiId, string status)
+        {
+            var koi = await _koiRepository.GetKoiByIdAsync(koiId);
+            if (koi == null) return false;
+
+            koi.Status = status;
+
+            return await _koiRepository.UpdateKoiAsync(koi); ;
+        }
+
         // KoiCategory Methods ======================================================================================
         public async Task<IEnumerable<KoiCategory>> GetAllKoiCategory()
         {

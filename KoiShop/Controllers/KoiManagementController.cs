@@ -84,6 +84,27 @@ namespace KoiShop.Controllers
             return Ok("Batch Koi successfully..");
         }
 
+        [HttpPut("{koiId:int}-{status}")]
+        public async Task<IActionResult> UpdateKoiStatus(int koiId, string status)
+        {
+            if (string.IsNullOrWhiteSpace(status))
+            {
+                return BadRequest("You have not entered Koi information or the Koi info is invalid.");
+            }
+
+            var result = await _koiService.UpdateKoiStatus(koiId, status);
+
+            if (result)
+            {
+                return Ok("Koi status updated successfully.");
+            }
+            else
+            {
+                return BadRequest("Failed to update Koi.");
+            }
+        }
+
+
         // KoiCategory Methods ======================================================================================
         [HttpGet("category")]
         public async Task<IActionResult> GetAllKoiCategory()
