@@ -24,8 +24,6 @@ namespace KoiShop.Application.Dtos
 
         public string? Gender { get; set; }
 
-        public string? Age { get; set; }
-
         public string? Certificate { get; set; }
 
         public string? Image { get; set; }
