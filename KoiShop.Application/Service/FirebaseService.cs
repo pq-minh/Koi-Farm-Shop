@@ -40,7 +40,7 @@ namespace KoiShop.Application.Service
                 }
             }
         }
-        public async Task<string> UploadFileToFirebaseStorageAsync(IFormFile file, string directory)
+        public async Task<string> UploadFileToFirebaseStorage(IFormFile file, string directory)
         {
             directory = directory.Trim('/');
 
@@ -62,7 +62,7 @@ namespace KoiShop.Application.Service
                 }
             }
         }
-        public async Task<bool> DeleteFileInFirebaseStorageAsync(string filePath)
+        public async Task<bool> DeleteFileInFirebaseStorage(string filePath)
         {
             // chỉ đưa vô file path, ko phải toàn bộ url
             try

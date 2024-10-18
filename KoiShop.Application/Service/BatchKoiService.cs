@@ -157,10 +157,10 @@ namespace KoiShop.Application.Service
             {
                 string filePath = await _firebaseService.GetRelativeFilePath(oldImagePath);
                 if (filePath != null)       // xóa ảnh cũ trong firebase
-                    await _firebaseService.DeleteFileInFirebaseStorageAsync(filePath);
+                    await _firebaseService.DeleteFileInFirebaseStorage(filePath);
  
                 // upload ảnh mới lên firebase
-                currentImagePath = await _firebaseService.UploadFileToFirebaseStorageAsync(image, path);
+                currentImagePath = await _firebaseService.UploadFileToFirebaseStorage(image, path);
                 if (currentImagePath == null)
                     return null;
             }

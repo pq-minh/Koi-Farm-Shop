@@ -51,8 +51,8 @@ namespace KoiShop.Controllers
             if (!await _koiService.ValidateAddKoiDtoInfo(koiDto))
                 return BadRequest("You have not entered Koi information or the Koi info is invalid.");
 
-            var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(koiDto.ImageFile, "KoiFishImage");
-            var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(koiDto.ImageFile, "KoiFishCertificate");
+            var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorage(koiDto.ImageFile, "KoiFishImage");
+            var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorage(koiDto.ImageFile, "KoiFishCertificate");
 
             if (koiImageUrl == null || cerImageUrl == null)
                 return BadRequest("You have not entered Koi information or the Koi info is invalid.");

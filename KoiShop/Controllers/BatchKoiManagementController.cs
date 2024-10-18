@@ -41,8 +41,8 @@ namespace KoiShop.Controllers
             if (!await _batchKoiService.ValidateAddBatchKoiDtoInfo(batchKoiDto))
                 return BadRequest("You have not entered Batch Koi information or the Batch Koi info is invalid.");
 
-            var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(batchKoiDto.ImageFile, "KoiFishImage");
-            var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(batchKoiDto.ImageFile, "KoiFishCertificate");
+            var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorage(batchKoiDto.ImageFile, "KoiFishImage");
+            var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorage(batchKoiDto.ImageFile, "KoiFishCertificate");
 
             if (koiImageUrl == null || cerImageUrl == null)
                 return BadRequest("You have not entered Batch Koi information or the Batch Koi info is invalid.");
