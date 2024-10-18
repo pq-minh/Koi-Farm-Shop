@@ -16,18 +16,17 @@ namespace KoiShop.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDiscount()
         {
-            var discounts = _orderService.GetDiscount();
-            return Ok();
+            var discounts = await _orderService.GetDiscount();
+            return Ok(discounts);
         }
-        [HttpGet]
-        [Route("user")]
+        [HttpGet("user")]
         public async Task<IActionResult> GetDiscountForUser()
         {
-            var discounts = _orderService.GetDiscountForUser();
+            var discounts = await _orderService.GetDiscountForUser();
             if (discounts != null)
-                return Ok();
+                return Ok(discounts);
             else
-                return BadRequest();
+                return BadRequest("Fail");
         }
         [HttpPost]
         public async Task<IActionResult> GetDiscount([FromBody] DiscountDtoV2 discount)
@@ -35,9 +34,9 @@ namespace KoiShop.Controllers
             var name = discount.Name;
             var discounts = await _orderService.GetDiscountForUser(name);
             if (discount != null)
-                return Ok();
+                return Ok(discounts);
             else
-                return BadRequest();
+                return BadRequest("Fail");
 
         }
     }
