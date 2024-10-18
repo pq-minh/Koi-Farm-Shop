@@ -42,7 +42,7 @@ namespace KoiShop.Controllers
             switch (result)
             {
                 case OrderEnum.Success:
-                    return Ok("Add order sucessfully");
+                    return Created();
                 case OrderEnum.Fail:
                     return BadRequest("Have bug in progrecing");
                 case OrderEnum.FailAdd:

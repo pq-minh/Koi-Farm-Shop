@@ -12,5 +12,6 @@ namespace KoiShop.Domain.Respositories
         Task<IEnumerable<CartItem>> GetCart();
         Task<bool> AddItemToCart(CartItem cart);
         Task<bool> RemoveCart(CartItem cart);
+        Task<bool> ChangeBatchQuantity(string? status, int batchKoiId);
     }
 }
