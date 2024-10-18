@@ -286,14 +286,28 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return (double)0;
             }
+            var userId = _userContext.GetCurrentUser();
+            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
             var discount = await _koiShopV1DbContext.Discounts.Where(d => d.DiscountId == disountId).FirstOrDefaultAsync();
-            if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now)
+
+            if (order != null)
             {
-                var pricePercent = (double) discount.DiscountRate;
-                discount.TotalQuantity--;
-                _koiShopV1DbContext.Discounts.Update(discount);
-                await _koiShopV1DbContext.SaveChangesAsync();
-                return pricePercent;
+                if (discount != null)
+                {
+                    if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now && !order.Contains(discount.DiscountId) && discount.TotalQuantity > 0)
+                    {
+                        var pricePercent = (double)discount.DiscountRate;
+                        discount.TotalQuantity--;
+                        _koiShopV1DbContext.Discounts.Update(discount);
+                        await _koiShopV1DbContext.SaveChangesAsync();
+                        return pricePercent;
+                    }
+                }
+                else
+                {
+                    return (double)0;
+                }
+
             }
             return (double)0;
         }
