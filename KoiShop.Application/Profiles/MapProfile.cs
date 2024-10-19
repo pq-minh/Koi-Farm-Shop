@@ -23,6 +23,8 @@ namespace KoiShop.Application.Profiles
             CreateMap<Order, OrderDtos>();
             CreateMap<AddKoiDto, Koi > ();
             CreateMap<AddBatchKoiDto, BatchKoi> ();
+            CreateMap<Discount, DiscountDto>();
+
         }
     }
 }

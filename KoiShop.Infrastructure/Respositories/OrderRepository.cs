@@ -4,6 +4,7 @@ using KoiShop.Infrastructure.Migrations;
 using KoiShop.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -267,6 +268,10 @@ namespace KoiShop.Infrastructure.Respositories
         public async Task<IEnumerable<Discount>> GetDiscountForUser()
         {
             var userId = _userContext.GetCurrentUser();
+            if (userId == null)
+            {
+                return Enumerable.Empty<Discount>();
+            }
             var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
             var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate).ToListAsync();
             if (order != null)
@@ -278,7 +283,25 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return validDiscounts;
             }
-            
+        }
+        public async Task<Discount?> GetDiscountForUser(string? name)
+        {
+            var userId = _userContext.GetCurrentUser();
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
+            var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate && d.Name == name).ToListAsync();
+            if (order != null)
+            {
+                var availableDiscount = validDiscounts.FirstOrDefault(d => !order.Contains(d.DiscountId));
+                return availableDiscount;
+            }
+            else
+            {
+                return null;
+            }
         }
         private async Task<double> CheckDiscount(int? disountId)
         {

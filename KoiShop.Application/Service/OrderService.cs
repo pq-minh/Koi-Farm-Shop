@@ -13,6 +13,7 @@ using KoiShop.Domain.Respositories;
 using KoiShop.Application.Dtos;
 using Microsoft.IdentityModel.Tokens;
 using PhoneNumbers;
+using static Dropbox.Api.Files.ListRevisionsMode;
 
 namespace KoiShop.Application.Service
 {
@@ -74,6 +75,48 @@ namespace KoiShop.Application.Service
             var orderDetail = await _orderRepository.GetOrderDetailById((int)id);
             var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtos>>(orderDetail);
             return orderDetailDto;
+        }
+        public async Task<IEnumerable<DiscountDto>> GetDiscount()
+        {
+            var discount = await _orderRepository.GetDiscount();
+            var discountDto = _mapper.Map<IEnumerable<DiscountDto>>(discount);
+            return discountDto;
+        }
+        public async Task<IEnumerable<DiscountDto>> GetDiscountForUser()
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return Enumerable.Empty<DiscountDto>();
+            }
+            var discount = await _orderRepository.GetDiscountForUser();
+            var discountDto = _mapper.Map<IEnumerable<DiscountDto>>(discount);
+            return discountDto;
+        }
+        public async Task<DiscountDto> GetDiscountForUser(string? name)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+            var discount = await _orderRepository.GetDiscountForUser(name);
+            var discountDto = _mapper.Map<DiscountDto>(discount);
+            return discountDto;
+
         }
         public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method, int? discountId, string? phoneNumber, string? address)
         {
