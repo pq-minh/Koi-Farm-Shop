@@ -10,7 +10,7 @@ namespace KoiShop.Domain.Respositories
 {
     public interface IQuotationRepository
     {
-        Task<Quotation> UpdatePriceQuotation(Quotation quotation);
+        Task<Quotation> UpdatePriceQuotation(Quotation quotation, string decision);
 
         Task<IEnumerable<QuotationWithKoi>> GetQuotation(string userid);
     }

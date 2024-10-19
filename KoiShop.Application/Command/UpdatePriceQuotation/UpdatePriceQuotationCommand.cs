@@ -17,5 +17,7 @@ namespace KoiShop.Application.Command.UpdatePriceQuotation
 
         public string? Note { get; set; }
 
+        public string? decision { get; set; }
+
     }
 }

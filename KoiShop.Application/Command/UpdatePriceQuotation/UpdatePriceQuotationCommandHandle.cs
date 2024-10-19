@@ -22,7 +22,7 @@ namespace KoiShop.Application.Command.UpdatePriceQuotation
         {
             var user = userContext.GetCurrentUser();
             var quotation = mapper.Map<Quotation>(request);
-            var result = await quotationRepository.UpdatePriceQuotation(quotation);
+            var result = await quotationRepository.UpdatePriceQuotation(quotation, request.decision);
             return result;
         }
     }
