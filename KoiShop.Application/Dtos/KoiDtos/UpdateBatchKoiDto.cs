@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using KoiShop.Application.Validation;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,7 +16,7 @@ namespace KoiShop.Application.Dtos.KoiDtos
         public string? BatchKoiName { get; set; }
 
 
-        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
+        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
         public string? Description { get; set; }
 
 
@@ -39,21 +40,9 @@ namespace KoiShop.Application.Dtos.KoiDtos
         public string? Origin { get; set; }
 
 
-        [RegularExpression("^(Male|Female|Unknown)$", ErrorMessage = "Gender must be 'Male', 'Female', or 'Unknown'.")]
+        [StringLength(50, ErrorMessage = "Gender cannot exceed 50 characters.")]
         public string? Gender { get; set; }
-
-
-        [FileExtensions(Extensions = "pdf,jpg,jpeg,png", ErrorMessage = "Only certificate files (pdf, jpg, jpeg, png) are allowed.")]
-        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Certificate file size cannot exceed 5MB.")]
-        public IFormFile? Certificate { get; set; }
-
-
-        [FileExtensions(Extensions = "jpg,jpeg,png", ErrorMessage = "Only koi image files (jpg, jpeg, png) are allowed.")]
-        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Image file size cannot exceed 5MB.")]
-        public IFormFile? KoiImage { get; set; }
-
-
-        [Required(ErrorMessage = "Batch type is required.")]
+ 
         public int? BatchTypeId { get; set; }
 
 
@@ -63,5 +52,15 @@ namespace KoiShop.Application.Dtos.KoiDtos
 
         [StringLength(50, ErrorMessage = "Status cannot exceed 50 characters.")]
         public string? Status { get; set; }
+
+
+        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is 5 MB.")]
+        [AllowedFileTypes(".jpg,.jpeg,.png", ErrorMessage = "Only image files (jpg, jpeg, png) are allowed.")]
+        public IFormFile? KoiImage { get; set; }
+
+
+        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is 5 MB.")]
+        [AllowedFileTypes(".pdf,.jpg,.jpeg,.png", ErrorMessage = "Only certificate files (pdf, jpg, jpeg, png) are allowed.")]
+        public IFormFile? Certificate { get; set; }
     }
 }

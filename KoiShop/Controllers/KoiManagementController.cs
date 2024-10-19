@@ -32,7 +32,7 @@ namespace KoiShop.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllKoiStaff()
         {
-            var allKoi = await _koiService.GetAllKoi();
+            var allKoi = await _koiService.GetAllKoiStaff();
             if (allKoi == null) return NotFound();
             return Ok(allKoi);
         }
@@ -87,9 +87,10 @@ namespace KoiShop.Controllers
         public async Task<IActionResult> UpdateKoiStatus(int koiId, string status)
         {
             if (string.IsNullOrWhiteSpace(status))
-            {
                 return BadRequest("You have not entered Koi information or the Koi info is invalid.");
-            }
+
+            if (status.Length > 50)
+                return BadRequest("Status cannot exceed 50 characters.");
 
             var result = await _koiService.UpdateKoiStatus(koiId, status);
 

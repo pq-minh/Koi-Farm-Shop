@@ -9,6 +9,6 @@ namespace KoiShop.Application.Interfaces
 {
     public class IDishcountService
     {
-        Task<IEnumerable<Discount>> GetAllDishcount();
+        //Task<IEnumerable<Discount>> GetAllDishcount();
     }
 }

@@ -77,9 +77,10 @@ namespace KoiShop.Controllers
         public async Task<IActionResult> UpdateBatchKoiStatus(int batchKoiId, string status)
         {
             if (string.IsNullOrWhiteSpace(status))
-            {
                 return BadRequest("You have not entered Koi information or the Koi info is invalid.");
-            }
+
+            if (status.Length > 50)
+                return BadRequest("Status cannot exceed 50 characters.");
 
             var result = await _batchKoiService.UpdateBatchKoiStatus(batchKoiId, status);
 

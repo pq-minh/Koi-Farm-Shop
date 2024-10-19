@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using KoiShop.Application.Validation;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,17 +22,12 @@ namespace KoiShop.Application.Dtos.KoiDtos
         public string? Origin { get; set; }
 
 
-        [StringLength(500, ErrorMessage = "Description cannot exceed 1000 characters.")]
+        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
         public string? Description { get; set; }
 
 
-        [RegularExpression("^(Male|Female|Unknown)$", ErrorMessage = "Gender must be 'Male', 'Female', or 'Unknown'.")]
+        [StringLength(50, ErrorMessage = "Gender cannot exceed 50 characters.")]
         public string? Gender { get; set; }
-
-
-        [FileExtensions(Extensions = "jpg,jpeg,png", ErrorMessage = "Only koi files (jpg, jpeg, png) are allowed.")]
-        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Image file size cannot exceed 5MB.")]
-        public IFormFile? KoiImage { get; set; }
 
 
         [Range(0, 100, ErrorMessage = "Age must be between 0 and 100.")]
@@ -58,9 +54,15 @@ namespace KoiShop.Application.Dtos.KoiDtos
         public double? Price { get; set; }
 
 
-        [FileExtensions(Extensions = "pdf,jpg,jpeg,png", ErrorMessage = "Only certificate files (pdf, jpg, jpeg, png) are allowed.")]
-        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Certificate file size cannot exceed 5MB.")]
+        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is 5 MB.")]
+        [AllowedFileTypes(".jpg,.jpeg,.png", ErrorMessage = "Only image files (jpg, jpeg, png) are allowed.")]
+        public IFormFile? KoiImage { get; set; }
+
+
+        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is 5 MB.")]
+        [AllowedFileTypes(".pdf,.jpg,.jpeg,.png", ErrorMessage = "Only certificate files (pdf, jpg, jpeg, png) are allowed.")]
         public IFormFile? Certificate { get; set; }
+
 
     }
 }
