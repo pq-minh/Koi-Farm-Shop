@@ -53,10 +53,10 @@ namespace KoiShop.Infrastructure.Repositories
             {
                 switch (sortBy)
                 {
-                    case "name_desc": allBatchKoi.OrderByDescending(bk => bk.Name); break;
-                    case "price_asc": allBatchKoi.OrderBy(bk => bk.Price); break;
-                    case "price_desc": allBatchKoi.OrderByDescending(bk => bk.Price); break;
-                    default: allBatchKoi.OrderBy(bk => bk.Name); break;
+                    case "name_desc": allBatchKoi =allBatchKoi.OrderByDescending(bk => bk.Name); break;
+                    case "price_asc": allBatchKoi  =allBatchKoi.OrderBy(bk => bk.Price); break;
+                    case "price_desc": allBatchKoi =allBatchKoi.OrderByDescending(bk => bk.Price); break;
+                    default: allBatchKoi =allBatchKoi.OrderBy(bk => bk.Name); break;
                 }
             }
             #endregion

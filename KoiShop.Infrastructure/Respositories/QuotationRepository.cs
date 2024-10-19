@@ -27,7 +27,7 @@ namespace KoiShop.Infrastructure.Respositories
                 quotation.Price = entity.Price;
                 quotation.Note = entity.Note;
                 quotation.Status = "Confirmed";
-                request.AgreementPrice = entity.Price;
+                request.AgreementPrice = entity.Price;  
                 request.Status = "Confirmed";
             } else if (decision == "reject")
             {

@@ -43,7 +43,8 @@ namespace KoiShop.Controllers
                     return StatusCode(500, "An unexpected error occurred.");
             }
         }
-        [HttpDelete]
+
+        [HttpDelete("deleteitem")]
         public async Task<IActionResult> RemoveCart([FromBody] CartDtoV1 cart)
         {
             var result = await _cartService.RemoveCart(cart);
@@ -61,7 +62,7 @@ namespace KoiShop.Controllers
                     return StatusCode(500, "An unexpected error occurred.");
             }
         }
-        [HttpPatch]
+        [HttpPatch("changequantity")]
         public async Task<IActionResult> UpdateBatchQuantity([FromBody] CartDtoV3 cart)
         {
             var status = cart.Status;
