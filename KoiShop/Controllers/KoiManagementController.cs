@@ -48,18 +48,16 @@ namespace KoiShop.Controllers
         [HttpPost]
         public async Task<IActionResult> AddKoi([FromForm] AddKoiDto koiDto)
         {
-            if (!await _koiService.ValidateAddKoiDtoInfo(koiDto))
+            if(koiDto == null)
                 return BadRequest("You have not entered Koi information or the Koi info is invalid.");
 
-            var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorage(koiDto.ImageFile, "KoiFishImage");
-            var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorage(koiDto.ImageFile, "KoiFishCertificate");
+            if(!await _koiService.ValidateFishTypeIdInKoi(koiDto.FishTypeId))
+                return BadRequest("FishTypeId isn't exist.");
 
-            if (koiImageUrl == null || cerImageUrl == null)
-                return BadRequest("You have not entered Koi information or the Koi info is invalid.");
+            var result = await _koiService.AddKoi(koiDto);
 
-            var result = await _koiService.AddKoi(koiDto, koiImageUrl, cerImageUrl);
             if (!result)
-                return BadRequest("Failed to add Koi.");
+                return BadRequest("You have not entered Koi information or the Koi info is invalid.");
 
             return Ok("Koi added successfully.");
         }
@@ -68,7 +66,8 @@ namespace KoiShop.Controllers
         [HttpPut("{koiId:int}")]
         public async Task<IActionResult> UpdateKoi(int koiId, [FromForm] UpdateKoiDto koiDto)
         {
-            Koi koi = await _koiService.ValidateUpdateKoiDto(koiId, koiDto);
+
+            Koi koi = await _koiService.ValidateUpdateKoiInfo(koiId, koiDto);
 
             if (koi != null)
             {
@@ -81,7 +80,7 @@ namespace KoiShop.Controllers
                 return BadRequest("You have not entered Koi information or the Koi info is invalid.");
             }
 
-            return Ok("Batch Koi successfully..");
+            return Ok("Batch Koi successfully.");
         }
 
         [HttpPut("{koiId:int}-{status}")]

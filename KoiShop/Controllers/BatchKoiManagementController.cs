@@ -1,4 +1,5 @@
-﻿using KoiShop.Application.Dtos.KoiDtos;
+﻿using KoiShop.Application.Dtos;
+using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Application.Interfaces;
 using KoiShop.Application.Service;
 using KoiShop.Domain.Entities;
@@ -38,28 +39,25 @@ namespace KoiShop.Controllers
         [HttpPost]
         public async Task<IActionResult> AddBatchKoi([FromForm] AddBatchKoiDto batchKoiDto)
         {
-            if (!await _batchKoiService.ValidateAddBatchKoiDtoInfo(batchKoiDto))
-                return BadRequest("You have not entered Batch Koi information or the Batch Koi info is invalid.");
+            if (batchKoiDto == null)
+                return BadRequest("You have not entered BatchKoi information or the BatchKoi info is invalid.");
 
-            var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorage(batchKoiDto.ImageFile, "KoiFishImage");
-            var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorage(batchKoiDto.ImageFile, "KoiFishCertificate");
+            if (!await _batchKoiService.ValidateBatchTypeIdInBatchKoi(batchKoiDto.BatchTypeId))
+                return BadRequest("BatchTypeId isn't exist.");
 
-            if (koiImageUrl == null || cerImageUrl == null)
-                return BadRequest("You have not entered Batch Koi information or the Batch Koi info is invalid.");
-
-            var result = await _batchKoiService.AddBatchKoi(batchKoiDto, koiImageUrl, cerImageUrl);
+            var result = await _batchKoiService.AddBatchKoi(batchKoiDto);
 
             if (!result)
-                return BadRequest("Failed to add Batch Koi.");
+                return BadRequest("You have not entered BatchKoi information or the BatchKoi info is invalid.");
 
-            return Ok("Batch Koi added successfully.");
+            return Ok("BatchKoi added successfully.");
         }
 
 
         [HttpPut("{batchKoiId:int}")]
         public async Task<IActionResult> UpdateBatchKoi(int batchKoiId, [FromForm] UpdateBatchKoiDto batchKoiDto)
         {
-            BatchKoi batchKoi = await _batchKoiService.ValidateUpdateBatchKoiDto(batchKoiId, batchKoiDto);
+            BatchKoi batchKoi = await _batchKoiService.ValidateUpdateBatchKoiInfo(batchKoiId, batchKoiDto);
 
             if(batchKoi != null)
             {
