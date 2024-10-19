@@ -17,5 +17,10 @@ namespace KoiShop.Application.Dtos
         public int? BatchKoiId { get; set; }
 
         public int? ToTalQuantity { get; set; }
+
+        public string KoiName { get; set; }
+        public string BatchKoiName { get; set; }
+        public string KoiImage { get; set; }
+        public string BatchKoiImage { get; set; }
     }
 }

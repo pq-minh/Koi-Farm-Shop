@@ -76,6 +76,27 @@ namespace KoiShop.Application.Service
             var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtos>>(orderDetail);
             return orderDetailDto;
         }
+        public async Task<IEnumerable<KoiDto>> GetKoiFromOrderDetail(int? orderId)
+        {
+            if (orderId == null)
+            {
+                return null;
+            }
+            var koi = await _orderRepository.GetKoiOrBatch<Koi>((int)orderId);
+            var koiDto = _mapper.Map<IEnumerable<KoiDto>>(koi);
+            return koiDto;
+        }
+        public async Task<IEnumerable<BatchKoiDto>> GetBatchFromOrderDetail(int? orderId)
+        {
+            if (orderId == null)
+            {
+                return null;
+            }
+            var batch = await _orderRepository.GetKoiOrBatch<BatchKoi>((int)orderId);
+            var batchDto = _mapper.Map<IEnumerable<BatchKoiDto>>(batch);
+            return batchDto;
+        }
+
         public async Task<IEnumerable<DiscountDto>> GetDiscount()
         {
             var discount = await _orderRepository.GetDiscount();

@@ -56,8 +56,35 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return Enumerable.Empty<OrderDetail>();
             }
-            var orderdetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.OrderId == orderId).ToListAsync();
+            var orderdetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.OrderId == orderId).Include(od => od.Koi).
+                Include(od => od.BatchKoi).ToListAsync();
             return orderdetail;
+        }
+        public async Task<IEnumerable<T>> GetKoiOrBatch<T>(int orderId)
+        {
+            var userId = _userContext.GetCurrentUser().Id;
+            var orders = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId).ToListAsync();
+            if (orders == null)
+            {
+                return Enumerable.Empty<T>();
+            }
+            var fish = await _koiShopV1DbContext.OrderDetails.
+                Where(od => od.OrderId == orderId).ToListAsync();
+            if (fish == null)
+            {
+                return Enumerable.Empty<T>();
+            }
+            var batch = await _koiShopV1DbContext.BatchKois.Where(b => fish.Any(f => b.BatchKoiId == f.BatchKoiId)).ToListAsync();
+            var koi = await _koiShopV1DbContext.Kois.Where(k => fish.Any(f => k.KoiId == f.KoiId)).ToListAsync();
+            if (typeof(T) == typeof(BatchKoi))
+            {
+                return batch as IEnumerable<T>;
+            }
+            else if (typeof(T) == typeof(Koi))
+            {
+                return koi as IEnumerable<T>;
+            }
+            return Enumerable.Empty<T>();
         }
         public async Task<bool> AddToOrderDetailFromCart(List<CartItem> carts)
         {
@@ -229,8 +256,8 @@ namespace KoiShop.Infrastructure.Respositories
         public async Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts)
         {
             if (carts == null)
-            { 
-                return false; 
+            {
+                return false;
             }
 
             foreach (var cart in carts)
@@ -277,7 +304,7 @@ namespace KoiShop.Infrastructure.Respositories
             if (order != null)
             {
                 var availableDiscount = validDiscounts.Where(d => !order.Contains(d.DiscountId)).ToList();
-                return availableDiscount;  
+                return availableDiscount;
             }
             else
             {
