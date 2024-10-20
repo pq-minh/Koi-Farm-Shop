@@ -26,6 +26,7 @@ namespace KoiShop.Infrastructure.Extensions
             services.AddScoped<IRequestRepository, RequestRepository>();
             services.AddScoped<IQuotationRepository, QuotationRepository>();    
             services.AddScoped<IUserSeeder, UserSeeder>();
+            services.AddScoped<IDiscountRepository, DiscountRepository>();
             services.AddDbContext<KoiShopV1DbContext>(options => options.UseSqlServer(connectionString));
             services.AddIdentity<User, IdentityRole>()
                .AddEntityFrameworkStores<KoiShopV1DbContext>().AddRoles<IdentityRole>();

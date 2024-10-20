@@ -1,15 +1,14 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KoiShop.Application.Dtos
+namespace KoiShop.Application.Command.CreateDiscount
 {
-    public class DiscountDto
+    public class CreateDiscountCommand : IRequest<string>
     {
-        public int DiscountId { get; set; }
-
         public string? Name { get; set; }
 
         public string? Description { get; set; }
@@ -18,18 +17,8 @@ namespace KoiShop.Application.Dtos
 
         public int? TotalQuantity { get; set; }
 
-        public int? Used { get; set; }
-
-        public DateTime? CreateDate { get; set; }
-
         public DateTime? StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
-
-        public string? Status { get; set; }
-    }
-    public class DiscountDtoV2
-    {
-        public string? Name { get; set; }
     }
 }
