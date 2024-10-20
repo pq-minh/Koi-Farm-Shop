@@ -26,7 +26,7 @@ namespace KoiShop.Application.Dtos
 
         public DateTime? EndDate { get; set; }
 
-        public int? Status { get; set; }
+        public string? Status { get; set; }
     }
     public class DiscountDtoV2
     {
