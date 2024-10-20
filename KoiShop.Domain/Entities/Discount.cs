@@ -23,7 +23,7 @@ public partial class Discount
 
     public DateTime? EndDate { get; set; }
 
-    public int? Status { get; set; }
+    public string? Status { get; set; }
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
