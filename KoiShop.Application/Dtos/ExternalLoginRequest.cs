@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.Dtos
 {
-    public class KoiAndBatchKoiDto
+    public class ExternalLoginRequest
     {
-        public IEnumerable<KoiDto>? Koi { get; set; }
-        public IEnumerable<BatchKoiDto>? BatchKoi { get; set; }
+        public string Token { get; set; }
     }
 }
