@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KoiShop.Application.Dtos.Pagination;
 using KoiShop.Domain.Constant;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
@@ -18,12 +19,15 @@ namespace KoiShop.Application.Queries.GetQuotation
         IUserStore<User> userStore,
         IQuotationRepository quotationRepository,
         IMapper mapper)
-        : IRequestHandler<GetQuotationQuery, IEnumerable<QuotationWithKoi>>
+        : IRequestHandler<GetQuotationQuery, PaginatedResult<QuotationWithKoi>>
     {
-        public Task<IEnumerable<QuotationWithKoi>> Handle(GetQuotationQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<QuotationWithKoi>> Handle(GetQuotationQuery request, CancellationToken cancellationToken)
         {
             var user = userContext.GetCurrentUser();
-            var quotations = quotationRepository.GetQuotation(user.Id);
+            int pageNumber = request.PageNumber; 
+            int pageSize = request.PageSize; 
+
+            var quotations = await quotationRepository.GetQuotation(user.Id, pageNumber, pageSize);
             return quotations;
         }
     }

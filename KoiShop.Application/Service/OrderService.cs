@@ -223,5 +223,10 @@ namespace KoiShop.Application.Service
             }
         }
 
+        public Task<int> GetLastOrderId()
+        {
+            var ordeid = _orderRepository.GetLastOrderId();
+            return ordeid;
+        }
     }
 }

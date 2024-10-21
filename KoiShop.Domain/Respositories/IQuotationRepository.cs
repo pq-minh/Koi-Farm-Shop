@@ -1,4 +1,5 @@
-﻿using KoiShop.Domain.Constant;
+﻿using KoiShop.Application.Dtos.Pagination;
+using KoiShop.Domain.Constant;
 using KoiShop.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,6 @@ namespace KoiShop.Domain.Respositories
     {
         Task<Quotation> UpdatePriceQuotation(Quotation quotation, string decision);
 
-        Task<IEnumerable<QuotationWithKoi>> GetQuotation(string userid);
+        Task<PaginatedResult<QuotationWithKoi>> GetQuotation(string userId, int pageNumber, int pageSize);
     }
 }

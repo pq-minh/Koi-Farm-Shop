@@ -1,10 +1,13 @@
 ﻿using Google.Apis.Auth;
 using KoiShop.Application.Dtos;
 using KoiShop.Application.JwtToken;
+using KoiShop.Domain.Constant;
 using KoiShop.Domain.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -16,11 +19,12 @@ namespace KoiShop.Controllers
     {
         private readonly SignInManager<User> signInManager;
         private readonly UserManager<User> userManager;
-
-        public GoogleLoginController2(SignInManager<User> signInManager, UserManager<User> userManager)
+        private readonly IJwtTokenService jwtTokenService;
+        public GoogleLoginController2(IJwtTokenService jwtTokenService, SignInManager<User> signInManager, UserManager<User> userManager)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
+            this.jwtTokenService = jwtTokenService;
         }
 
         [HttpPost("external-login-callback")]
@@ -46,9 +50,9 @@ namespace KoiShop.Controllers
             var info = new ExternalLoginInfo(
                 new ClaimsPrincipal(new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Email, email),
-                    new Claim(ClaimTypes.GivenName, payload.GivenName),
-                    new Claim(ClaimTypes.Surname, payload.FamilyName)
+            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.GivenName, payload.GivenName),
+            new Claim(ClaimTypes.Surname, payload.FamilyName)
                 })),
                 "Google", // loginProvider
                 payload.Subject, // providerKey
@@ -58,24 +62,40 @@ namespace KoiShop.Controllers
             var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider,
                 info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
+            User user = null;
+
             if (signInResult.Succeeded)
             {
-                return Ok(new { redirectUrl = "/" }); 
+                user = await userManager.FindByEmailAsync(email);
+                var jwtTokenLogin = await jwtTokenService.GenerateToken(user);
+                return Ok(new { redirectUrl = "/", token = jwtTokenLogin });
             }
-
-            var user = await userManager.FindByEmailAsync(email) ?? new User
+            else
             {
-                UserName = email,
-                Email = email,
-                FirstName = payload.GivenName,
-                LastName = payload.FamilyName,
-            };
+                user = await userManager.FindByEmailAsync(email) ?? new User
+                {
+                    UserName = email,
+                    Email = email,
+                    FirstName = payload.GivenName,
+                    LastName = payload.FamilyName,
+                    PhoneNumber = string.Empty 
+                };
 
-            await userManager.CreateAsync(user);
-            await userManager.AddLoginAsync(user, info);
-            await signInManager.SignInAsync(user, isPersistent: false);
+                var createResult = await userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    return BadRequest(new { error = "User creation failed.", details = createResult.Errors });
+                }
 
-            return Ok(new { redirectUrl = "/" });
+                await userManager.AddLoginAsync(user, info);
+                await userManager.AddToRoleAsync(user, UserRoles.Customer);
+                await signInManager.SignInAsync(user, isPersistent: false);
+            }
+            user = await userManager.FindByEmailAsync(user.Email);
+            var jwtToken = await jwtTokenService.GenerateToken(user);
+            return Ok(new { redirectUrl = "/", token = jwtToken });
+
         }
     }
-}
+
+    }

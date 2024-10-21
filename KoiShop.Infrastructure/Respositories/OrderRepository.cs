@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Dropbox.Api.Files.SearchMatchType;
 using static KoiShop.Application.Users.UserContext;
 
 namespace KoiShop.Infrastructure.Respositories
@@ -292,8 +293,18 @@ namespace KoiShop.Infrastructure.Respositories
         }
         public async Task<IEnumerable<Discount>> GetDiscount()
         {
-            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate).ToListAsync();
-            return discount;
+
+            var discounts = await _koiShopV1DbContext.Discounts.ToListAsync();
+            var dateNow = DateTime.Now;
+            foreach (var discount in discounts)
+            {
+                if (discount.EndDate < dateNow)
+                {
+                    discount.Status = "Inactive"; 
+                }
+            }
+
+            return discounts;
         }
         public async Task<IEnumerable<Discount>> GetDiscountForUser()
         {
@@ -363,6 +374,13 @@ namespace KoiShop.Infrastructure.Respositories
 
             }
             return (double)0;
+        }
+
+
+
+        public async Task<int> GetLastOrderId()
+        {
+            return await _koiShopV1DbContext.Orders.OrderByDescending(o => o.OrderId).Select(o => o.OrderId).FirstOrDefaultAsync();
         }
     }
 }

@@ -19,5 +19,6 @@ namespace KoiShop.Application.Interfaces
         Task<IEnumerable<DiscountDto>> GetDiscountForUser();
         Task<IEnumerable<DiscountDto>> GetDiscount();
         Task<DiscountDto> GetDiscountForUser(string? name);
+        Task<int> GetLastOrderId();
     }
 }

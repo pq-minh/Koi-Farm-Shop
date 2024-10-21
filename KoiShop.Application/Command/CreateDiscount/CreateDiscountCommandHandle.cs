@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace KoiShop.Application.Command.CreateDiscount
 {
     public class CreateDiscountCommandHandle
-        ( IDiscountRepository discountRepository): IRequestHandler<CreateDiscountCommand, string>
+        ( IDiscountRepository discountRepository): IRequestHandler<CreateDiscountCommand, Discount>
     {
-        public Task<string> Handle(CreateDiscountCommand request, CancellationToken cancellationToken)
+        public Task<Discount> Handle(CreateDiscountCommand request, CancellationToken cancellationToken)
         {
             var discountCreate = new Discount
             {
@@ -22,6 +22,8 @@ namespace KoiShop.Application.Command.CreateDiscount
                 DiscountRate = request.DiscountRate,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate,
+                Used = 0,
+                Status ="Active"
             };
             var result = discountRepository.CreateDiscount(discountCreate);
             return result;

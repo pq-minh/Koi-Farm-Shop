@@ -25,13 +25,13 @@ namespace KoiShop.Application.JwtToken
         new Claim(JwtRegisteredClaimNames.Sub, user.Id), // ID người dùng
         new Claim("FirstName",user.FirstName),
         new Claim("LastName",user.LastName),
-        new Claim("Point",user.Point.ToString()),
-        new Claim("PhoneNumber",user.PhoneNumber),
+        new Claim("Point",(user.Point ?? 0).ToString()),
+        new Claim("PhoneNumber",user.PhoneNumber ?? string.Empty),
         new Claim("Email",user.Email),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Unique identifier cho token
         };
             // Thêm roles vào claims
-            claims.AddRange(roles.Select(role => new Claim("role", role)));
+            claims.AddRange(roles.Select(role => new Claim("role", role ?? string.Empty)));
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
@@ -42,6 +42,23 @@ namespace KoiShop.Application.JwtToken
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<string> GenerateTokenClaims(IEnumerable<Claim> claims)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(120),
+                signingCredentials: credentials
+            );
+
+            // Trả về token dưới dạng Task<string>
+            return await Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using KoiShop.Domain.Entities;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.Command.CreateDiscount
 {
-    public class CreateDiscountCommand : IRequest<string>
+    public class CreateDiscountCommand : IRequest<Discount>
     {
         public string? Name { get; set; }
 

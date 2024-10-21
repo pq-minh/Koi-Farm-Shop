@@ -1,6 +1,7 @@
 ﻿using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using KoiShop.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,15 +28,17 @@ namespace KoiShop.Infrastructure.Respositories
             
         }
 
-        public async Task<string> CreateDiscount(Discount discount)
-        {   
-            if (discount.Name != null && koiShopV1DbContext.Discounts.Any(dc => dc.Name == discount.Name))
+        public async Task<Discount> CreateDiscount(Discount discount)
+        {
+            if (discount.Name != null && await koiShopV1DbContext.Discounts.AnyAsync(dc => dc.Name == discount.Name))
             {
-                return "Tên của mã giảm giá đã tồn tại";
+                return null;
             }
-            var discountCreate = await koiShopV1DbContext.Discounts.AddAsync(discount);
+            await koiShopV1DbContext.Discounts.AddAsync(discount);
             await koiShopV1DbContext.SaveChangesAsync();
-            return "Tạo mã giảm giá thành công";
+
+            return discount;
         }
+
     }
 }

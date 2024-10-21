@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Application.Dtos.PackageDtos;
+using KoiShop.Application.Dtos.Pagination;
 using KoiShop.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace KoiShop.Application.Dtos.RequestDtos
                 .ForMember(dest => dest.Koi, opt => opt.MapFrom(src => src.Koi));
 
             CreateMap<Koi, KoiDtoResponse>();
+            CreateMap<PaginatedResult<Request>, PaginatedResult<RequestDtoResponse>>()
+            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
         }
     }
 }
