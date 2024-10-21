@@ -13,17 +13,6 @@ namespace KoiShop
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowSpecificOrigin", builder =>
-            //    {
-            //        builder.WithOrigins("http://localhost:5173")
-            //               .AllowAnyHeader()
-            //               .AllowAnyMethod();
-            //    });
-            //});
-
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
