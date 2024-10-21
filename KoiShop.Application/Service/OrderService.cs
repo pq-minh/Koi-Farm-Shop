@@ -9,11 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static KoiShop.Application.Users.UserContext;
-using KoiShop.Domain.Respositories;
 using KoiShop.Application.Dtos;
 using Microsoft.IdentityModel.Tokens;
 using PhoneNumbers;
-using static Dropbox.Api.Files.ListRevisionsMode;
 
 namespace KoiShop.Application.Service
 {
