@@ -6,7 +6,6 @@ using KoiShop.Application.Service;
 
 namespace KoiShop.Controllers
 {
-    
     [ApiController]
     [Route("/api/batchkois")]
     public class BatchKoiController : ControllerBase

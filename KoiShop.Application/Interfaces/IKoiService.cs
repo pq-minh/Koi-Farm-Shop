@@ -1,6 +1,7 @@
 ﻿using KoiShop.Application.Dtos;
 using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +22,12 @@ namespace KoiShop.Application.Interfaces
         // Koi Methods =============================================================================================
         Task<IEnumerable<Koi>> GetAllKoiStaff();
         Task<Koi> GetKoiById(int id);
-        Task<bool> AddKoi(AddKoiDto koiDto, string imageUrl);
-
+        Task<bool> AddKoi(AddKoiDto koiDto);
+        Task<Koi> ValidateUpdateKoiInfo(int koiId, UpdateKoiDto koiDto);
+        Task<string> ValidateImage(IFormFile image, string oldImagePath, string path);
         Task<bool> UpdateKoi(Koi koi);
-        Task<bool> ValidateAddKoiDtoInfo(AddKoiDto koiDto);
         Task<bool> ValidateFishTypeIdInKoi(int FishTypeId);
-        Task<Koi> ValidateUpdateKoiDto(int koiId, UpdateKoiDto koiDto);
+        Task<bool> UpdateKoiStatus(int koiId, string status);
 
         // KoiCategory Methods ======================================================================================
         Task<IEnumerable<KoiCategory>> GetAllKoiCategory();
