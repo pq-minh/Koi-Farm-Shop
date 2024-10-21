@@ -171,10 +171,13 @@ namespace KoiShop.Infrastructure.Respositories
                     totalAmount += totalPrice;
                 }
             }
-            var pricePercentDiscount = await CheckDiscount(discountId);
-            if (pricePercentDiscount != null && pricePercentDiscount > 0)
+            if (discountId.HasValue)
             {
-                totalAmount = totalAmount - (totalAmount * (float)pricePercentDiscount);
+                var pricePercentDiscount = await CheckDiscount(discountId);
+                if (pricePercentDiscount != null && pricePercentDiscount > 0 && pricePercentDiscount <= 1)
+                {
+                    totalAmount = totalAmount - (totalAmount * (float)pricePercentDiscount);
+                }
             }
             order.TotalAmount = totalAmount;
             _koiShopV1DbContext.Orders.Update(order);
@@ -344,10 +347,10 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 if (discount != null)
                 {
-                    if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now && !order.Contains(discount.DiscountId) && discount.TotalQuantity > 0)
+                    if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now && !order.Contains(discount.DiscountId) && discount.TotalQuantity > 0 && discount.Used <= discount.TotalQuantity)
                     {
                         var pricePercent = (double)discount.DiscountRate;
-                        discount.TotalQuantity--;
+                        discount.Used++;
                         _koiShopV1DbContext.Discounts.Update(discount);
                         await _koiShopV1DbContext.SaveChangesAsync();
                         return pricePercent;
