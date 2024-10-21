@@ -38,8 +38,46 @@ namespace KoiShop.Application.Service
             }
 
             var allCart = await _cartsRepository.GetCart();
-            var cart = _mapper.Map<IEnumerable<CartDtos>>(allCart);
-            return cart;
+
+
+            var koiIds = allCart
+            .Select(ci => ci.KoiId)
+            .Where(koiId => koiId.HasValue) 
+            .Select(koiId => koiId.Value)   
+            .Distinct()
+            .ToList();
+
+            var batchKoiIds = allCart
+                .Select(ci => ci.BatchKoiId)
+                .Where(batchKoiId => batchKoiId.HasValue) 
+                .Select(batchKoiId => batchKoiId.Value)   
+                .Distinct()
+                .ToList();
+
+
+
+            var koiNames = await _cartsRepository.GetKoiNamesAsync(koiIds);
+            var batchKoiNames = await _cartsRepository.GetBatchKoiNamesAsync(batchKoiIds);
+
+            var cartDtos = allCart.Select(cartItem => new CartDtos
+            {
+                CartItemsID = cartItem.CartItemsID,
+                Quantity = cartItem.Quantity,
+                UnitPrice = cartItem.UnitPrice,
+                TotalPrice = cartItem.TotalPrice,
+                Status = cartItem.Status,
+                KoiId = cartItem.KoiId, 
+                BatchKoiId = cartItem.BatchKoiId,
+                ShoppingCartId = cartItem.ShoppingCartId,
+                KoiName = koiNames.GetValueOrDefault(cartItem.KoiId ?? 0).Name,
+                BatchKoiName = batchKoiNames.GetValueOrDefault(cartItem.BatchKoiId ?? 0).Name,
+                KoiImgUrl = koiNames.GetValueOrDefault(cartItem.KoiId ?? 0).ImgUrl,
+                BatchKoiImgUrl = batchKoiNames.GetValueOrDefault(cartItem.BatchKoiId ?? 0).ImgUrl,
+                KoiDescription = koiNames.GetValueOrDefault(cartItem.KoiId ?? 0).Description,
+                BatchKoiDescription = batchKoiNames.GetValueOrDefault(cartItem.BatchKoiId ?? 0).Description
+            });
+
+            return cartDtos;
         }
         public async Task<CartEnum> AddCarts(CartDtoV1 cart)
         {

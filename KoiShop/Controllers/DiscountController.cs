@@ -1,5 +1,8 @@
-﻿using KoiShop.Application.Dtos;
+﻿using KoiShop.Application.Command.CreateDiscount;
+using KoiShop.Application.Command.UpdateDiscount;
+using KoiShop.Application.Dtos;
 using KoiShop.Application.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KoiShop.Controllers
@@ -9,9 +12,12 @@ namespace KoiShop.Controllers
     public class DiscountController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        public DiscountController(IOrderService orderService)
+
+        private readonly IMediator _mediator;
+        public DiscountController(IOrderService orderService,IMediator mediator)
         {
             _orderService = orderService;
+            _mediator = mediator;
         }
         [HttpGet]
         public async Task<IActionResult> GetDiscount()
@@ -38,6 +44,26 @@ namespace KoiShop.Controllers
             else
                 return BadRequest("Fail");
 
+        }
+
+        [HttpPost("update-discount")]
+        public async Task<IActionResult> UpdateDiscount([FromBody] UpdateDiscountCommand updateDiscountCommand)
+        {
+            var result = await _mediator.Send(updateDiscountCommand);
+            return Ok(result); 
+        }
+
+        [HttpPost("create-discount")]
+        public async Task<IActionResult> CreateDiscount([FromBody] CreateDiscountCommand createDiscountCommand)
+        {
+            var result = await _mediator.Send(createDiscountCommand);
+            if (result != null)
+            {
+                return Ok(result);
+            } else
+            {
+                return BadRequest(result);
+            }
         }
     }
 }
