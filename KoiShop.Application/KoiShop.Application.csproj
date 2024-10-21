@@ -21,6 +21,7 @@
 	  <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
 	  <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
 	  <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+	  <PackageReference Include="libphonenumber-csharp" Version="8.13.47" />
 	  <PackageReference Include="MediatR" Version="12.4.1" />
 	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
 	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />

@@ -30,4 +30,9 @@ namespace KoiShop.Application.Dtos
         public int? BatchKoiId { get; set; }
         public int? Quantity { get; set; }
     }
+    public class CartDtoV3
+    {
+        public string? Status { get; set; }
+        public int? BatchKoiId { get; set; }
+    }
 }

@@ -4,6 +4,7 @@ using KoiShop.Infrastructure.Migrations;
 using KoiShop.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -55,8 +56,35 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return Enumerable.Empty<OrderDetail>();
             }
-            var orderdetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.OrderId == orderId).ToListAsync();
+            var orderdetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.OrderId == orderId).Include(od => od.Koi).
+                Include(od => od.BatchKoi).ToListAsync();
             return orderdetail;
+        }
+        public async Task<IEnumerable<T>> GetKoiOrBatch<T>(int orderId)
+        {
+            var userId = _userContext.GetCurrentUser().Id;
+            var orders = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId).ToListAsync();
+            if (orders == null)
+            {
+                return Enumerable.Empty<T>();
+            }
+            var fish = await _koiShopV1DbContext.OrderDetails.
+                Where(od => od.OrderId == orderId).ToListAsync();
+            if (fish == null)
+            {
+                return Enumerable.Empty<T>();
+            }
+            var batch = await _koiShopV1DbContext.BatchKois.Where(b => fish.Any(f => b.BatchKoiId == f.BatchKoiId)).ToListAsync();
+            var koi = await _koiShopV1DbContext.Kois.Where(k => fish.Any(f => k.KoiId == f.KoiId)).ToListAsync();
+            if (typeof(T) == typeof(BatchKoi))
+            {
+                return batch as IEnumerable<T>;
+            }
+            else if (typeof(T) == typeof(Koi))
+            {
+                return koi as IEnumerable<T>;
+            }
+            return Enumerable.Empty<T>();
         }
         public async Task<bool> AddToOrderDetailFromCart(List<CartItem> carts)
         {
@@ -113,7 +141,7 @@ namespace KoiShop.Infrastructure.Respositories
             else
                 return false;
         }
-        public async Task<bool> AddToOrder(List<CartItem> carts)
+        public async Task<bool> AddToOrder(List<CartItem> carts, int? discountId, string? phoneNumber, string? address)
         {
             var user = _userContext.GetCurrentUser();
             var count = carts.Count();
@@ -125,7 +153,9 @@ namespace KoiShop.Infrastructure.Respositories
                 TotalAmount = 0,
                 CreateDate = DateTime.Now,
                 OrderStatus = "Pending",
-                UserId = user.Id
+                UserId = user.Id,
+                PhoneNumber = phoneNumber,
+                ShippingAddress = address
             };
             _koiShopV1DbContext.Orders.Add(order);
             await _koiShopV1DbContext.SaveChangesAsync();
@@ -139,6 +169,14 @@ namespace KoiShop.Infrastructure.Respositories
                     quantity = (int)cart.Quantity;
                     totalPrice = quantity * (float)cartItem.UnitPrice;
                     totalAmount += totalPrice;
+                }
+            }
+            if (discountId.HasValue)
+            {
+                var pricePercentDiscount = await CheckDiscount(discountId);
+                if (pricePercentDiscount != null && pricePercentDiscount > 0 && pricePercentDiscount <= 1)
+                {
+                    totalAmount = totalAmount - (totalAmount * (float)pricePercentDiscount);
                 }
             }
             order.TotalAmount = totalAmount;
@@ -221,14 +259,12 @@ namespace KoiShop.Infrastructure.Respositories
         public async Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts)
         {
             if (carts == null)
-            { 
-                return false; 
+            {
+                return false;
             }
 
             foreach (var cart in carts)
             {
-
-
                 if ((cart.KoiId.HasValue && (cart.BatchKoiId == null || !cart.BatchKoiId.HasValue)) ||
                     (cart.BatchKoiId.HasValue && (cart.KoiId == null || !cart.KoiId.HasValue)))
                 {
@@ -254,9 +290,79 @@ namespace KoiShop.Infrastructure.Respositories
             }
             return true;
         }
-        public async Task<bool> UpdateDiscount(int discountId)
+        public async Task<IEnumerable<Discount>> GetDiscount()
         {
-            return true;
+            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate).ToListAsync();
+            return discount;
+        }
+        public async Task<IEnumerable<Discount>> GetDiscountForUser()
+        {
+            var userId = _userContext.GetCurrentUser();
+            if (userId == null)
+            {
+                return Enumerable.Empty<Discount>();
+            }
+            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
+            var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate).ToListAsync();
+            if (order != null)
+            {
+                var availableDiscount = validDiscounts.Where(d => !order.Contains(d.DiscountId)).ToList();
+                return availableDiscount;
+            }
+            else
+            {
+                return validDiscounts;
+            }
+        }
+        public async Task<Discount?> GetDiscountForUser(string? name)
+        {
+            var userId = _userContext.GetCurrentUser();
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
+            var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate && d.Name == name).ToListAsync();
+            if (order != null)
+            {
+                var availableDiscount = validDiscounts.FirstOrDefault(d => !order.Contains(d.DiscountId));
+                return availableDiscount;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        private async Task<double> CheckDiscount(int? disountId)
+        {
+            if (disountId == null || disountId == 0)
+            {
+                return (double)0;
+            }
+            var userId = _userContext.GetCurrentUser();
+            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
+            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.DiscountId == disountId).FirstOrDefaultAsync();
+
+            if (order != null)
+            {
+                if (discount != null)
+                {
+                    if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now && !order.Contains(discount.DiscountId) && discount.TotalQuantity > 0 && discount.Used <= discount.TotalQuantity)
+                    {
+                        var pricePercent = (double)discount.DiscountRate;
+                        discount.Used++;
+                        _koiShopV1DbContext.Discounts.Update(discount);
+                        await _koiShopV1DbContext.SaveChangesAsync();
+                        return pricePercent;
+                    }
+                }
+                else
+                {
+                    return (double)0;
+                }
+
+            }
+            return (double)0;
         }
     }
 }

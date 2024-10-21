@@ -12,11 +12,15 @@ namespace KoiShop.Domain.Respositories
         Task<IEnumerable<OrderDetail>> GetOrderDetail();
         Task<IEnumerable<Order>> GetOrder();
         Task<IEnumerable<OrderDetail>> GetOrderDetailById(int orderId);
-        Task<bool> AddToOrder(List<CartItem> carts);
+        Task<bool> AddToOrder(List<CartItem> carts, int? discountId, string? phoneNumber, string? address);
         Task<bool> AddPayment(string method);
         Task<bool> AddToOrderDetailFromShop(CartItem cart, int orderId);
         Task<bool> AddToOrderDetailFromCart(List<CartItem> carts);
         Task<bool> UpdateCartAfterBuy(List<CartItem> carts);
         Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts);
+        Task<IEnumerable<Discount>> GetDiscountForUser();
+        Task<IEnumerable<Discount>> GetDiscount();
+        Task<Discount?> GetDiscountForUser(string? name);
+        Task<IEnumerable<T>> GetKoiOrBatch<T>(int orderId);
     }
 }

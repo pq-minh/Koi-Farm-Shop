@@ -61,5 +61,16 @@ namespace KoiShop.Controllers
                     return StatusCode(500, "An unexpected error occurred.");
             }
         }
+        [HttpPatch]
+        public async Task<IActionResult> UpdateBatchQuantity([FromBody] CartDtoV3 cart)
+        {
+            var status = cart.Status;
+            var batchKoiId = cart.BatchKoiId;
+            var result = await _cartService.ChangeBatchQuantity(status, batchKoiId);
+            if (result)
+                return Ok("Update successfull");
+            else
+                return BadRequest("An expected error occurred");
+        }
     }
 }

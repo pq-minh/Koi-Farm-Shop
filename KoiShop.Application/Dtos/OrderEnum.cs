@@ -12,6 +12,7 @@ namespace KoiShop.Application.Dtos
         UserNotAuthenticated,
         NotLoggedInYet,
         InvalidParameters,
+        InvalidTypeParameters,
         ItemUpdated,
         NotAddOrderInYet,
         FailUpdateFish,

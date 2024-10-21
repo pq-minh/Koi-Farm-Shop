@@ -19,10 +19,16 @@ namespace KoiShop.Application.Profiles
             CreateMap<CartItem, CartDtos>();
             CreateMap<CartDtoV1, CartItem>();
             CreateMap<CartDtoV2, CartItem>();
-            CreateMap<OrderDetail, OrderDetailDtos>();
+            CreateMap<OrderDetail, OrderDetailDtos>()
+                .ForMember(dest => dest.KoiName, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Name : string.Empty))
+                .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Name : string.Empty))
+                .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
+                .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty));
             CreateMap<Order, OrderDtos>();
-            CreateMap<AddKoiDto, Koi > ();
-            CreateMap<AddBatchKoiDto, BatchKoi> ();
+            CreateMap<AddKoiDto, Koi>();
+            CreateMap<AddBatchKoiDto, BatchKoi>();
+            CreateMap<Discount, DiscountDto>();
+
         }
     }
 }
