@@ -30,7 +30,7 @@ namespace KoiShop.Controllers
         [HttpPost("external-login-callback")]
         public async Task<IActionResult> ExternalLoginCallback([FromBody] ExternalLoginRequest request)
         {
-            var token = request.Token; // Lấy token từ request
+            var token = request.Token; 
             if (string.IsNullOrEmpty(token))
             {
                 return BadRequest(new { error = "Token is missing." });
@@ -54,9 +54,9 @@ namespace KoiShop.Controllers
             new Claim(ClaimTypes.GivenName, payload.GivenName),
             new Claim(ClaimTypes.Surname, payload.FamilyName)
                 })),
-                "Google", // loginProvider
-                payload.Subject, // providerKey
-                email // displayName
+                "Google", 
+                payload.Subject, 
+                email 
             );
 
             var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider,
