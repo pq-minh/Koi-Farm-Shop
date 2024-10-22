@@ -1,5 +1,4 @@
 ﻿using Firebase.Storage;
-using FirebaseAdmin.Auth;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using KoiShop.Application.Dtos;
 using Google.Cloud.Firestore;
+using KoiShop.Application.Dtos.BlogDtos;
+using KoiShop.Application.Dtos.KoiShop.Application.Dtos;
 
 namespace KoiShop.Application.Service
 {
@@ -21,144 +22,190 @@ namespace KoiShop.Application.Service
             _logger = logger;
             _firebaseStorageBucket = configuration["Firebase:StorageBucket"];
 
-            try
-            {
-                // Thiết lập biến môi trường GOOGLE_APPLICATION_CREDENTIALS
-                var serviceAccountPath = configuration["Firebase:ServiceAccountPath"];
-                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", serviceAccountPath);
+            var serviceAccountPath = configuration["Firebase:ServiceAccountPath"];
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", serviceAccountPath);
 
-                // Kiểm tra nếu instance mặc định đã tồn tại thì không tạo lại
-                var firebaseApp = FirebaseApp.GetInstance("[DEFAULT]");
-            }
-            catch (Exception ex)
+            // Kiểm tra và tạo ứng dụng Firebase nếu chưa tồn tại
+            if (FirebaseApp.DefaultInstance == null)
             {
-                if (ex is InvalidOperationException)
+                FirebaseApp.Create(new AppOptions
                 {
-                    // Nếu chưa có instance, khởi tạo Firebase Admin SDK
-                    FirebaseApp.Create(new AppOptions()
-                    {
-                        // Không cần truyền Credential vì đã sử dụng biến môi trường
-                        ProjectId = configuration["Firebase:ProjectId"]
-                    });
-                }
-                else
-                {
-                    throw;
-                }
+                    Credential = GoogleCredential.FromFile(serviceAccountPath),
+                    ProjectId = configuration["Firebase:ProjectId"]
+                });
             }
 
-            // Khởi tạo Firestore (sử dụng instance mặc định đã tạo)
+            // Khởi tạo Firestore
             _firestoreDb = FirestoreDb.Create(configuration["Firebase:ProjectId"]);
-            _logger.LogInformation("Firestore database initialized successfully.");
         }
 
         public async Task<string> UploadFileToFirebaseStorage(IFormFile file, string directory)
         {
             directory = directory.Trim('/');
 
-            // tạo tên file độc nhất = GUID
+            // Tạo tên file độc nhất bằng GUID
             var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
-            var filePath = $"{directory}/{fileName}";               // directory = vị trí lưu trữ file
+            var filePath = $"{directory}/{fileName}"; // Directory là vị trí lưu trữ file
 
-            using (var stream = file.OpenReadStream())
-            {
-                try
-                {
-                    var firebaseStorage = new FirebaseStorage(_firebaseStorageBucket);
-                    await firebaseStorage.Child(filePath).PutAsync(stream);
-                    return await firebaseStorage.Child(filePath).GetDownloadUrlAsync();
-                }
-                catch (Exception ex)
-                {
-                    throw; 
-                }
-            }
-        }
-        public async Task<bool> DeleteFileInFirebaseStorage(string filePath)
-        {
-            // chỉ đưa vô file path, ko phải toàn bộ url
             try
             {
+                using var stream = file.OpenReadStream();
                 var firebaseStorage = new FirebaseStorage(_firebaseStorageBucket);
-                filePath = filePath.Trim('/');
-                
-                await firebaseStorage.Child(filePath).DeleteAsync();
-                return true; 
+                await firebaseStorage.Child(filePath).PutAsync(stream);
+                return await firebaseStorage.Child(filePath).GetDownloadUrlAsync();
             }
             catch (Exception ex)
             {
-                return false; 
+                _logger.LogError($"Error uploading file to Firebase Storage: {ex.Message}");
+                throw;
             }
         }
 
-        public async Task<string> GetRelativeFilePath(string filePath)
+        public async Task<bool> DeleteFileInFirebaseStorage(string filePath)
+        {
+            filePath = filePath.Trim('/');
+
+            try
+            {
+                var firebaseStorage = new FirebaseStorage(_firebaseStorageBucket);
+                await firebaseStorage.Child(filePath).DeleteAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error deleting file from Firebase Storage: {ex.Message}");
+                return false;
+            }
+        }
+
+        public string GetRelativeFilePath(string filePath)
         {
             if (!string.IsNullOrEmpty(filePath))
             {
                 // Tách đường dẫn tuyệt đối thành đường dẫn tương đối vì Firebase chỉ nhận vào đường dẫn tương đối
-                // ví dụ url: /o/KoiFishImage%2Fca6c022b-4247-426b-99a0-03bf1d94c534_Screenshot%202024-10-17%20203637.png?
                 var startIndex = filePath.IndexOf("/o/") + 3; // 3 là độ dài của chuỗi "/o/"
                 var endIndex = filePath.IndexOf("?");
 
-                if (startIndex < 3 || endIndex <= startIndex)
-                    return null;
+                if (startIndex < 3 || endIndex <= startIndex) return null;
 
-                var relativeFilePath = Uri.UnescapeDataString(filePath.Substring(startIndex, endIndex - startIndex));
-                return relativeFilePath;
+                return Uri.UnescapeDataString(filePath.Substring(startIndex, endIndex - startIndex));
             }
             return null;
         }
 
-
-
-        // lưu blog post vào Firestore
-        public async Task<string> SaveBlog(BlogDto blogPost)
+        // sử dụng generic object
+        public async Task<string> SaveDocument<T>(T document, string collectionName)
         {
             try
             {
-                DocumentReference docRef = _firestoreDb.Collection("Blogs").Document();
-                await docRef.SetAsync(blogPost);
+                // tham chiếu tới collection được truyền vào
+                var docRef = _firestoreDb.Collection(collectionName).Document();
+                await docRef.SetAsync(document);
                 return docRef.Id;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error saving document to {collectionName}: {ex.Message}");
                 throw;
             }
         }
 
-        public async Task<List<BlogDto>> GetBlog()
+        public async Task<bool> UpdateDocument<T>(string documentId, T document, string collectionName)
         {
             try
             {
-                // lấy tham chiếu tới collection tên: "blogPosts"
-                CollectionReference blogsRef = _firestoreDb.Collection("Blogs");
+                // tham chiếu tới document trong collection được truyền vào
+                var docRef = _firestoreDb.Collection(collectionName).Document(documentId);
 
-                // lấy tất cả document trong collection
-                QuerySnapshot snapshot = await blogsRef.GetSnapshotAsync();
+                // convert đối tượng T thành Dictionary để cập nhật từng trường
+                var updates = document.GetType()
+                    .GetProperties()
+                    .Where(prop => prop.GetValue(document) != null)
+                    .ToDictionary(
+                        prop => prop.Name,
+                        prop => prop.GetValue(document)
+                    );
 
-                // chuyển thành list các Blog
-                List<BlogDto> blogs = new List<BlogDto>();
+                await docRef.UpdateAsync(updates);
+                _logger.LogInformation($"Document with ID: {documentId} in {collectionName} updated successfully.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating document in {collectionName}: {ex.Message}");
+                return false;
+            }
+        }
+
+
+        public async Task<List<T>> GetDocuments<T>(string collectionName) where T : class, new()
+        {
+            try
+            {
+                // lấy tham chiếu tới collection được truyền vào
+                CollectionReference collectionRef = _firestoreDb.Collection(collectionName);
+
+                // lấy tất cả các document trong collection
+                QuerySnapshot snapshot = await collectionRef.GetSnapshotAsync();
+
+                // chuyển đổi thành danh sách các đối tượng kiểu T
+                List<T> documents = new List<T>();
                 foreach (DocumentSnapshot document in snapshot.Documents)
                 {
                     if (document.Exists)
                     {
-                        BlogDto blogDto = document.ConvertTo<BlogDto>();
-                        blogDto.PostId = document.Id; // gán Id của document mỗi Blog
-                        blogs.Add(blogDto);
+                        T obj = document.ConvertTo<T>();
+                        // nếu đối tượng có thuộc tính "Id", gán document Id cho nó
+                        var propertyInfo = typeof(T).GetProperty("id");
+                        if (propertyInfo != null && propertyInfo.PropertyType == typeof(string))
+                        {
+                            propertyInfo.SetValue(obj, document.Id);
+                        }
+                        documents.Add(obj);
                     }
                 }
-                return blogs;
+                return documents;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error retrieving documents from {collectionName}: {ex.Message}");
                 throw;
             }
         }
 
-        public async Task<bool> UpdateBlog(string blogId)
-        {
-            return true;
-        }
 
+        public async Task<T> GetDocumentById<T>(string documentId, string collectionName) where T : class
+        {
+            try
+            {
+                // lấy tham chiếu tới document trong Firestore
+                DocumentReference docRef = _firestoreDb.Collection(collectionName).Document(documentId);
+                DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+
+                if (snapshot.Exists)
+                {
+                    // chuyển document sang đối tượng kiểu T
+                    T document = snapshot.ConvertTo<T>();
+
+                    // nếu đối tượng có thuộc tính "id", gán document Id cho nó
+                    var propertyInfo = typeof(T).GetProperty("id");
+                    if (propertyInfo != null && propertyInfo.PropertyType == typeof(string))
+                    {
+                        propertyInfo.SetValue(document, snapshot.Id);
+                    }
+
+                    return document;
+                }
+                else
+                {
+                    return null; // null nếu document ko tồn tại
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving document: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

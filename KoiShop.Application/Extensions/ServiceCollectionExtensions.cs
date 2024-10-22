@@ -30,6 +30,8 @@ namespace KoiShop.Application.Extensions
             services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly).AddFluentValidationAutoValidation();
             services.AddAutoMapper(typeof(ServiceCollectionExtensions).Assembly);
             services.AddScoped<FirebaseService>();
+            services.AddScoped<IBlogService, BlogService>();
+
         }
     }
 }

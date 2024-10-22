@@ -13,7 +13,6 @@ using KoiShop.Domain.Respositories;
 using KoiShop.Application.Dtos;
 using Microsoft.IdentityModel.Tokens;
 using PhoneNumbers;
-using static Dropbox.Api.Files.ListRevisionsMode;
 
 namespace KoiShop.Application.Service
 {
