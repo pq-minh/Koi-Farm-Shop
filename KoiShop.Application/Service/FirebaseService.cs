@@ -6,13 +6,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using KoiShop.Application.Dtos;
+using Google.Cloud.Firestore;
 
 namespace KoiShop.Application.Service
 {
     public class FirebaseService
     {
-        private readonly string _firebaseStorageBucket;
         private readonly ILogger<FirebaseService> _logger;
+        private readonly FirestoreDb _firestoreDb;
+        private readonly string _firebaseStorageBucket;
 
         public FirebaseService(ILogger<FirebaseService> logger, IConfiguration configuration)
         {
@@ -21,17 +23,22 @@ namespace KoiShop.Application.Service
 
             try
             {
-                // ktra nếu instance mặc định đã tồn tại thì không tạo lại
+                // Thiết lập biến môi trường GOOGLE_APPLICATION_CREDENTIALS
+                var serviceAccountPath = configuration["Firebase:ServiceAccountPath"];
+                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", serviceAccountPath);
+
+                // Kiểm tra nếu instance mặc định đã tồn tại thì không tạo lại
                 var firebaseApp = FirebaseApp.GetInstance("[DEFAULT]");
             }
             catch (Exception ex)
             {
                 if (ex is InvalidOperationException)
                 {
-                    var serviceAccountPath = configuration["Firebase:ServiceAccountPath"];
+                    // Nếu chưa có instance, khởi tạo Firebase Admin SDK
                     FirebaseApp.Create(new AppOptions()
                     {
-                        Credential = GoogleCredential.FromFile(serviceAccountPath)
+                        // Không cần truyền Credential vì đã sử dụng biến môi trường
+                        ProjectId = configuration["Firebase:ProjectId"]
                     });
                 }
                 else
@@ -39,7 +46,12 @@ namespace KoiShop.Application.Service
                     throw;
                 }
             }
+
+            // Khởi tạo Firestore (sử dụng instance mặc định đã tạo)
+            _firestoreDb = FirestoreDb.Create(configuration["Firebase:ProjectId"]);
+            _logger.LogInformation("Firestore database initialized successfully.");
         }
+
         public async Task<string> UploadFileToFirebaseStorage(IFormFile file, string directory)
         {
             directory = directory.Trim('/');
@@ -97,6 +109,56 @@ namespace KoiShop.Application.Service
             return null;
         }
 
+
+
+        // lưu blog post vào Firestore
+        public async Task<string> SaveBlog(BlogDto blogPost)
+        {
+            try
+            {
+                DocumentReference docRef = _firestoreDb.Collection("Blogs").Document();
+                await docRef.SetAsync(blogPost);
+                return docRef.Id;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<BlogDto>> GetBlog()
+        {
+            try
+            {
+                // lấy tham chiếu tới collection tên: "blogPosts"
+                CollectionReference blogsRef = _firestoreDb.Collection("Blogs");
+
+                // lấy tất cả document trong collection
+                QuerySnapshot snapshot = await blogsRef.GetSnapshotAsync();
+
+                // chuyển thành list các Blog
+                List<BlogDto> blogs = new List<BlogDto>();
+                foreach (DocumentSnapshot document in snapshot.Documents)
+                {
+                    if (document.Exists)
+                    {
+                        BlogDto blogDto = document.ConvertTo<BlogDto>();
+                        blogDto.PostId = document.Id; // gán Id của document mỗi Blog
+                        blogs.Add(blogDto);
+                    }
+                }
+                return blogs;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateBlog(string blogId)
+        {
+            return true;
+        }
 
     }
 }
