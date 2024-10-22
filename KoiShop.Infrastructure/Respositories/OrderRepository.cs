@@ -303,7 +303,7 @@ namespace KoiShop.Infrastructure.Respositories
                     discount.Status = "Inactive"; 
                 }
             }
-
+           await _koiShopV1DbContext.SaveChangesAsync();
             return discounts;
         }
         public async Task<IEnumerable<Discount>> GetDiscountForUser()

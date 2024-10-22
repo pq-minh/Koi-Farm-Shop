@@ -35,4 +35,10 @@
     </ProjectReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Command\DeleteUser\" />
+    <Folder Include="Command\UpdateUser\" />
+    <Folder Include="Dtos\UserDto\" />
+  </ItemGroup>
+
 </Project>

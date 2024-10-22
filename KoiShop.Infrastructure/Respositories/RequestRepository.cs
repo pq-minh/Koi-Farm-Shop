@@ -50,7 +50,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 throw new KeyNotFoundException($"Request with ID {rqID} not found.");
             }
-            var quotation = await koiShopV1DbContext.Quotations.FindAsync(request.RequestId);
+            var quotation = await koiShopV1DbContext.Quotations.FirstOrDefaultAsync(q => q.RequestId == rqID);
             if (quotation == null)
             {
                 throw new KeyNotFoundException($"Quotation with ID {quotation.QuotationId} not found.");
@@ -85,6 +85,7 @@ namespace KoiShop.Infrastructure.Respositories
             }
 
             koiShopV1DbContext.Update(request);
+            koiShopV1DbContext.Update(quotation);
             koiShopV1DbContext.Update(kois);
 
             await koiShopV1DbContext.SaveChangesAsync();
