@@ -11,24 +11,24 @@ namespace KoiShop.Controllers
     [Route("api/discounts")]
     public class DiscountController : ControllerBase
     {
-        private readonly IOrderService _orderService;
+        private readonly IDiscountService _discountService;
 
         private readonly IMediator _mediator;
-        public DiscountController(IOrderService orderService,IMediator mediator)
+        public DiscountController(IDiscountService discountService, IMediator mediator)
         {
-            _orderService = orderService;
+            _discountService = discountService;
             _mediator = mediator;
         }
         [HttpGet]
         public async Task<IActionResult> GetDiscount()
         {
-            var discounts = await _orderService.GetDiscount();
+            var discounts = await _discountService.GetDiscount();
             return Ok(discounts);
         }
         [HttpGet("user")]
         public async Task<IActionResult> GetDiscountForUser()
         {
-            var discounts = await _orderService.GetDiscountForUser();
+            var discounts = await _discountService.GetDiscountForUser();
             if (discounts != null)
                 return Ok(discounts);
             else
@@ -38,7 +38,7 @@ namespace KoiShop.Controllers
         public async Task<IActionResult> GetDiscount([FromBody] DiscountDtoV2 discount)
         {
             var name = discount.Name;
-            var discounts = await _orderService.GetDiscountForUser(name);
+            var discounts = await _discountService.GetDiscountForUser(name);
             if (discount != null)
                 return Ok(discounts);
             else

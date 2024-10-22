@@ -16,8 +16,5 @@ namespace KoiShop.Application.Interfaces
         Task<IEnumerable<OrderDetailDtos>> GetOrderDetailById(int? id);
         Task<IEnumerable<KoiDto>> GetKoiFromOrderDetail(int? orderId);
         Task<IEnumerable<BatchKoiDto>> GetBatchFromOrderDetail(int? orderId);
-        Task<IEnumerable<DiscountDto>> GetDiscountForUser();
-        Task<IEnumerable<DiscountDto>> GetDiscount();
-        Task<DiscountDto> GetDiscountForUser(string? name);
     }
 }
