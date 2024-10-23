@@ -180,5 +180,108 @@ namespace KoiShop.Application.Service
             }
         }
 
+
+        // ====================================================================================================
+        public async Task<IEnumerable<Order>> GetOrders(string status, DateTime startDate, DateTime endDate)
+        {
+            return await _orderRepository.GetOrders(status, startDate, endDate);
+        }
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate)
+        {
+            return await _orderRepository.GetOrderDetails(status, startDate, endDate);
+        }
+
+        public async Task<int> GetBestSalesKoi(DateTime startDate, DateTime endDate)
+        {
+            Dictionary<int, int> koiDic = new Dictionary<int, int>();
+
+            var od = await _orderRepository.GetOrderDetails("Completed", startDate, endDate);
+            foreach (var item in od)
+            {
+                if (item.KoiId.HasValue)
+                {
+                    if (koiDic.ContainsKey(item.KoiId.Value))
+                        koiDic[item.KoiId.Value] += (int)item.ToTalQuantity;
+                    else
+                        koiDic.Add((int)item.KoiId, (int)item.ToTalQuantity);
+                }
+            }
+
+            int maxQuantity = 0;
+            int id = -1;
+            foreach (var item in koiDic)
+            {
+                if (item.Value > maxQuantity)
+                {
+                    maxQuantity = item.Value;
+                    id = item.Key;
+                }
+            }
+            return id;
+        }
+        public async Task<int> GetBestSalesBatchKoi(DateTime startDate, DateTime endDate)
+        {
+            Dictionary<int, int> batchKoiDic = new Dictionary<int, int>();
+
+            var od = await _orderRepository.GetOrderDetails("Completed", startDate, endDate);
+            foreach (var item in od)
+            {
+                if (item.KoiId.HasValue)
+                {
+                    if (batchKoiDic.ContainsKey(item.BatchKoiId.Value))
+                        batchKoiDic[item.BatchKoiId.Value] += (int)item.ToTalQuantity;
+                    else
+                        batchKoiDic.Add((int)item.BatchKoiId, (int)item.ToTalQuantity);
+                }
+            }
+
+            int maxQuantity = 0;
+            int id = -1;
+            foreach (var item in batchKoiDic)
+            {
+                if (item.Value > maxQuantity)
+                {
+                    maxQuantity = item.Value;
+                    id = item.Key;
+                }
+            }
+            return id;
+        }
+
+
+
+        public async Task<int> GetTotalOrders(DateTime startDate, DateTime endDate)
+        {
+            var orders = await _orderRepository.GetOrders(startDate, endDate);
+            int count = 0;
+            foreach (var item in orders)
+            {
+                count++;
+            }
+            return count;
+        }
+
+        public async Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate)
+        {
+            var orders = await _orderRepository.GetOrders("Completed", startDate, endDate);
+            int count = 0;
+            foreach (var item in orders)
+            {
+                count++;
+            }
+            return count;
+        }
+
+        public async Task<int> GetPendingOrders(DateTime startDate, DateTime endDate)
+        {
+            var orders = await _orderRepository.GetOrders("Pending", startDate, endDate);
+            int count = 0;
+            foreach (var item in orders)
+            {
+                count++;
+            }
+            return count;
+        }
+
     }
 }
