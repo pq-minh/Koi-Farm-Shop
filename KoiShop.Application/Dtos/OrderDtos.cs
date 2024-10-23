@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KoiShop.Application.Dtos.VnPayDtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,5 +30,10 @@ namespace KoiShop.Application.Dtos
         public int? DiscountId { get; set; }
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
+    }
+    public class PaymentDto
+    {
+        public OrderEnum Status { get; set; }
+        public string Message { get; set; }
     }
 }

@@ -18,6 +18,7 @@ namespace KoiShop.Domain.Respositories
         Task<bool> AddToOrderDetailFromCart(List<CartItem> carts);
         Task<bool> UpdateCartAfterBuy(List<CartItem> carts);
         Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts);
+        Task<bool> UpdatePayment();
         Task<IEnumerable<T>> GetKoiOrBatch<T>(int orderId);
     }
 }

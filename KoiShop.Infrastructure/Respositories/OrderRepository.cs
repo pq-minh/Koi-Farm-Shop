@@ -254,7 +254,7 @@ namespace KoiShop.Infrastructure.Respositories
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> UpdatePayment(int paymentId)
+        public async Task<bool> UpdatePayment()
         {
             var userId = _userContext.GetCurrentUser();
             var order = await _koiShopV1DbContext.Orders.Where(od => od.UserId == userId.Id).OrderByDescending(od => od.CreateDate).FirstOrDefaultAsync();
@@ -262,7 +262,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
-            var payment = await _koiShopV1DbContext.Payments.FirstOrDefaultAsync(p => p.PaymentID == paymentId);
+            var payment = await _koiShopV1DbContext.Payments.FirstOrDefaultAsync(p => p.OrderId == order.OrderId);
             if (payment == null)
             {
                 return false;

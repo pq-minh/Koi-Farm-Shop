@@ -1,7 +1,10 @@
 ﻿using KoiShop.Application.Dtos;
+using KoiShop.Application.Dtos.VnPayDtos;
 using KoiShop.Application.Interfaces;
+using KoiShop.Application.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace KoiShop.Controllers
 {
@@ -10,9 +13,11 @@ namespace KoiShop.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        public OrderController(IOrderService orderService)
+        private readonly IVnPayService _vnPayservice;
+        public OrderController(IOrderService orderService, IVnPayService vnPayService)
         {
             _orderService = orderService;
+            _vnPayservice = vnPayService;
         }
         //[HttpGet]
         //public async Task<IActionResult> GetOrderDetail()
@@ -67,5 +72,38 @@ namespace KoiShop.Controllers
                     return BadRequest("Unexpected error!");
             }
         }
+        [HttpPost("createpayment")]
+        public IActionResult CreatePayment([FromBody] VnPaymentRequestModel paymentRequest)
+        {
+            var vnPayModel = _vnPayservice.CreateVnpayModel(paymentRequest);
+            if (vnPayModel == null)
+            {
+                return BadRequest("Invalid payment request");
+            }
+            var paymentUrl = _vnPayservice.CreatePatmentUrl(HttpContext, vnPayModel);
+            return Ok(new { PaymentUrl = paymentUrl });
+        }
+        [HttpPost("handlepayment")]
+        public async Task<IActionResult> HandlePaymentCallBack([FromBody] VnPaymentResponseFromFe request)
+        {
+            var result = await _orderService.PayByVnpay(request);
+            switch (result.Status)
+            {
+                case OrderEnum.NotLoggedInYet:
+                    return Unauthorized(result.Message);
+                case OrderEnum.InvalidParameters:
+                    return BadRequest(result.Message);
+                case OrderEnum.Success:
+                    return Ok(result.Message);
+                case OrderEnum.Fail:
+                    return BadRequest(result.Message);
+                case OrderEnum.FailAddPayment:
+                    return BadRequest(result.Message);
+                default:
+                    return StatusCode(500, "Unexpected error!");
+            }
+
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using KoiShop.Application.Dtos;
+using KoiShop.Application.Dtos.VnPayDtos;
 using KoiShop.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,5 +17,6 @@ namespace KoiShop.Application.Interfaces
         Task<IEnumerable<OrderDetailDtos>> GetOrderDetailById(int? id);
         Task<IEnumerable<KoiDto>> GetKoiFromOrderDetail(int? orderId);
         Task<IEnumerable<BatchKoiDto>> GetBatchFromOrderDetail(int? orderId);
+        Task<PaymentDto> PayByVnpay(VnPaymentResponseFromFe request);
     }
 }
