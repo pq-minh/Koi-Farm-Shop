@@ -27,9 +27,5 @@ namespace KoiShop.Application.Interfaces
         Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate);
         Task<int> GetPendingOrders(DateTime startDate, DateTime endDate);
         Task<PaymentDto> PayByVnpay(VnPaymentResponseFromFe request);
-        Task<IEnumerable<DiscountDto>> GetDiscountForUser();
-        Task<IEnumerable<DiscountDto>> GetDiscount();
-        Task<DiscountDto> GetDiscountForUser(string? name);
-        Task<int> GetLastOrderId();
     }
 }

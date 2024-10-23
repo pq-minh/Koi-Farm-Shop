@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Dropbox.Api.Files.SearchMatchType;
 using static KoiShop.Application.Users.UserContext;
 
 namespace KoiShop.Infrastructure.Respositories
@@ -289,10 +288,12 @@ namespace KoiShop.Infrastructure.Respositories
         }
         public async Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts)
         {
-            if (carts == null)
+            if (carts == null || carts.Count == 0)
             {
-                return false;
+                return false; // Return false if carts is null or empty
             }
+
+            bool anyUpdate = false; // Track if any update was successful
 
             foreach (var cart in carts)
             {
@@ -301,26 +302,42 @@ namespace KoiShop.Infrastructure.Respositories
                 {
                     if (cart.KoiId.HasValue)
                     {
-                        var koi = await _koiShopV1DbContext.Kois.Where(k => k.KoiId == cart.KoiId).FirstOrDefaultAsync();
-                        koi.Status = "Sold";
-                        _koiShopV1DbContext.Kois.Update(koi);
-                        await _koiShopV1DbContext.SaveChangesAsync();
-                        return true;
+                        var koi = await _koiShopV1DbContext.Kois
+                            .Where(k => k.KoiId == cart.KoiId)
+                            .FirstOrDefaultAsync();
+
+                        if (koi != null)
+                        {
+                            koi.Status = "Sold";
+                            _koiShopV1DbContext.Kois.Update(koi);
+                            anyUpdate = true; // Mark that an update occurred
+                        }
                     }
-                    else
+                    else if (cart.BatchKoiId.HasValue)
                     {
-                        var batchKoi = await _koiShopV1DbContext.BatchKois.Where(bk => bk.BatchKoiId == cart.BatchKoiId).FirstOrDefaultAsync();
-                        batchKoi.Status = "Sold";
-                        _koiShopV1DbContext.BatchKois.Update(batchKoi);
-                        await _koiShopV1DbContext.SaveChangesAsync();
-                        return true;
+                        var batchKoi = await _koiShopV1DbContext.BatchKois
+                            .Where(bk => bk.BatchKoiId == cart.BatchKoiId)
+                            .FirstOrDefaultAsync();
+
+                        if (batchKoi != null)
+                        {
+                            batchKoi.Status = "Sold";
+                            _koiShopV1DbContext.BatchKois.Update(batchKoi);
+                            anyUpdate = true; // Mark that an update occurred
+                        }
                     }
                 }
-                else
-                    return false;
             }
-            return true;
+
+            // Save changes once after processing all carts
+            if (anyUpdate)
+            {
+                await _koiShopV1DbContext.SaveChangesAsync();
+            }
+
+            return anyUpdate; // Return true if any updates were made
         }
+
 
 
         // =================================================================================================

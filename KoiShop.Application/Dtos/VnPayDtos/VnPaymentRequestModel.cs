@@ -8,7 +8,6 @@ namespace KoiShop.Application.Dtos.VnPayDtos
 {
     public class VnPaymentRequestModel
     {
-        public int UserID { get; set; }
         public double Amount { get; set; }
         public DateTime CreatedDate { get; set; }
     }

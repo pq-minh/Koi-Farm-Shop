@@ -42,12 +42,12 @@ namespace KoiShop.Infrastructure.Respositories
 
         public async Task<Discount> CreateDiscount(Discount discount)
         {
-            if (discount.Name != null && await koiShopV1DbContext.Discounts.AnyAsync(dc => dc.Name == discount.Name))
+            if (discount.Name != null && await _koiShopV1DbContext.Discounts.AnyAsync(dc => dc.Name == discount.Name))
             {
                 return null;
             }
-            await koiShopV1DbContext.Discounts.AddAsync(discount);
-            await koiShopV1DbContext.SaveChangesAsync();
+            await _koiShopV1DbContext.Discounts.AddAsync(discount);
+            await _koiShopV1DbContext.SaveChangesAsync();
 
             return discount;
         }
