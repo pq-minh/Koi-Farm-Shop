@@ -379,7 +379,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 if (discount.EndDate < dateNow)
                 {
-                    discount.Status = "Inactive";
+                    discount.Status = "InActive";
                 }
             }
             await _koiShopV1DbContext.SaveChangesAsync();
