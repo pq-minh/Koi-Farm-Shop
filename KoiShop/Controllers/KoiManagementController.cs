@@ -31,7 +31,7 @@ namespace KoiShop.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllKoiStaff()
         {
-            var allKoi = await _koiService.GetAllKoi();
+            var allKoi = await _koiService.GetAllKoiStaff();
             if (allKoi == null) return NotFound();
             return Ok(allKoi);
         }
@@ -47,23 +47,17 @@ namespace KoiShop.Controllers
         [HttpPost]
         public async Task<IActionResult> AddKoi([FromForm] AddKoiDto koiDto)
         {
-            if (!await _koiService.ValidateAddKoiDtoInfo(koiDto))
-            {
+            if(koiDto == null)
                 return BadRequest("You have not entered Koi information or the Koi info is invalid.");
-            }
 
-            // upload ảnh lên firebase và trả về url ảnh
-            var imageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(koiDto.ImageFile, "KoiFishImage");
+            if(!await _koiService.ValidateFishTypeIdInKoi(koiDto.FishTypeId))
+                return BadRequest("FishTypeId isn't exist.");
 
-            if (imageUrl == null)
-            {
-                return BadRequest("You have not entered Koi information or the Koi info is invalid.");
-            }
-            var result = await _koiService.AddKoi(koiDto, imageUrl);
+            var result = await _koiService.AddKoi(koiDto);
+
             if (!result)
-            {
-                return BadRequest("Failed to add Koi.");
-            }
+                return BadRequest("You have not entered Koi information or the Koi info is invalid.");
+
             return Ok("Koi added successfully.");
         }
 
@@ -71,7 +65,8 @@ namespace KoiShop.Controllers
         [HttpPut("{koiId:int}")]
         public async Task<IActionResult> UpdateKoi(int koiId, [FromForm] UpdateKoiDto koiDto)
         {
-            Koi koi = await _koiService.ValidateUpdateKoiDto(koiId, koiDto);
+
+            Koi koi = await _koiService.ValidateUpdateKoiInfo(koiId, koiDto);
 
             if (koi != null)
             {
@@ -84,8 +79,30 @@ namespace KoiShop.Controllers
                 return BadRequest("You have not entered Koi information or the Koi info is invalid.");
             }
 
-            return Ok("Batch Koi successfully..");
+            return Ok("Batch Koi successfully.");
         }
+
+        [HttpPut("{koiId:int}-{status}")]
+        public async Task<IActionResult> UpdateKoiStatus(int koiId, string status)
+        {
+            if (string.IsNullOrWhiteSpace(status))
+                return BadRequest("You have not entered Koi information or the Koi info is invalid.");
+
+            if (status.Length > 50)
+                return BadRequest("Status cannot exceed 50 characters.");
+
+            var result = await _koiService.UpdateKoiStatus(koiId, status);
+
+            if (result)
+            {
+                return Ok("Koi status updated successfully.");
+            }
+            else
+            {
+                return BadRequest("Failed to update Koi.");
+            }
+        }
+
 
         // KoiCategory Methods ======================================================================================
         [HttpGet("category")]

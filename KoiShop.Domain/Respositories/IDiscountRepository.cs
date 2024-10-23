@@ -11,5 +11,10 @@ namespace KoiShop.Domain.Respositories
     {
         Task<string> UpdateDiscount(Discount discount);
         Task<Discount> CreateDiscount(Discount discount);
+        Task<string> CreateDiscount(Discount discount);
+        Task<IEnumerable<Discount>> GetDiscount();
+        Task<IEnumerable<Discount>> GetDiscountForUser();
+        Task<Discount?> GetDiscountForUser(string? name);
+        Task<double> CheckDiscount(int? disountId);
     }
 }

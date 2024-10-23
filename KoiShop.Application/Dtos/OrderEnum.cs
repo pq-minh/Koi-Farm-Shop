@@ -16,9 +16,16 @@ namespace KoiShop.Application.Dtos
         ItemUpdated,
         NotAddOrderInYet,
         FailUpdateFish,
+        FailPaid,
         FailUpdateCart,
+        FailUpdatePayment,
         FailAddPayment,
         FailAdd,
         Fail
+    }
+    public class PaymentResponse
+    {
+        public OrderEnum Status { get; set; }
+        public string Message { get; set; }
     }
 }

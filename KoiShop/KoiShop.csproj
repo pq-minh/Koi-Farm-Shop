@@ -10,18 +10,16 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\KoiShop.Application\KoiShop.Application.csproj" />
-    <ProjectReference Include="..\KoiShop.Infrastructure\KoiShop.Infrastructure.csproj">
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\KoiShop.Application\KoiShop.Application.csproj" />
+	  <ProjectReference Include="..\KoiShop.Infrastructure\KoiShop.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using KoiShop.Application.Dtos.KoiDtos;
+﻿using KoiShop.Application.Dtos;
+using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Application.Interfaces;
 using KoiShop.Application.Service;
 using KoiShop.Domain.Entities;
@@ -38,31 +39,25 @@ namespace KoiShop.Controllers
         [HttpPost]
         public async Task<IActionResult> AddBatchKoi([FromForm] AddBatchKoiDto batchKoiDto)
         {
-            if (!await _batchKoiService.ValidateAddBatchKoiDtoInfo(batchKoiDto))
-            {
-                return BadRequest("You have not entered Batch Koi information or the Batch Koi info is invalid.");
-            }
+            if (batchKoiDto == null)
+                return BadRequest("You have not entered BatchKoi information or the BatchKoi info is invalid.");
 
-            // upload ảnh lên firebase và trả về url ảnh
-            var imageUrl = await _firebaseService.UploadFileToFirebaseStorageAsync(batchKoiDto.ImageFile, "KoiFishImage");
+            if (!await _batchKoiService.ValidateBatchTypeIdInBatchKoi(batchKoiDto.BatchTypeId))
+                return BadRequest("BatchTypeId isn't exist.");
 
-            if(imageUrl == null)
-            {
-                return BadRequest("You have not entered Batch Koi information or the Batch Koi info is invalid.");
-            }
-            var result = await _batchKoiService.AddBatchKoi(batchKoiDto, imageUrl);
+            var result = await _batchKoiService.AddBatchKoi(batchKoiDto);
+
             if (!result)
-            {
-                return BadRequest("Failed to add Batch Koi.");
-            }
-            return Ok("Batch Koi added successfully.");
+                return BadRequest("You have not entered BatchKoi information or the BatchKoi info is invalid.");
+
+            return Ok("BatchKoi added successfully.");
         }
 
 
         [HttpPut("{batchKoiId:int}")]
         public async Task<IActionResult> UpdateBatchKoi(int batchKoiId, [FromForm] UpdateBatchKoiDto batchKoiDto)
         {
-            BatchKoi batchKoi = await _batchKoiService.ValidateUpdateBatchKoiDto(batchKoiId, batchKoiDto);
+            BatchKoi batchKoi = await _batchKoiService.ValidateUpdateBatchKoiInfo(batchKoiId, batchKoiDto);
 
             if(batchKoi != null)
             {
@@ -76,6 +71,27 @@ namespace KoiShop.Controllers
             }
             
             return Ok("Update Batch Koi successfully..");
+        }
+
+        [HttpPut("{batchKoiId:int}-{status}")]
+        public async Task<IActionResult> UpdateBatchKoiStatus(int batchKoiId, string status)
+        {
+            if (string.IsNullOrWhiteSpace(status))
+                return BadRequest("You have not entered Koi information or the Koi info is invalid.");
+
+            if (status.Length > 50)
+                return BadRequest("Status cannot exceed 50 characters.");
+
+            var result = await _batchKoiService.UpdateBatchKoiStatus(batchKoiId, status);
+
+            if (result)
+            {
+                return Ok("Koi status updated successfully.");
+            }
+            else
+            {
+                return BadRequest("Failed to update Koi.");
+            }
         }
 
         // KoiCategory Methods ======================================================================================

@@ -4,6 +4,7 @@ using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Application.Interfaces;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,10 +55,15 @@ namespace KoiShop.Application.Service
             return await _batchKoiRepository.GetAllBatchKoiAsync();
         }
 
-        public async Task<bool> AddBatchKoi(AddBatchKoiDto batchKoiDto, string imageUrl)
+        public async Task<bool> AddBatchKoi(AddBatchKoiDto batchKoiDto)
         {
             var batchKoi = _mapper.Map<BatchKoi>(batchKoiDto);
-            batchKoi.Image = imageUrl;
+
+            var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorage(batchKoiDto.KoiImage, "KoiFishImage");
+            var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorage(batchKoiDto.Certificate, "KoiFishCertificate");
+
+            batchKoi.Image = koiImageUrl;
+            batchKoi.Certificate = cerImageUrl;
             return await _batchKoiRepository.AddBatchKoiAsync(batchKoi);
         }
 
@@ -68,27 +74,6 @@ namespace KoiShop.Application.Service
         public async Task<BatchKoi> GetBatchKoiById(int id)
         {
             return await _batchKoiRepository.GetBatchKoiByIdAsync(id);
-        }
-
-        public async Task<bool> ValidateAddBatchKoiDtoInfo(AddBatchKoiDto batchKoi)
-        {
-            if (batchKoi == null) return false;
-
-            if (!await ValidateBatchTypeIdInBatchKoi(batchKoi.BatchTypeId)) return false;
-
-            if (string.IsNullOrEmpty(batchKoi.Name)) return false;
-            if (string.IsNullOrEmpty(batchKoi.Origin)) return false;
-            if (string.IsNullOrEmpty(batchKoi.Description)) return false;
-            if (string.IsNullOrEmpty(batchKoi.Age)) return false;
-            if (string.IsNullOrEmpty(batchKoi.Gender)) return false;
-            if (string.IsNullOrEmpty(batchKoi.Quantity)) return false;
-            if (string.IsNullOrEmpty(batchKoi.Weight)) return false;
-            if (string.IsNullOrEmpty(batchKoi.Size)) return false;
-            if (string.IsNullOrEmpty(batchKoi.Status)) return false;
-            if (batchKoi.Price <= 0) return false;
-            if (string.IsNullOrEmpty(batchKoi.Certificate)) return false;
-
-            return true;
         }
 
         public async Task<bool> ValidateBatchTypeIdInBatchKoi(int batchTypeId)
@@ -107,9 +92,9 @@ namespace KoiShop.Application.Service
             if (!contain) return false;
 
             return true;
-}
+        }
 
-        public async Task<BatchKoi> ValidateUpdateBatchKoiDto(int batchKoiId, UpdateBatchKoiDto batchKoiDto)
+        public async Task<BatchKoi> ValidateUpdateBatchKoiInfo(int batchKoiId, UpdateBatchKoiDto batchKoiDto)
         {
             // lấy cá koi cần update từ database 
             var currentBatchKoi = await GetBatchKoiById(batchKoiId);
@@ -136,31 +121,44 @@ namespace KoiShop.Application.Service
             if (!string.IsNullOrEmpty(batchKoiDto.Size)) currentBatchKoi.Size = batchKoiDto.Size;
             if (!string.IsNullOrEmpty(batchKoiDto.Status)) currentBatchKoi.Status = batchKoiDto.Status;
             if (batchKoiDto.Price.HasValue && batchKoiDto.Price > 0) currentBatchKoi.Price = batchKoiDto.Price;
-            if (!string.IsNullOrEmpty(batchKoiDto.Certificate)) currentBatchKoi.Certificate = batchKoiDto.Certificate;
 
-            // update image
-            if (batchKoiDto.ImageFile != null)
+            string batchKoiImage = await ValidateImage(batchKoiDto.KoiImage, currentBatchKoi.Image, "KoiFishImage");
+            string batchKoiCertificate = await ValidateImage(batchKoiDto.Certificate, currentBatchKoi.Certificate, "KoiFishCertificate");
+
+            if(!string.IsNullOrEmpty(batchKoiImage))
+                currentBatchKoi.Image = batchKoiImage;
+
+            if (!string.IsNullOrEmpty(batchKoiCertificate))
+                currentBatchKoi.Certificate = batchKoiCertificate;
+            
+            return currentBatchKoi;
+        }
+
+        public async Task<string> ValidateImage(IFormFile image, string oldImagePath, string path)
+        {
+            string currentImagePath = null;
+            if (image != null)
             {
-                string oldImagePath = currentBatchKoi.Image;
+                string imagePath = _firebaseService.GetRelativeFilePath(oldImagePath);
+                if (imagePath != null)       // xóa ảnh cũ trong firebase
+                    await _firebaseService.DeleteFileInFirebaseStorage(imagePath);
 
-                // tách đg dẫn tuyệt đối thành đg dẫn tg đối  vì Firebase chỉ nhận vào đg dẫn tg đối
-                var startIndex = oldImagePath.IndexOf("/o/") + 3; // 3 là độ dài của chuỗi "/o/"
-                var endIndex = oldImagePath.IndexOf("?");
-                var filePath = Uri.UnescapeDataString(oldImagePath.Substring(startIndex, endIndex - startIndex));
-
-                // xóa ảnh cũ trong firebase
-                var result = await _firebaseService.DeleteFileInFirebaseStorageAsync(filePath);
-                if (!result)
-                    return null;
-
-                // tải ảnh mới lên firebase
-                currentBatchKoi.Image = await _firebaseService.UploadFileToFirebaseStorageAsync(batchKoiDto.ImageFile, "KoiFishImage");
-
-                if (currentBatchKoi.Image == null)
+                // upload ảnh mới lên firebase
+                currentImagePath = await _firebaseService.UploadFileToFirebaseStorage(image, path);
+                if (currentImagePath == null)
                     return null;
             }
+            return currentImagePath;
+        }
 
-            return currentBatchKoi;
+        public async Task<bool> UpdateBatchKoiStatus(int batchkoiId, string status)
+        {
+            var batchKoi = await _batchKoiRepository.GetBatchKoiByIdAsync(batchkoiId);
+            if (batchKoi == null) return false;
+
+            batchKoi.Status = status;
+
+            return await _batchKoiRepository.UpdateBatchKoiAsync(batchKoi); ;
         }
 
         // BatchKoiCategory Methods ====================================================================================

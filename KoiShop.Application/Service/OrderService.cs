@@ -9,11 +9,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static KoiShop.Application.Users.UserContext;
-using KoiShop.Domain.Respositories;
 using KoiShop.Application.Dtos;
 using Microsoft.IdentityModel.Tokens;
 using PhoneNumbers;
-using static Dropbox.Api.Files.ListRevisionsMode;
+using static Google.Rpc.Context.AttributeContext.Types;
+using KoiShop.Application.Dtos.VnPayDtos;
 
 namespace KoiShop.Application.Service
 {
@@ -23,13 +23,15 @@ namespace KoiShop.Application.Service
         private readonly IOrderRepository _orderRepository;
         private readonly IUserStore<User> _userStore;
         private readonly IUserContext _userContext;
+        private readonly IVnPayService _vnPayService;
 
-        public OrderService(IMapper mapper, IOrderRepository orderRepository, IUserContext userContext, IUserStore<User> userStore)
+        public OrderService(IMapper mapper, IOrderRepository orderRepository, IUserContext userContext, IUserStore<User> userStore, IVnPayService vpnPayService)
         {
             _mapper = mapper;
             _orderRepository = orderRepository;
             _userContext = userContext;
             _userStore = userStore;
+            _vnPayService = vpnPayService;
         }
         public async Task<IEnumerable<OrderDetailDtos>> GetOrderDetail()
         {
@@ -97,49 +99,7 @@ namespace KoiShop.Application.Service
             return batchDto;
         }
 
-        public async Task<IEnumerable<DiscountDto>> GetDiscount()
-        {
-            var discount = await _orderRepository.GetDiscount();
-            var discountDto = _mapper.Map<IEnumerable<DiscountDto>>(discount);
-            return discountDto;
-        }
-        public async Task<IEnumerable<DiscountDto>> GetDiscountForUser()
-        {
-            if (_userContext.GetCurrentUser() == null || _userStore == null)
-            {
-                throw new ArgumentException("User context or user store is not valid.");
-            }
-            var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null)
-            {
-                return Enumerable.Empty<DiscountDto>();
-            }
-            var discount = await _orderRepository.GetDiscountForUser();
-            var discountDto = _mapper.Map<IEnumerable<DiscountDto>>(discount);
-            return discountDto;
-        }
-        public async Task<DiscountDto> GetDiscountForUser(string? name)
-        {
-            if (_userContext.GetCurrentUser() == null || _userStore == null)
-            {
-                throw new ArgumentException("User context or user store is not valid.");
-            }
-            var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null)
-            {
-                return null;
-            }
-
-            if (string.IsNullOrEmpty(name))
-            {
-                return null;
-            }
-            var discount = await _orderRepository.GetDiscountForUser(name);
-            var discountDto = _mapper.Map<DiscountDto>(discount);
-            return discountDto;
-
-        }
-        public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method, int? discountId, string? phoneNumber, string? address)
+        public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method, int? discountId, string? phoneNumber, string? address, VnPaymentResponseFromFe request)
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
             {
@@ -175,10 +135,27 @@ namespace KoiShop.Application.Service
                         var koiandBatchStatus = await _orderRepository.UpdateKoiAndBatchStatus(cartItems);
                         if (koiandBatchStatus)
                         {
-                            var payment = await _orderRepository.AddPayment(method);
-                            if (payment)
+                            var payment = await _orderRepository.AddPayment("offline");
+                            if (payment && method == "offline")
                             {
                                 return OrderEnum.Success;
+                            }
+                            else if (method == "online")
+                            {
+                                var response = _vnPayService.ExecutePayment(request);
+                                if (response == null || !response.Success)
+                                {
+                                    return OrderEnum.FailPaid;
+                                }
+                                var paymentUpdate = await _orderRepository.UpdatePayment();
+                                if (paymentUpdate)
+                                {
+                                    return OrderEnum.Success;
+                                }
+                                else
+                                {
+                                    return OrderEnum.FailAddPayment;
+                                }
                             }
                             else
                             {
@@ -204,6 +181,61 @@ namespace KoiShop.Application.Service
                 return OrderEnum.Fail;
         }
 
+        public async Task<PaymentDto> PayByVnpay(VnPaymentResponseFromFe request)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.NotLoggedInYet,
+                    Message = "User not logged in."
+                };
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.UserNotAuthenticated,
+                    Message = "User not authenticated."
+                };
+            }
+            if (request == null)
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.InvalidParameters,
+                    Message = "Paramaters can not identify"
+                };
+            }
+            var response = _vnPayService.ExecutePayment(request);
+            if (response == null || !response.Success)
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.FailAddPayment,
+                    Message = $"PaymentFail {response?.VnPayResponseCode}"
+                };
+
+            }
+            var paymentUpdate = await _orderRepository.UpdatePayment();
+            if (paymentUpdate)
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.Success,
+                    Message = "Payment successful."
+                };
+            }
+            else
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.Fail,
+                    Message = "Payment unsuccessful."
+                };
+            }
+        }
         private bool IsPhoneNumberValid(string phoneNumber, string regionCode)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
@@ -221,6 +253,109 @@ namespace KoiShop.Application.Service
             {
                 return false;
             }
+        }
+
+
+        // ====================================================================================================
+        public async Task<IEnumerable<Order>> GetOrders(string status, DateTime startDate, DateTime endDate)
+        {
+            return await _orderRepository.GetOrders(status, startDate, endDate);
+        }
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate)
+        {
+            return await _orderRepository.GetOrderDetails(status, startDate, endDate);
+        }
+
+        public async Task<int> GetBestSalesKoi(DateTime startDate, DateTime endDate)
+        {
+            Dictionary<int, int> koiDic = new Dictionary<int, int>();
+
+            var od = await _orderRepository.GetOrderDetails("Completed", startDate, endDate);
+            foreach (var item in od)
+            {
+                if (item.KoiId.HasValue)
+                {
+                    if (koiDic.ContainsKey(item.KoiId.Value))
+                        koiDic[item.KoiId.Value] += (int)item.ToTalQuantity;
+                    else
+                        koiDic.Add((int)item.KoiId, (int)item.ToTalQuantity);
+                }
+            }
+
+            int maxQuantity = 0;
+            int id = -1;
+            foreach (var item in koiDic)
+            {
+                if (item.Value > maxQuantity)
+                {
+                    maxQuantity = item.Value;
+                    id = item.Key;
+                }
+            }
+            return id;
+        }
+        public async Task<int> GetBestSalesBatchKoi(DateTime startDate, DateTime endDate)
+        {
+            Dictionary<int, int> batchKoiDic = new Dictionary<int, int>();
+
+            var od = await _orderRepository.GetOrderDetails("Completed", startDate, endDate);
+            foreach (var item in od)
+            {
+                if (item.KoiId.HasValue)
+                {
+                    if (batchKoiDic.ContainsKey(item.BatchKoiId.Value))
+                        batchKoiDic[item.BatchKoiId.Value] += (int)item.ToTalQuantity;
+                    else
+                        batchKoiDic.Add((int)item.BatchKoiId, (int)item.ToTalQuantity);
+                }
+            }
+
+            int maxQuantity = 0;
+            int id = -1;
+            foreach (var item in batchKoiDic)
+            {
+                if (item.Value > maxQuantity)
+                {
+                    maxQuantity = item.Value;
+                    id = item.Key;
+                }
+            }
+            return id;
+        }
+
+
+
+        public async Task<int> GetTotalOrders(DateTime startDate, DateTime endDate)
+        {
+            var orders = await _orderRepository.GetOrders(startDate, endDate);
+            int count = 0;
+            foreach (var item in orders)
+            {
+                count++;
+            }
+            return count;
+        }
+
+        public async Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate)
+        {
+            var orders = await _orderRepository.GetOrders("Completed", startDate, endDate);
+            int count = 0;
+            foreach (var item in orders)
+            {
+                count++;
+            }
+            return count;
+        }
+
+        public async Task<int> GetPendingOrders(DateTime startDate, DateTime endDate)
+        {
+            var orders = await _orderRepository.GetOrders("Pending", startDate, endDate);
+            int count = 0;
+            foreach (var item in orders)
+            {
+                count++;
+            }
+            return count;
         }
 
         public Task<int> GetLastOrderId()

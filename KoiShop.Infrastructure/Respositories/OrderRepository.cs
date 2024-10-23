@@ -21,11 +21,13 @@ namespace KoiShop.Infrastructure.Respositories
         private readonly KoiShopV1DbContext _koiShopV1DbContext;
         private readonly IUserStore<User> _userStore;
         private readonly IUserContext _userContext;
-        public OrderRepository(KoiShopV1DbContext koiShopV1DbContext, IUserStore<User> userStore, IUserContext userContext)
+        private readonly IDiscountRepository _discountRepository;
+        public OrderRepository(KoiShopV1DbContext koiShopV1DbContext, IUserStore<User> userStore, IUserContext userContext, IDiscountRepository discountRepository)
         {
             _koiShopV1DbContext = koiShopV1DbContext;
             _userStore = userStore;
             _userContext = userContext;
+            _discountRepository = discountRepository;
         }
 
         public async Task<IEnumerable<OrderDetail>> GetOrderDetail()
@@ -174,7 +176,7 @@ namespace KoiShop.Infrastructure.Respositories
             }
             if (discountId.HasValue)
             {
-                var pricePercentDiscount = await CheckDiscount(discountId);
+                var pricePercentDiscount = await _discountRepository.CheckDiscount(discountId);
                 if (pricePercentDiscount != null && pricePercentDiscount > 0 && pricePercentDiscount <= 1)
                 {
                     totalAmount = totalAmount - (totalAmount * (float)pricePercentDiscount);
@@ -234,11 +236,7 @@ namespace KoiShop.Infrastructure.Respositories
                 return false;
             }
             string status;
-            if (string.Equals(method, "online", StringComparison.OrdinalIgnoreCase))
-            {
-                status = "Complete";
-            }
-            else if (string.Equals(method, "offline", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(method, "offline", StringComparison.OrdinalIgnoreCase))
             {
                 status = "Pending";
             }
@@ -256,6 +254,38 @@ namespace KoiShop.Infrastructure.Respositories
             _koiShopV1DbContext.Payments.Add(payment);
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
+        }
+        public async Task<bool> UpdatePayment()
+        {
+            var userId = _userContext.GetCurrentUser();
+            var order = await _koiShopV1DbContext.Orders.Where(od => od.UserId == userId.Id).OrderByDescending(od => od.CreateDate).FirstOrDefaultAsync();
+            if (order == null)
+            {
+                return false;
+            }
+            var payment = await _koiShopV1DbContext.Payments.FirstOrDefaultAsync(p => p.OrderId == order.OrderId);
+            if (payment == null)
+            {
+                return false;
+            }
+            payment.Status = "Complete";
+            order.OrderStatus = "Complete"; 
+            _koiShopV1DbContext.Orders.Update(order);
+            _koiShopV1DbContext.Payments.Update(payment);
+            await _koiShopV1DbContext.SaveChangesAsync();
+            return true;
+        }
+        public async Task<int> GetCurentOrderId()
+        {
+            var userId = _userContext.GetCurrentUser();
+            var order = await _koiShopV1DbContext.Orders.Where(od => od.UserId == userId.Id).OrderByDescending(od => od.CreateDate).FirstOrDefaultAsync();
+            var orderId = order.OrderId;
+            if (orderId <= 0 || orderId == null)
+            {
+                orderId = 0;
+            } 
+            var orderIdNext = orderId += 1;
+            return orderIdNext;
         }
         public async Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts)
         {
@@ -291,99 +321,47 @@ namespace KoiShop.Infrastructure.Respositories
             }
             return true;
         }
-       
-        public async Task<IEnumerable<Discount>> GetDiscountForUser()
-        {
-            var userId = _userContext.GetCurrentUser();
-            if (userId == null)
-            {
-                return Enumerable.Empty<Discount>();
-            }
-            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
-            var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate).ToListAsync();
-            if (order != null)
-            {
-                var availableDiscount = validDiscounts.Where(d => !order.Contains(d.DiscountId)).ToList();
-                return availableDiscount;
-            }
-            else
-            {
-                return validDiscounts;
-            }
-        }
-        public async Task<Discount?> GetDiscountForUser(string? name)
-        {
-            var userId = _userContext.GetCurrentUser();
-            if (string.IsNullOrEmpty(name))
-            {
-                return null;
-            }
-            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
-            var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate && d.Name == name).ToListAsync();
-            if (order != null)
-            {
-                var availableDiscount = validDiscounts.FirstOrDefault(d => !order.Contains(d.DiscountId));
-                return availableDiscount;
-            }
-            else
-            {
-                return null;
-            }
-        }
-        private async Task<double> CheckDiscount(int? disountId)
-        {
-            if (disountId == null || disountId == 0)
-            {
-                return (double)0;
-            }
-            var userId = _userContext.GetCurrentUser();
-            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
-            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.DiscountId == disountId).FirstOrDefaultAsync();
 
-            if (order != null)
-            {
-                if (discount != null)
-                {
-                    if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now && !order.Contains(discount.DiscountId) && discount.TotalQuantity > 0 && discount.Used <= discount.TotalQuantity)
-                    {
-                        var pricePercent = (double)discount.DiscountRate;
-                        discount.Used++;
-                        _koiShopV1DbContext.Discounts.Update(discount);
-                        await _koiShopV1DbContext.SaveChangesAsync();
-                        return pricePercent;
-                    }
-                }
-                else
-                {
-                    return (double)0;
-                }
 
-            }
-            return (double)0;
+        // =================================================================================================
+        public async Task<IEnumerable<Order>> GetOrders(string status, DateTime startDate, DateTime endDate)
+        {
+            return await _koiShopV1DbContext.Orders
+                .Where(o => o.OrderStatus == status &&
+                            o.CreateDate.HasValue &&
+                            o.CreateDate >= startDate &&
+                            o.CreateDate <= endDate)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<Order>> GetOrders(DateTime startDate, DateTime endDate)
+        {
+            return await _koiShopV1DbContext.Orders
+                .Where(o => o.CreateDate.HasValue &&
+                            o.CreateDate >= startDate &&
+                            o.CreateDate <= endDate)
+                .ToListAsync();
         }
 
-
-
-        public async Task<int> GetLastOrderId()
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate)
         {
-            return await _koiShopV1DbContext.Orders.OrderByDescending(o => o.OrderId).Select(o => o.OrderId).FirstOrDefaultAsync();
+            var orders = await _koiShopV1DbContext.Orders
+                .Where(o => o.OrderStatus == status &&
+                            o.CreateDate.HasValue &&
+                            o.CreateDate >= startDate &&
+                            o.CreateDate <= endDate)
+                .SelectMany(od => od.OrderDetails).ToListAsync();
+            return orders;
         }
 
-
-        public async Task<IEnumerable<Discount>> GetDiscount()
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetails(DateTime startDate, DateTime endDate)
         {
-
-            var discounts = await _koiShopV1DbContext.Discounts.ToListAsync();
-            var dateNow = DateTime.Now;
-            foreach (var discount in discounts)
-            {
-                if (discount.EndDate < dateNow)
-                {
-                    discount.Status = "InActive";
-                }
-            }
-            await _koiShopV1DbContext.SaveChangesAsync();
-            return discounts;
+            var orders = await _koiShopV1DbContext.Orders
+                .Where(o => o.CreateDate.HasValue &&
+                            o.CreateDate >= startDate &&
+                            o.CreateDate <= endDate)
+                .SelectMany(od => od.OrderDetails).ToListAsync();
+            return orders;
         }
+
     }
 }

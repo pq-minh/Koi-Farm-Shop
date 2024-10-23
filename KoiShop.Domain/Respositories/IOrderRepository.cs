@@ -18,10 +18,16 @@ namespace KoiShop.Domain.Respositories
         Task<bool> AddToOrderDetailFromCart(List<CartItem> carts);
         Task<bool> UpdateCartAfterBuy(List<CartItem> carts);
         Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts);
-        Task<IEnumerable<Discount>> GetDiscountForUser();
-        Task<IEnumerable<Discount>> GetDiscount();
-        Task<Discount?> GetDiscountForUser(string? name);
+        Task<bool> UpdatePayment();
+        Task<int> GetCurentOrderId();
         Task<IEnumerable<T>> GetKoiOrBatch<T>(int orderId);
+
+        // ===========================================================================================
+        Task<IEnumerable<Order>> GetOrders(string status, DateTime startDate, DateTime endDate);
+        Task<IEnumerable<Order>> GetOrders(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate);
+        Task<IEnumerable<OrderDetail>> GetOrderDetails(DateTime startDate, DateTime endDate);
+
         Task<int> GetLastOrderId();
     }
 }

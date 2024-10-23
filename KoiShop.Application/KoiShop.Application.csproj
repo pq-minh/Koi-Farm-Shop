@@ -17,10 +17,11 @@
 
   <ItemGroup>
 	  <PackageReference Include="AutoMapper" Version="13.0.1" />
-	  <PackageReference Include="Dropbox.Api" Version="7.0.0" />
 	  <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
 	  <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
 	  <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+	  <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+	  <PackageReference Include="Google.Cloud.Firestore" Version="3.9.0" />
 	  <PackageReference Include="libphonenumber-csharp" Version="8.13.47" />
 	  <PackageReference Include="MediatR" Version="12.4.1" />
 	  <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.10" />
@@ -30,9 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KoiShop.Domain\KoiShop.Domain.csproj">
-      <Private>True</Private>
-    </ProjectReference>
+    <ProjectReference Include="..\KoiShop.Domain\KoiShop.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

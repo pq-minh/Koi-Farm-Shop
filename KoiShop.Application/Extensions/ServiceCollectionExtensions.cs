@@ -20,6 +20,9 @@ namespace KoiShop.Application.Extensions
             services.AddScoped<IKoiAndBatchKoiService, KoiAndBatchKoiService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IDiscountService, DiscountService>();
+            services.AddScoped<IReviewService, ReviewService>();
+            services.AddScoped<IVnPayService, VnPayService>();
             //Register service for JWTToken
             services.AddScoped<IJwtTokenService,JwtTokenService>();
             services.AddHttpContextAccessor();
@@ -30,6 +33,8 @@ namespace KoiShop.Application.Extensions
             services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly).AddFluentValidationAutoValidation();
             services.AddAutoMapper(typeof(ServiceCollectionExtensions).Assembly);
             services.AddScoped<FirebaseService>();
+            services.AddScoped<IBlogService, BlogService>();
+
         }
     }
 }
