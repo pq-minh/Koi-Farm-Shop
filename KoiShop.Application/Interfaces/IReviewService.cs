@@ -1,0 +1,18 @@
+﻿using KoiShop.Application.Dtos;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace KoiShop.Application.Interfaces
+{
+    public interface IReviewService
+    {
+        Task<IEnumerable<ReviewDtos>> GetReview();
+        Task<bool> AddReview(ReviewDtos reviewdto);
+        Task<bool> DeleteReview(int? id);
+        Task<IEnumerable<KoiDto>> GetKoiFromOrderDetail();
+        Task<IEnumerable<BatchKoiDto>> GetBatchFromOrderDetail();
+    }
+}
