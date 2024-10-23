@@ -1,5 +1,6 @@
 ﻿using KoiShop.Application.Dtos.VnPayDtos;
 using KoiShop.Application.Interfaces;
+using KoiShop.Domain.Respositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -13,14 +14,17 @@ namespace KoiShop.Application.Service
     public class VnPayService : IVnPayService
     {
         private readonly IConfiguration _config;
+        private readonly IOrderRepository _orderRepository;
 
-        public VnPayService(IConfiguration config)
+        public VnPayService(IConfiguration config, IOrderRepository orderRepository)
         {
             _config = config;
+            _orderRepository = orderRepository;
         }
-        public string CreatePatmentUrl(HttpContext content, VnPaymentRequestModel paymentRequestModel)
+        public async Task<string> CreatePatmentUrl(HttpContext content, VnPaymentRequestModel paymentRequestModel)
         {
             var tick = DateTime.Now.Ticks.ToString();
+            var orderId = await _orderRepository.GetCurentOrderId();
             var vnpay = new VnPayLibrary();
             vnpay.AddRequestData("vnp_Version", _config["VnPay:Version"]);
             vnpay.AddRequestData("vnp_Command", _config["VnPay:Command"]);
@@ -34,7 +38,7 @@ namespace KoiShop.Application.Service
             vnpay.AddRequestData("vnp_CurrCode", _config["VnPay:CurrCode"]);
             vnpay.AddRequestData("vnp_IpAddr", Utils.GetIpAddress(content));
             vnpay.AddRequestData("vnp_Locale", _config["VnPay:Locale"]);
-            vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + paymentRequestModel.OrderId);
+            vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + orderId);
             vnpay.AddRequestData("vnp_OrderType", "order"); //default value: other
             vnpay.AddRequestData("vnp_ReturnUrl", _config["VnPay:PaymentBackReturnUrl"]);
             vnpay.AddRequestData("vnp_TxnRef", tick); // Mã tham chiếu của giao dịch tại hệ 
@@ -48,7 +52,7 @@ namespace KoiShop.Application.Service
 
         public VnPaymentRequestModel CreateVnpayModel(VnPaymentRequestModel paymentRequest)
         {
-            if (paymentRequest == null || paymentRequest.Amount <= 0 || paymentRequest.OrderId == null)
+            if (paymentRequest == null || paymentRequest.Amount <= 0)
             {
                 return null;
             }
@@ -58,7 +62,6 @@ namespace KoiShop.Application.Service
                 Amount = paymentRequest.Amount,
                 CreatedDate = DateTime.Now,
                 UserID = paymentRequest.UserID,
-                OrderId = paymentRequest.OrderId
             };
             return vnPayModel;
         }

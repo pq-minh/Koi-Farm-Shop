@@ -11,6 +11,5 @@ namespace KoiShop.Application.Dtos.VnPayDtos
         public int UserID { get; set; }
         public double Amount { get; set; }
         public DateTime CreatedDate { get; set; }
-        public int OrderId { get; set; }
     }
 }

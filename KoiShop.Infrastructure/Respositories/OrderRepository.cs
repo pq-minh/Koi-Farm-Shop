@@ -274,6 +274,18 @@ namespace KoiShop.Infrastructure.Respositories
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
+        public async Task<int> GetCurentOrderId()
+        {
+            var userId = _userContext.GetCurrentUser();
+            var order = await _koiShopV1DbContext.Orders.Where(od => od.UserId == userId.Id).OrderByDescending(od => od.CreateDate).FirstOrDefaultAsync();
+            var orderId = order.OrderId;
+            if (orderId <= 0 || orderId == null)
+            {
+                orderId = 0;
+            } 
+            var orderIdNext = orderId += 1;
+            return orderIdNext;
+        }
         public async Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts)
         {
             if (carts == null)

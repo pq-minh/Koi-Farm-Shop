@@ -10,7 +10,7 @@ namespace KoiShop.Application.Interfaces
 {
     public interface IVnPayService
     {
-        string CreatePatmentUrl(HttpContext content, VnPaymentRequestModel paymentRequestModel);
+        Task<string> CreatePatmentUrl(HttpContext content, VnPaymentRequestModel paymentRequestModel);
         VnPaymentResponseModel ExecutePayment(VnPaymentResponseFromFe request);
         VnPaymentRequestModel CreateVnpayModel(VnPaymentRequestModel paymentRequest);
     }

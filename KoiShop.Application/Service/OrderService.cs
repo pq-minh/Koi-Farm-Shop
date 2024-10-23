@@ -23,7 +23,7 @@ namespace KoiShop.Application.Service
         private readonly IOrderRepository _orderRepository;
         private readonly IUserStore<User> _userStore;
         private readonly IUserContext _userContext;
-        private readonly IVnPayService _vpnPayService;
+        private readonly IVnPayService _vnPayService;
 
         public OrderService(IMapper mapper, IOrderRepository orderRepository, IUserContext userContext, IUserStore<User> userStore, IVnPayService vpnPayService)
         {
@@ -31,7 +31,7 @@ namespace KoiShop.Application.Service
             _orderRepository = orderRepository;
             _userContext = userContext;
             _userStore = userStore;
-            _vpnPayService = vpnPayService;
+            _vnPayService = vpnPayService;
         }
         public async Task<IEnumerable<OrderDetailDtos>> GetOrderDetail()
         {
@@ -99,7 +99,7 @@ namespace KoiShop.Application.Service
             return batchDto;
         }
 
-        public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method, int? discountId, string? phoneNumber, string? address)
+        public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method, int? discountId, string? phoneNumber, string? address, VnPaymentResponseFromFe request)
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
             {
@@ -136,9 +136,26 @@ namespace KoiShop.Application.Service
                         if (koiandBatchStatus)
                         {
                             var payment = await _orderRepository.AddPayment("offline");
-                            if (payment)
+                            if (payment && method == "offline")
                             {
                                 return OrderEnum.Success;
+                            }
+                            else if (method == "online")
+                            {
+                                var response = _vnPayService.ExecutePayment(request);
+                                if (response == null || !response.Success)
+                                {
+                                    return OrderEnum.FailPaid;
+                                }
+                                var paymentUpdate = await _orderRepository.UpdatePayment();
+                                if (paymentUpdate)
+                                {
+                                    return OrderEnum.Success;
+                                }
+                                else
+                                {
+                                    return OrderEnum.FailAddPayment;
+                                }
                             }
                             else
                             {
@@ -191,7 +208,7 @@ namespace KoiShop.Application.Service
                     Message = "Paramaters can not identify"
                 };
             }
-            var response = _vpnPayService.ExecutePayment(request);
+            var response = _vnPayService.ExecutePayment(request);
             if (response == null || !response.Success)
             {
                 return new PaymentDto
