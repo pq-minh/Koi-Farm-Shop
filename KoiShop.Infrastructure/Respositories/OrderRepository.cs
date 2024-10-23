@@ -268,7 +268,9 @@ namespace KoiShop.Infrastructure.Respositories
                 return false;
             }
             payment.Status = "Complete";
-            _koiShopV1DbContext.Payments.Add(payment);
+            order.OrderStatus = "Complete"; 
+            _koiShopV1DbContext.Orders.Update(order);
+            _koiShopV1DbContext.Payments.Update(payment);
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
