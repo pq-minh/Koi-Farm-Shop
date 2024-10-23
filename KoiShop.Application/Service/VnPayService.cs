@@ -61,7 +61,6 @@ namespace KoiShop.Application.Service
             {
                 Amount = paymentRequest.Amount,
                 CreatedDate = DateTime.Now,
-                UserID = paymentRequest.UserID,
             };
             return vnPayModel;
         }

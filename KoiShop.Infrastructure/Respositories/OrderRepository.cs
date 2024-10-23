@@ -304,7 +304,7 @@ namespace KoiShop.Infrastructure.Respositories
                         koi.Status = "Sold";
                         _koiShopV1DbContext.Kois.Update(koi);
                         await _koiShopV1DbContext.SaveChangesAsync();
-                        return true;
+                        
                     }
                     else
                     {
@@ -312,7 +312,7 @@ namespace KoiShop.Infrastructure.Respositories
                         batchKoi.Status = "Sold";
                         _koiShopV1DbContext.BatchKois.Update(batchKoi);
                         await _koiShopV1DbContext.SaveChangesAsync();
-                        return true;
+                        
                     }
                 }
                 else

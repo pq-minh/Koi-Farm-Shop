@@ -88,14 +88,14 @@ namespace KoiShop.Controllers
             }
         }
         [HttpPost("createpayment")]
-        public IActionResult CreatePayment([FromBody] VnPaymentRequestModel paymentRequest)
+        public async Task<IActionResult> CreatePayment([FromBody] VnPaymentRequestModel paymentRequest)
         {
             var vnPayModel = _vnPayService.CreateVnpayModel(paymentRequest);
             if (vnPayModel == null)
             {
                 return BadRequest("Invalid payment request");
             }
-            var paymentUrl = _vnPayService.CreatePatmentUrl(HttpContext, vnPayModel);
+            var paymentUrl = await _vnPayService.CreatePatmentUrl(HttpContext, vnPayModel);
             return Ok(new { PaymentUrl = paymentUrl });
         }
 
