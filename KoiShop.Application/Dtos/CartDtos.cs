@@ -18,6 +18,18 @@ namespace KoiShop.Application.Dtos
         public int? BatchKoiId { get; set; }
 
         public int? ShoppingCartId { get; set; }
+
+        public string? KoiName { get; set; }
+
+        public string? BatchKoiName { get; set; }
+
+        public string? KoiImgUrl {  get; set; }
+
+        public string? BatchKoiImgUrl { get; set; }
+
+        public string? KoiDescription { get; set; }
+
+        public string? BatchKoiDescription { get;set; }
     }
     public class CartDtoV1
     {

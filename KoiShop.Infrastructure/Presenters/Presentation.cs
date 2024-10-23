@@ -1,5 +1,7 @@
 ﻿using KoiShop.Domain.Entities;
 using KoiShop.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +37,11 @@ namespace KoiShop.Infrastructure.Presenters
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
+            .AddGoogle(options =>
+                {
+                    options.ClientId = "58740703879-3s8ddc1rno4kavb9neslns90iphlps9g.apps.googleusercontent.com";
+                    options.ClientSecret = "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";
+                })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -48,8 +55,9 @@ namespace KoiShop.Infrastructure.Presenters
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                 };
             });
+
             //authorization role
-           services.AddAuthorization(Options =>
+            services.AddAuthorization(Options =>
             {
                 Options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
             });

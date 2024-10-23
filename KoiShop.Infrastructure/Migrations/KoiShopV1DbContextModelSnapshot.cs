@@ -111,11 +111,6 @@ namespace KoiShop.Infrastructure.Migrations
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("Personality")
-                        .HasMaxLength(200)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<double?>("Price")
                         .HasColumnType("float");
 
@@ -249,9 +244,9 @@ namespace KoiShop.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("start_Date");
 
-                    b.Property<int?>("Status")
+                    b.Property<string>("Status")
                         .IsUnicode(true)
-                        .HasColumnType("int")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("status");
 
                     b.Property<int?>("TotalQuantity")

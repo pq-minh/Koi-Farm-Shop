@@ -19,7 +19,7 @@ namespace KoiShop.Application.Dtos.RequestDtos
         public DateTime? EndDate { get; set; }
 
         public double? AgreementPrice { get; set; }
-
+        public string? Status { get; set; }
         public string? TypeRequest { get; set; }
         public virtual PackageDtoResponse? Package { get; set; }
     }

@@ -19,12 +19,10 @@ namespace KoiShop.Application.Dtos
         public string? Weight { get; set; }
 
         public string? Size { get; set; }
-
+        public string? Age { get; set; }
         public string? Origin { get; set; }
 
         public string? Gender { get; set; }
-
-        public string? Age { get; set; }
 
         public string? Certificate { get; set; }
 

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Dropbox.Api.Files.SearchMatchType;
 using static KoiShop.Application.Users.UserContext;
 
 namespace KoiShop.Infrastructure.Respositories
@@ -151,36 +152,59 @@ namespace KoiShop.Infrastructure.Respositories
             else
                 return false;
         }
+
+        public async Task<Dictionary<int, (string Name, string Description, string ImgUrl)>> GetKoiNamesAsync(IEnumerable<int> koiIds)
+        {
+            return await _koiShopV1DbContext.Kois
+                .Where(kn => koiIds.Contains(kn.KoiId))
+                .ToDictionaryAsync(kn => kn.KoiId, kn => (kn.Name, kn.Description, kn.Image));
+        }
+
+        public async Task<Dictionary<int, (string Name, string Description, string ImgUrl)>> GetBatchKoiNamesAsync(IEnumerable<int> batchKoiIds)
+        {
+            return await _koiShopV1DbContext.BatchKois
+                .Where(bk => batchKoiIds.Contains(bk.BatchKoiId))
+                .ToDictionaryAsync(kn => kn.BatchKoiId, kn => (kn.Name, kn.Description, kn.Image));
+        }
         public async Task<bool> ChangeBatchQuantity(string? status, int batchKoiId)
         {
             var userId = _userContext.GetCurrentUser().Id;
-            if (status == null)
+
+            if (string.IsNullOrEmpty(status))
             {
                 return false;
             }
-            var shoppingCart = await _koiShopV1DbContext.ShoppingCarts.Where(sc => sc.UserId == userId).FirstOrDefaultAsync();
-            var cart = await _koiShopV1DbContext.CartItems.Where(c => c.BatchKoiId == batchKoiId && c.Status == "Save").FirstOrDefaultAsync();
+
+            var cart = await _koiShopV1DbContext.CartItems
+                .Where(c => c.BatchKoiId == batchKoiId && c.Status == "Save")
+                .FirstOrDefaultAsync();
+
             if (cart != null)
             {
-                if (status == "Add")
+                if (status.Equals("Add", StringComparison.OrdinalIgnoreCase))
                 {
                     cart.Quantity += 1;
-                    _koiShopV1DbContext.CartItems.Update(cart);
-                    return true;
+                    
                 }
-                else if (status == "Minus")
+                else if (status.Equals("Minus", StringComparison.OrdinalIgnoreCase))
                 {
-                    cart.Quantity -= 1;
-                    _koiShopV1DbContext.CartItems.Update(cart);
-                    return true;
+                    if (cart.Quantity > 1)
+                    {
+                        cart.Quantity -= 1;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
-                await _koiShopV1DbContext.SaveChangesAsync();
-                return true;
+                cart.TotalPrice = cart.Quantity*cart.UnitPrice;
+                _koiShopV1DbContext.CartItems.Update(cart);
+                var changes = await _koiShopV1DbContext.SaveChangesAsync();
+                return changes > 0; 
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
+
     }
 }

@@ -14,46 +14,11 @@ namespace KoiShop
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowSpecificOrigin", builder =>
-            //    {
-            //        builder.WithOrigins("http://localhost:5173")
-            //               .AllowAnyHeader()
-            //               .AllowAnyMethod();
-            //    });
-            //});
-
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddSwaggerGen();
-            //jwt authentication
-            //builder.Services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            //})
-            //.AddJwtBearer(options =>
-            //{
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateIssuer = true,
-            //        ValidateAudience = true,
-            //        ValidateLifetime = true,
-            //        ValidateIssuerSigningKey = true,
-            //        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            //        ValidAudience = builder.Configuration["Jwt:Audience"],
-            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-            //    };
-            //});
-            //authorization role
-            //builder.Services.AddAuthorization(Options =>
-            //{
-            //    Options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-            //});
+            
 
 
             builder.Services.AddInfrastructure(builder.Configuration);
@@ -70,10 +35,8 @@ namespace KoiShop
             var seeder = scope.ServiceProvider.GetRequiredService<IUserSeeder>();
             await seeder.Seed();
             app.UseHttpsRedirection();
-            //cors
             app.UseRouting();
             app.UseCors("AllowSpecificOrigin");
-            //author
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

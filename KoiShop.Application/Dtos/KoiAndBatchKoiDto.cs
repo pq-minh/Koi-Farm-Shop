@@ -8,7 +8,7 @@ namespace KoiShop.Application.Dtos
 {
     public class KoiAndBatchKoiDto
     {
-        public IEnumerable<KoiDto> Koi { get; set; }
-        public IEnumerable<BatchKoiDto> BatchKoi { get; set; }
+        public IEnumerable<KoiDto>? Koi { get; set; }
+        public IEnumerable<BatchKoiDto>? BatchKoi { get; set; }
     }
 }
