@@ -9,7 +9,6 @@ namespace KoiShop.Controllers
     [Route("api/reviews")]
     public class ReviewController : ControllerBase
     {
-        // afsbv
         private readonly IReviewService _reviewService;
 
         public ReviewController(IReviewService reviewService)
@@ -47,13 +46,13 @@ namespace KoiShop.Controllers
             }
             return BadRequest("Can not remove review");
         }
-        [HttpGet("api/user/koi")]
+        [HttpGet("/api/user/koi")]
         public async Task<IActionResult> GetKoiFromOrderDetail()
         {
             var koi = await _reviewService.GetKoiFromOrderDetail();
             return Ok(koi);
         }
-        [HttpGet("api/user/batch")]
+        [HttpGet("/api/user/batch")]
         public async Task<IActionResult> GetBatchKoiFromOrderDetail()
         {
             var batch = await _reviewService.GetBatchFromOrderDetail();

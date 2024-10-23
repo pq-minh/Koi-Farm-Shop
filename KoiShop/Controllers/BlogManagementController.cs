@@ -9,7 +9,6 @@ namespace KoiShop.Controllers
     [Route("api/blog/management")]
     public class BlogManagementController : ControllerBase
     {
-        // abc
         private readonly IBlogService _blogService;
 
         public BlogManagementController(IBlogService blogService)
