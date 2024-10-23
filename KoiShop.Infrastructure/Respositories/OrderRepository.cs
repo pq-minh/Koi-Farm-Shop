@@ -291,21 +291,7 @@ namespace KoiShop.Infrastructure.Respositories
             }
             return true;
         }
-        public async Task<IEnumerable<Discount>> GetDiscount()
-        {
-
-            var discounts = await _koiShopV1DbContext.Discounts.ToListAsync();
-            var dateNow = DateTime.Now;
-            foreach (var discount in discounts)
-            {
-                if (discount.EndDate < dateNow)
-                {
-                    discount.Status = "Inactive"; 
-                }
-            }
-           await _koiShopV1DbContext.SaveChangesAsync();
-            return discounts;
-        }
+       
         public async Task<IEnumerable<Discount>> GetDiscountForUser()
         {
             var userId = _userContext.GetCurrentUser();
@@ -381,6 +367,23 @@ namespace KoiShop.Infrastructure.Respositories
         public async Task<int> GetLastOrderId()
         {
             return await _koiShopV1DbContext.Orders.OrderByDescending(o => o.OrderId).Select(o => o.OrderId).FirstOrDefaultAsync();
+        }
+
+
+        public async Task<IEnumerable<Discount>> GetDiscount()
+        {
+
+            var discounts = await _koiShopV1DbContext.Discounts.ToListAsync();
+            var dateNow = DateTime.Now;
+            foreach (var discount in discounts)
+            {
+                if (discount.EndDate < dateNow)
+                {
+                    discount.Status = "Inactive";
+                }
+            }
+            await _koiShopV1DbContext.SaveChangesAsync();
+            return discounts;
         }
     }
 }
