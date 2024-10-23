@@ -74,6 +74,10 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
+            if (reviews.Rating < 1 || reviews.Rating > 5)
+            {
+                return false; 
+            }
             review.Rating = reviews.Rating;
             _koiShopV1DbContext.Reviews.Update(review);
             await _koiShopV1DbContext.SaveChangesAsync();
