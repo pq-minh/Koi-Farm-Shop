@@ -235,11 +235,7 @@ namespace KoiShop.Infrastructure.Respositories
                 return false;
             }
             string status;
-            if (string.Equals(method, "online", StringComparison.OrdinalIgnoreCase))
-            {
-                status = "Complete";
-            }
-            else if (string.Equals(method, "offline", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(method, "offline", StringComparison.OrdinalIgnoreCase))
             {
                 status = "Pending";
             }
@@ -255,6 +251,26 @@ namespace KoiShop.Infrastructure.Respositories
                 OrderId = order.OrderId
             };
             _koiShopV1DbContext.Payments.Add(payment);
+            await _koiShopV1DbContext.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> UpdatePayment()
+        {
+            var userId = _userContext.GetCurrentUser();
+            var order = await _koiShopV1DbContext.Orders.Where(od => od.UserId == userId.Id).OrderByDescending(od => od.CreateDate).FirstOrDefaultAsync();
+            if (order == null)
+            {
+                return false;
+            }
+            var payment = await _koiShopV1DbContext.Payments.FirstOrDefaultAsync(p => p.OrderId == order.OrderId);
+            if (payment == null)
+            {
+                return false;
+            }
+            payment.Status = "Complete";
+            order.OrderStatus = "Complete"; 
+            _koiShopV1DbContext.Orders.Update(order);
+            _koiShopV1DbContext.Payments.Update(payment);
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }

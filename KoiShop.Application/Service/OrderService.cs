@@ -12,6 +12,8 @@ using static KoiShop.Application.Users.UserContext;
 using KoiShop.Application.Dtos;
 using Microsoft.IdentityModel.Tokens;
 using PhoneNumbers;
+using static Google.Rpc.Context.AttributeContext.Types;
+using KoiShop.Application.Dtos.VnPayDtos;
 
 namespace KoiShop.Application.Service
 {
@@ -21,13 +23,15 @@ namespace KoiShop.Application.Service
         private readonly IOrderRepository _orderRepository;
         private readonly IUserStore<User> _userStore;
         private readonly IUserContext _userContext;
+        private readonly IVnPayService _vpnPayService;
 
-        public OrderService(IMapper mapper, IOrderRepository orderRepository, IUserContext userContext, IUserStore<User> userStore)
+        public OrderService(IMapper mapper, IOrderRepository orderRepository, IUserContext userContext, IUserStore<User> userStore, IVnPayService vpnPayService)
         {
             _mapper = mapper;
             _orderRepository = orderRepository;
             _userContext = userContext;
             _userStore = userStore;
+            _vpnPayService = vpnPayService;
         }
         public async Task<IEnumerable<OrderDetailDtos>> GetOrderDetail()
         {
@@ -44,7 +48,6 @@ namespace KoiShop.Application.Service
             var oddto = _mapper.Map<IEnumerable<OrderDetailDtos>>(od);
             return oddto;
         }
-        // abc
         public async Task<IEnumerable<OrderDtos>> GetOrder()
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
@@ -132,7 +135,7 @@ namespace KoiShop.Application.Service
                         var koiandBatchStatus = await _orderRepository.UpdateKoiAndBatchStatus(cartItems);
                         if (koiandBatchStatus)
                         {
-                            var payment = await _orderRepository.AddPayment(method);
+                            var payment = await _orderRepository.AddPayment("offline");
                             if (payment)
                             {
                                 return OrderEnum.Success;
@@ -161,6 +164,61 @@ namespace KoiShop.Application.Service
                 return OrderEnum.Fail;
         }
 
+        public async Task<PaymentDto> PayByVnpay(VnPaymentResponseFromFe request)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.NotLoggedInYet,
+                    Message = "User not logged in."
+                };
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.UserNotAuthenticated,
+                    Message = "User not authenticated."
+                };
+            }
+            if (request == null)
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.InvalidParameters,
+                    Message = "Paramaters can not identify"
+                };
+            }
+            var response = _vpnPayService.ExecutePayment(request);
+            if (response == null || !response.Success)
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.FailAddPayment,
+                    Message = $"PaymentFail {response?.VnPayResponseCode}"
+                };
+
+            }
+            var paymentUpdate = await _orderRepository.UpdatePayment();
+            if (paymentUpdate)
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.Success,
+                    Message = "Payment successful."
+                };
+            }
+            else
+            {
+                return new PaymentDto
+                {
+                    Status = OrderEnum.Fail,
+                    Message = "Payment unsuccessful."
+                };
+            }
+        }
         private bool IsPhoneNumberValid(string phoneNumber, string regionCode)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))

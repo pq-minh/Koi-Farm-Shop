@@ -17,6 +17,7 @@ namespace KoiShop.Application.Dtos
         NotAddOrderInYet,
         FailUpdateFish,
         FailUpdateCart,
+        FailUpdatePayment,
         FailAddPayment,
         FailAdd,
         Fail
