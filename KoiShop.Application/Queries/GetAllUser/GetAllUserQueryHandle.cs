@@ -22,6 +22,7 @@ namespace KoiShop.Application.Queries.GetAllUser
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Email = user.Email,
                 Point   = user.Point,
                 Status = user.Status,
 
