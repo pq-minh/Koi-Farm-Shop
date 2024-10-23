@@ -309,5 +309,46 @@ namespace KoiShop.Infrastructure.Respositories
             return true;
         }
 
+
+        // =================================================================================================
+        public async Task<IEnumerable<Order>> GetOrders(string status, DateTime startDate, DateTime endDate)
+        {
+            return await _koiShopV1DbContext.Orders
+                .Where(o => o.OrderStatus == status &&
+                            o.CreateDate.HasValue &&
+                            o.CreateDate >= startDate &&
+                            o.CreateDate <= endDate)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<Order>> GetOrders(DateTime startDate, DateTime endDate)
+        {
+            return await _koiShopV1DbContext.Orders
+                .Where(o => o.CreateDate.HasValue &&
+                            o.CreateDate >= startDate &&
+                            o.CreateDate <= endDate)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate)
+        {
+            var orders = await _koiShopV1DbContext.Orders
+                .Where(o => o.OrderStatus == status &&
+                            o.CreateDate.HasValue &&
+                            o.CreateDate >= startDate &&
+                            o.CreateDate <= endDate)
+                .SelectMany(od => od.OrderDetails).ToListAsync();
+            return orders;
+        }
+
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetails(DateTime startDate, DateTime endDate)
+        {
+            var orders = await _koiShopV1DbContext.Orders
+                .Where(o => o.CreateDate.HasValue &&
+                            o.CreateDate >= startDate &&
+                            o.CreateDate <= endDate)
+                .SelectMany(od => od.OrderDetails).ToListAsync();
+            return orders;
+        }
+
     }
 }

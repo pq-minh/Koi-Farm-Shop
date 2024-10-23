@@ -17,6 +17,15 @@ namespace KoiShop.Application.Interfaces
         Task<IEnumerable<OrderDetailDtos>> GetOrderDetailById(int? id);
         Task<IEnumerable<KoiDto>> GetKoiFromOrderDetail(int? orderId);
         Task<IEnumerable<BatchKoiDto>> GetBatchFromOrderDetail(int? orderId);
+
+        // ===============================================================================================
+        Task<IEnumerable<Order>> GetOrders(string status, DateTime startDate, DateTime endDate);
+        Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate);
+        Task<int> GetBestSalesKoi(DateTime startDate, DateTime endDate);
+        Task<int> GetBestSalesBatchKoi(DateTime startDate, DateTime endDate);
+        Task<int> GetTotalOrders(DateTime startDate, DateTime endDate);
+        Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate);
+        Task<int> GetPendingOrders(DateTime startDate, DateTime endDate);
         Task<PaymentDto> PayByVnpay(VnPaymentResponseFromFe request);
     }
 }
