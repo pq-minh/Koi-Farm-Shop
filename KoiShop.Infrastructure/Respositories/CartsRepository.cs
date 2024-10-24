@@ -144,6 +144,7 @@ namespace KoiShop.Infrastructure.Respositories
             if (exsitFish != null)
             {
                 exsitFish.Status = "Removed";
+                exsitFish.Quantity = 0;
                 var remove = _koiShopV1DbContext.CartItems.Update(exsitFish);
                 await _koiShopV1DbContext.SaveChangesAsync();
                 return true;

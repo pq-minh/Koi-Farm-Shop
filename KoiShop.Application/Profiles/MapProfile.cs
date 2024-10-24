@@ -30,7 +30,7 @@ namespace KoiShop.Application.Profiles
             CreateMap<Discount, DiscountDto>();
             CreateMap<Review, ReviewDtos>();
             CreateMap<ReviewDtos, Review>();
-
+            CreateMap<OrderDetailDtoV1, OrderDetail>();
         }
     }
 }
