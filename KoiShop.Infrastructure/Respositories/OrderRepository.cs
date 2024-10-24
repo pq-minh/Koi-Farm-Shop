@@ -176,9 +176,9 @@ namespace KoiShop.Infrastructure.Respositories
             if (discountId.HasValue)
             {
                 var pricePercentDiscount = await _discountRepository.CheckDiscount(discountId);
-                if (pricePercentDiscount != null && pricePercentDiscount > 0 && pricePercentDiscount <= 1)
+                if (pricePercentDiscount != null && pricePercentDiscount > 0 && pricePercentDiscount <= 100)
                 {
-                    totalAmount = totalAmount - (totalAmount * (float)pricePercentDiscount);
+                    totalAmount = totalAmount - (totalAmount * (float)(pricePercentDiscount/100));
                 }
             }
             order.TotalAmount = totalAmount;
