@@ -1,4 +1,6 @@
-﻿using KoiShop.Application.Queries.GetAllUser;
+﻿using KoiShop.Application.Command.DeleteUser;
+using KoiShop.Application.Command.UpdatePointUser;
+using KoiShop.Application.Queries.GetAllUser;
 using KoiShop.Application.Queries.GetQuotation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,5 +18,20 @@ namespace KoiShop.Controllers
             var result = await mediator.Send(query);
             return Ok(result);
         }
+
+        [HttpPost("updateuser")]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdatePointUserCommand updatePointUserCommand)
+        {
+            var result = await mediator.Send(updatePointUserCommand);
+            return Ok(result);
+        }
+
+        [HttpPost("deleteuser")]
+        public async Task<IActionResult> DeleteUser([FromBody] DeleteUserCommand deleteUserCommand)
+        {
+            var result = await mediator.Send(deleteUserCommand);
+            return Ok(result);
+        }
     }
+   
 }

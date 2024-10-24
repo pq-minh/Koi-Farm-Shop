@@ -30,8 +30,16 @@ namespace KoiShop.Infrastructure.Extensions
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddDbContext<KoiShopV1DbContext>(options => options.UseSqlServer(connectionString));
-            services.AddIdentity<User, IdentityRole>()
-               .AddEntityFrameworkStores<KoiShopV1DbContext>().AddRoles<IdentityRole>();
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 6;
+                options.SignIn.RequireConfirmedAccount = true; // Cấu hình xác thực tài khoản
+            })
+               .AddEntityFrameworkStores<KoiShopV1DbContext>().AddRoles<IdentityRole>().AddDefaultTokenProviders(); ;
         }
     }
 }
