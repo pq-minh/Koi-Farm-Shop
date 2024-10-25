@@ -96,8 +96,8 @@ namespace KoiShop.Infrastructure.Respositories
                 }
                 if (cart.BatchKoiId.HasValue && cart.BatchKoiId == exsitFish.BatchKoiId)
                 {
-                    exsitFish.Quantity += 1;
-                    exsitFish.TotalPrice = exsitFish.Quantity * exsitFish.UnitPrice;
+                    exsitFish.UnitPrice = (float)currentPrice;
+                    exsitFish.TotalPrice = (float)currentPrice * exsitFish.Quantity;
                     _koiShopV1DbContext.CartItems.Update(exsitFish);
                     await _koiShopV1DbContext.SaveChangesAsync();
                 }
