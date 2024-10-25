@@ -288,7 +288,7 @@ namespace KoiShop.Infrastructure.Respositories
         }
         public async Task<bool> UpdateKoiAndBatchStatus(List<CartItem> carts)
         {
-            if (carts == null)
+            if (carts == null || carts.Count == 0)
             {
                 return false;
             }
