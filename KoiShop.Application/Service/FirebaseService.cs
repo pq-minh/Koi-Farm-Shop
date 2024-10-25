@@ -19,23 +19,21 @@ namespace KoiShop.Application.Service
 
         public FirebaseService(ILogger<FirebaseService> logger, IConfiguration configuration)
         {
-            _logger = logger;
-            _firebaseStorageBucket = configuration["Firebase:StorageBucket"];
-
+               
             var serviceAccountPath = configuration["Firebase:ServiceAccountPath"];
             Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", serviceAccountPath);
 
-            // Kiểm tra và tạo ứng dụng Firebase nếu chưa tồn tại
             if (FirebaseApp.DefaultInstance == null)
             {
                 FirebaseApp.Create(new AppOptions
                 {
                     Credential = GoogleCredential.FromFile(serviceAccountPath),
-                    ProjectId = configuration["Firebase:ProjectId"]
+                    //ProjectId = configuration["Firebase:ProjectId"]
                 });
             }
 
-            // Khởi tạo Firestore
+            _logger = logger;
+            _firebaseStorageBucket = configuration["Firebase:StorageBucket"];
             _firestoreDb = FirestoreDb.Create(configuration["Firebase:ProjectId"]);
         }
 
@@ -43,9 +41,8 @@ namespace KoiShop.Application.Service
         {
             directory = directory.Trim('/');
 
-            // Tạo tên file độc nhất bằng GUID
             var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
-            var filePath = $"{directory}/{fileName}"; // Directory là vị trí lưu trữ file
+            var filePath = $"{directory}/{fileName}"; 
 
             try
             {
@@ -81,9 +78,8 @@ namespace KoiShop.Application.Service
         public string GetRelativeFilePath(string filePath)
         {
             if (!string.IsNullOrEmpty(filePath))
-            {
-                // Tách đường dẫn tuyệt đối thành đường dẫn tương đối vì Firebase chỉ nhận vào đường dẫn tương đối
-                var startIndex = filePath.IndexOf("/o/") + 3; // 3 là độ dài của chuỗi "/o/"
+            { 
+                var startIndex = filePath.IndexOf("/o/") + 3; 
                 var endIndex = filePath.IndexOf("?");
 
                 if (startIndex < 3 || endIndex <= startIndex) return null;
@@ -93,12 +89,11 @@ namespace KoiShop.Application.Service
             return null;
         }
 
-        // sử dụng generic object
+        
         public async Task<string> SaveDocument<T>(T document, string collectionName)
         {
             try
             {
-                // tham chiếu tới collection được truyền vào
                 var docRef = _firestoreDb.Collection(collectionName).Document();
                 await docRef.SetAsync(document);
                 return docRef.Id;
@@ -114,10 +109,8 @@ namespace KoiShop.Application.Service
         {
             try
             {
-                // tham chiếu tới document trong collection được truyền vào
                 var docRef = _firestoreDb.Collection(collectionName).Document(documentId);
 
-                // convert đối tượng T thành Dictionary để cập nhật từng trường
                 var updates = document.GetType()
                     .GetProperties()
                     .Where(prop => prop.GetValue(document) != null)
@@ -142,20 +135,16 @@ namespace KoiShop.Application.Service
         {
             try
             {
-                // lấy tham chiếu tới collection được truyền vào
                 CollectionReference collectionRef = _firestoreDb.Collection(collectionName);
 
-                // lấy tất cả các document trong collection
                 QuerySnapshot snapshot = await collectionRef.GetSnapshotAsync();
 
-                // chuyển đổi thành danh sách các đối tượng kiểu T
                 List<T> documents = new List<T>();
                 foreach (DocumentSnapshot document in snapshot.Documents)
                 {
                     if (document.Exists)
                     {
                         T obj = document.ConvertTo<T>();
-                        // nếu đối tượng có thuộc tính "Id", gán document Id cho nó
                         var propertyInfo = typeof(T).GetProperty("id");
                         if (propertyInfo != null && propertyInfo.PropertyType == typeof(string))
                         {
@@ -178,16 +167,13 @@ namespace KoiShop.Application.Service
         {
             try
             {
-                // lấy tham chiếu tới document trong Firestore
                 DocumentReference docRef = _firestoreDb.Collection(collectionName).Document(documentId);
                 DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
                 if (snapshot.Exists)
                 {
-                    // chuyển document sang đối tượng kiểu T
                     T document = snapshot.ConvertTo<T>();
 
-                    // nếu đối tượng có thuộc tính "id", gán document Id cho nó
                     var propertyInfo = typeof(T).GetProperty("id");
                     if (propertyInfo != null && propertyInfo.PropertyType == typeof(string))
                     {
@@ -198,7 +184,7 @@ namespace KoiShop.Application.Service
                 }
                 else
                 {
-                    return null; // null nếu document ko tồn tại
+                    return null; 
                 }
             }
             catch (Exception ex)
