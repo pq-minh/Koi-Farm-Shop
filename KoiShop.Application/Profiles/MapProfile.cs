@@ -20,10 +20,10 @@ namespace KoiShop.Application.Profiles
             CreateMap<CartDtoV1, CartItem>();
             CreateMap<CartDtoV2, CartItem>();
             CreateMap<OrderDetail, OrderDetailDtos>()
-                .ForMember(dest => dest.KoiName, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Name : string.Empty))
-                .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Name : string.Empty))
-                .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
-                .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty));
+                 .ForMember(dest => dest.KoiName, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Name : string.Empty))
+                 .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Name : string.Empty))
+                 .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
+                 .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty));
             CreateMap<Order, OrderDtos>();
             CreateMap<AddKoiDto, Koi>();
             CreateMap<AddBatchKoiDto, BatchKoi>();
@@ -31,6 +31,11 @@ namespace KoiShop.Application.Profiles
             CreateMap<Review, ReviewDtos>();
             CreateMap<ReviewDtos, Review>();
             CreateMap<OrderDetailDtoV1, OrderDetail>();
+            CreateMap<Request, RequestCareDtos>()
+                .ForMember(dest => dest.KoiName, opt => opt.MapFrom(src => src.Package.Koi != null ? src.Package.Koi.Name : string.Empty))
+                .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.Package.BatchKoi != null ? src.Package.BatchKoi.Name : string.Empty))
+                .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Package.Koi != null ? src.Package.Koi.Image : string.Empty))
+                .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.Package.BatchKoi != null ? src.Package.BatchKoi.Image : string.Empty));
         }
     }
 }

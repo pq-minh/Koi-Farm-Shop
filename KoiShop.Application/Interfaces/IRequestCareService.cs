@@ -12,6 +12,8 @@ namespace KoiShop.Application.Interfaces
     {
         Task<IEnumerable<Request>> GetKoiOrBatchCare();
         Task<IEnumerable<OrderDetailDtos>> GetCurrentOrderdetail();
+        Task<IEnumerable<RequestCareDtos>> GetAllRequestCareByStaff();
+        Task<IEnumerable<RequestCareDtos>> GetAllRequestCareByCustomer();
         Task<bool> AddKoiOrBatchToPackage(List<OrderDetailDtoV1> orderDetails);
         Task<bool> AddKoiOrBatchToRequest(List<OrderDetailDtoV1> orderDetails, DateTime endDate);
         Task<bool> UpdateKoiOrBatchToCare(int? id);

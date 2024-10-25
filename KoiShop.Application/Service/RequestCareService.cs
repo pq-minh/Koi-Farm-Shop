@@ -65,6 +65,40 @@ namespace KoiShop.Application.Service
             var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtos>>(orderDetail);
             return orderDetailDto;
         }
+        public async Task<IEnumerable<RequestCareDtos>> GetAllRequestCareByCustomer()
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return Enumerable.Empty<RequestCareDtos>();
+            }
+            var request = await _requestCareRepository.GetAllRequestCareByCustomer();
+            if (request == null) { return Enumerable.Empty<RequestCareDtos>(); }
+            var requestDto = _mapper.Map<IEnumerable<RequestCareDtos>>(request);
+            if (requestDto == null) { return Enumerable.Empty<RequestCareDtos>(); }
+            return requestDto;
+        }
+        public async Task<IEnumerable<RequestCareDtos>> GetAllRequestCareByStaff()
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return Enumerable.Empty<RequestCareDtos>();
+            }
+            var request = await _requestCareRepository.GetAllRequestCareByStaff();
+            if (request == null) { return Enumerable.Empty<RequestCareDtos>(); }
+            var requestDto = _mapper.Map<IEnumerable<RequestCareDtos>>(request);
+            if (requestDto == null) { return Enumerable.Empty<RequestCareDtos>(); }
+            return requestDto;
+        }
         public async Task<bool> AddKoiOrBatchToPackage(List<OrderDetailDtoV1> orderDetails)
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
@@ -91,7 +125,7 @@ namespace KoiShop.Application.Service
                 throw new ArgumentException("User context or user store is not valid.");
             }
             var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null || orderDetails ==  null)
+            if (userId == null || orderDetails == null)
             {
                 return false;
             }

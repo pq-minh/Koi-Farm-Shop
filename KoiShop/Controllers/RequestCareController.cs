@@ -35,6 +35,26 @@ namespace KoiShop.Controllers
             }
             return BadRequest();
         }
+        [HttpGet("user")]
+        public async Task<IActionResult> GetAllRequestCareByCustomer()
+        {
+            var request = await _requestCareService.GetAllRequestCareByCustomer();
+            if (request != null)
+            {
+                return Ok(request);
+            }
+            return BadRequest();
+        }
+        [HttpGet("allrequest")]
+        public async Task<IActionResult> GetAllRequestCareByStaff()
+        {
+            var request = await _requestCareService.GetAllRequestCareByStaff();
+            if (request != null)
+            {
+                return Ok(request);
+            }
+            return BadRequest();
+        }
         [HttpPost("package")]
         public async Task<IActionResult> AddKoiOrBatchToPackage(List<OrderDetailDtoV1> orderDetails)
         {

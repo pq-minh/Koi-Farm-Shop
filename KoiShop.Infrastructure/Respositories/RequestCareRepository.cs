@@ -59,6 +59,36 @@ namespace KoiShop.Infrastructure.Respositories
             }
             return orderdetail;
         }
+        public async Task<IEnumerable<Request>> GetAllRequestCareByCustomer()
+        {
+            var user = _userContext.GetCurrentUser();
+            if (user.Id == null)
+            {
+                return Enumerable.Empty<Request>();
+            }
+            var request = await _koiShopV1DbContext.Requests.Where(r => r.UserId == user.Id).Include(r => r.Package).Include(r => r.Package.Koi).
+                Include(r => r.Package.BatchKoi).ToListAsync();
+            if (request == null)
+            {
+                return Enumerable.Empty<Request>();
+            }
+            return request;
+        }
+        public async Task<IEnumerable<Request>> GetAllRequestCareByStaff()
+        {
+            var user = _userContext.GetCurrentUser();
+            if (user.Id == null)
+            {
+                return Enumerable.Empty<Request>();
+            }
+            var request = await _koiShopV1DbContext.Requests.Include(r => r.Package).Include(r => r.Package.Koi).
+                Include(r => r.Package.BatchKoi).ToListAsync();
+            if (request == null)
+            {
+                return Enumerable.Empty<Request>();
+            }
+            return request;
+        }
         public async Task<bool> AddKoiOrBatchToPackage(List<OrderDetail> orderDetails)
         {
             var user = _userContext.GetCurrentUser();
@@ -105,6 +135,7 @@ namespace KoiShop.Infrastructure.Respositories
                 {
                     CreatedDate = DateTime.Now,
                     PackageId = package.PackageId,
+                    ConsignmentDate = DateTime.Now,
                     TypeRequest = "Care",
                     EndDate = endDate,
                     UserId = user.Id,
@@ -118,6 +149,7 @@ namespace KoiShop.Infrastructure.Respositories
                 var request = new Request
                 {
                     CreatedDate = DateTime.Now,
+                    ConsignmentDate = DateTime.Now,
                     PackageId = package.PackageId,
                     TypeRequest = "Care",
                     EndDate = endDate,

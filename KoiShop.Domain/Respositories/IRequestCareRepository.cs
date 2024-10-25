@@ -11,6 +11,8 @@ namespace KoiShop.Domain.Respositories
     {
         Task<IEnumerable<Request>> GetKoiOrBatchCare();
         Task<IEnumerable<OrderDetail>> GetCurrentOrderdetail();
+        Task<IEnumerable<Request>> GetAllRequestCareByStaff();
+        Task<IEnumerable<Request>> GetAllRequestCareByCustomer();
         Task<bool> AddKoiOrBatchToPackage(List<OrderDetail> orderDetails);
         Task<bool> AddKoiOrBatchToRequest(List<OrderDetail> orderDetails, DateTime endDate);
         Task<bool> UpdateKoiOrBatchToCare(int? id);
