@@ -20,17 +20,17 @@ namespace KoiShop.Application.Dtos.VnPayDtos
 
     public class VnPaymentResponseFromFe()
     {
-            public string Amount { get; set; }
-            public string BankCode { get; set; }
-            public string BankTranNo { get; set; }
-            public string CardType { get; set; }
-            public string OrderInfo { get; set; }
-            public string PayDate { get; set; }
-            public string VnPayResponseCode { get; set; }
-            public string TmnCode { get; set; }
-            public string TransactionNo { get; set; }
-            public string TransactionStatus { get; set; }
-            public string TxnRef { get; set; }
-            public string SecureHash { get; set; }
+            public string? Amount { get; set; }
+            public string? BankCode { get; set; }
+            public string? BankTranNo { get; set; }
+            public string? CardType { get; set; }
+            public string? OrderInfo { get; set; }
+            public string? PayDate { get; set; }
+            public string? VnPayResponseCode { get; set; }
+            public string? TmnCode { get; set; }
+            public string? TransactionNo { get; set; }
+            public string? TransactionStatus { get; set; }
+            public string? TxnRef { get; set; }
+            public string? SecureHash { get; set; }
     }
 }

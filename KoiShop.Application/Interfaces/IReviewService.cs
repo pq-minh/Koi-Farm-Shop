@@ -12,6 +12,7 @@ namespace KoiShop.Application.Interfaces
         Task<IEnumerable<ReviewDtos>> GetReview();
         Task<bool> AddReview(ReviewDtos reviewdto);
         Task<bool> DeleteReview(int? id);
+        Task<IEnumerable<OrderDetailDtos>> GetAllOrderDetail();
         Task<IEnumerable<KoiDto>> GetKoiFromOrderDetail();
         Task<IEnumerable<BatchKoiDto>> GetBatchFromOrderDetail();
     }

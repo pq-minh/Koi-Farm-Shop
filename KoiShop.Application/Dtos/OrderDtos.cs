@@ -30,6 +30,7 @@ namespace KoiShop.Application.Dtos
         public int? DiscountId { get; set; }
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
+        public VnPaymentResponseFromFe? request { get; set; }
     }
     public class PaymentDto
     {

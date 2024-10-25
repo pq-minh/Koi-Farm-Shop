@@ -13,11 +13,11 @@ namespace KoiShop.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        private readonly IVnPayService _vnPayservice;
+        private readonly IVnPayService _vnPayService;
         public OrderController(IOrderService orderService, IVnPayService vnPayService)
         {
             _orderService = orderService;
-            _vnPayservice = vnPayService;
+            _vnPayService = vnPayService;
         }
         //[HttpGet]
         //public async Task<IActionResult> GetOrderDetail()
@@ -45,7 +45,8 @@ namespace KoiShop.Controllers
             var discountId = orderDto.DiscountId;
             var phoneNumber = orderDto.PhoneNumber;
             var address = orderDto.Address;
-            var result = await _orderService.AddOrders(carts, method, discountId, phoneNumber, address);
+            var request = orderDto.request;
+            var result = await _orderService.AddOrders(carts, method, discountId, phoneNumber, address, request);
             switch (result)
             {
                 case OrderEnum.Success:
@@ -60,6 +61,20 @@ namespace KoiShop.Controllers
                     return BadRequest("Fail update fish");
                 case OrderEnum.FailAddPayment:
                     return BadRequest("Add payment have bug");
+                case OrderEnum.FailPaid:
+                    var response = _vnPayService.ExecutePayment(request);
+                    if (response == null || !response.Success)
+                    {
+                        var paymentFailMessage = $"PaymentFail {response?.VnPayResponseCode}";
+                        var paymentResponse = new PaymentResponse
+                        {
+                            Status = OrderEnum.FailPaid,
+                            Message = paymentFailMessage
+                        };
+                        return BadRequest(paymentResponse); // Trả về đối tượng PaymentResponse
+                    }
+                    else
+                        return BadRequest("Unexpected error in payment");
                 case OrderEnum.NotLoggedInYet:
                     return Unauthorized("User is not login");
                 case OrderEnum.InvalidParameters:
@@ -73,36 +88,15 @@ namespace KoiShop.Controllers
             }
         }
         [HttpPost("createpayment")]
-        public IActionResult CreatePayment([FromBody] VnPaymentRequestModel paymentRequest)
+        public async Task<IActionResult> CreatePayment([FromBody] VnPaymentRequestModel paymentRequest)
         {
-            var vnPayModel = _vnPayservice.CreateVnpayModel(paymentRequest);
+            var vnPayModel = _vnPayService.CreateVnpayModel(paymentRequest);
             if (vnPayModel == null)
             {
                 return BadRequest("Invalid payment request");
             }
-            var paymentUrl = _vnPayservice.CreatePatmentUrl(HttpContext, vnPayModel);
+            var paymentUrl = await _vnPayService.CreatePatmentUrl(HttpContext, vnPayModel);
             return Ok(new { PaymentUrl = paymentUrl });
-        }
-        [HttpPost("handlepayment")]
-        public async Task<IActionResult> HandlePaymentCallBack([FromBody] VnPaymentResponseFromFe request)
-        {
-            var result = await _orderService.PayByVnpay(request);
-            switch (result.Status)
-            {
-                case OrderEnum.NotLoggedInYet:
-                    return Unauthorized(result.Message);
-                case OrderEnum.InvalidParameters:
-                    return BadRequest(result.Message);
-                case OrderEnum.Success:
-                    return Ok(result.Message);
-                case OrderEnum.Fail:
-                    return BadRequest(result.Message);
-                case OrderEnum.FailAddPayment:
-                    return BadRequest(result.Message);
-                default:
-                    return StatusCode(500, "Unexpected error!");
-            }
-
         }
 
     }
