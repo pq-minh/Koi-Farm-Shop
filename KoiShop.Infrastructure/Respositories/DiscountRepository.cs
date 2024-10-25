@@ -40,15 +40,16 @@ namespace KoiShop.Infrastructure.Respositories
             
         }
 
-        public async Task<string> CreateDiscount(Discount discount)
-        {   
-            if (discount.Name != null && _koiShopV1DbContext.Discounts.Any(dc => dc.Name == discount.Name))
+        public async Task<Discount> CreateDiscount(Discount discount)
+        {
+            if (discount.Name != null && await _koiShopV1DbContext.Discounts.AnyAsync(dc => dc.Name == discount.Name))
             {
-                return "Tên của mã giảm giá đã tồn tại";
+                return null;
             }
-            var discountCreate = await _koiShopV1DbContext.Discounts.AddAsync(discount);
+            await _koiShopV1DbContext.Discounts.AddAsync(discount);
             await _koiShopV1DbContext.SaveChangesAsync();
-            return "Tạo mã giảm giá thành công";
+
+            return discount;
         }
 
         public async Task<IEnumerable<Discount>> GetDiscount()

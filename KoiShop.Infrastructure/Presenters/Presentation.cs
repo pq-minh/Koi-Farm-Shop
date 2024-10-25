@@ -1,4 +1,5 @@
-﻿using KoiShop.Domain.Entities;
+﻿using KoiShop.Application.Users;
+using KoiShop.Domain.Entities;
 using KoiShop.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -30,6 +31,8 @@ namespace KoiShop.Infrastructure.Presenters
                            .AllowAnyMethod();
                 });
             });
+            //Email
+            services.AddTransient<EmailService>();
             //jwt authentication
             services.AddAuthentication(options =>
             {

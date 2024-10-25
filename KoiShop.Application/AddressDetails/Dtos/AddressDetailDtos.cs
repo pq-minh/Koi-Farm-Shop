@@ -15,5 +15,6 @@ namespace KoiShop.Application.AddressDetail.Dtos
 
         public string? StreetName { get; set; }
         public string? Ward { get; set; }
+        public string? Status { get; set;}
     }
 }

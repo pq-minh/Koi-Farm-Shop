@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using KoiShop.Application.Users.Command.ChangePassword;
 using KoiShop.Application.Users.Command.Logout;
 using KoiShop.Application.Users.Command.UpdateAddress;
+using KoiShop.Application.Users.Command.ResetPassword;
 namespace KoiShop.Controllers
 {
     [ApiController]
@@ -70,7 +71,17 @@ namespace KoiShop.Controllers
             return Ok(new { Result = result });
         }
 
-
-       
+        [HttpPost("resetpassword")]
+        public async Task<IActionResult> ResetPassword(string email)
+        {
+            var result = await mediator.Send(new ResetPasswordCommand(email));
+            return Ok(result);
+        }
+        [HttpPost("confirmpassword")]
+        public async Task<IActionResult> ConfirmPasswordRest([FromBody] ConfirmPasswordCommand confirmPasswordCommand)
+        {
+            var result = await mediator.Send(confirmPasswordCommand);
+            return Ok(result);
+        }
     }
 }

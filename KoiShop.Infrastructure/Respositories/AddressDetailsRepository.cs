@@ -23,6 +23,6 @@ namespace KoiShop.Infrastructure.Respositories
 
             return addresses;
         }
-
+            
     }
 }

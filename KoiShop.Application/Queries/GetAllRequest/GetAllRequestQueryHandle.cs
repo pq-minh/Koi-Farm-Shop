@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KoiShop.Application.Dtos.Pagination;
 using KoiShop.Application.Dtos.RequestDtos;
 using KoiShop.Application.Users;
 using KoiShop.Domain.Entities;
@@ -18,13 +19,15 @@ namespace KoiShop.Application.Queries.GetAllRequest
     public class GetAllRequestQueryHandle(IUserContext userContext,
         IUserStore<User> userStore,
         IRequestRepository requestRepository,
-        IMapper mapper) : IRequestHandler<GetAllRequestQuery, IEnumerable<RequestDtoResponse>>
+        IMapper mapper) : IRequestHandler<GetAllRequestQuery, PaginatedResult<RequestDtoResponse>>
     {
-        public async Task<IEnumerable<RequestDtoResponse>> Handle(GetAllRequestQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<RequestDtoResponse>> Handle(GetAllRequestQuery request, CancellationToken cancellationToken)
         {
             var user = userContext.GetCurrentUser();
-            var requests = await requestRepository.GetAllRequest(user.Id);
-            var requestDtos = mapper.Map<IEnumerable<RequestDtoResponse>>(requests);
+            int pageNumber = request.PageNumber;
+            int pageSize = request.PageSize;
+            var requests = await requestRepository.GetAllRequest(user.Id, pageNumber, pageSize);
+            var requestDtos = mapper.Map<PaginatedResult<RequestDtoResponse>>(requests);
             return requestDtos;
         }
     }
