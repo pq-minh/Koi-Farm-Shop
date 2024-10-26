@@ -10,7 +10,8 @@ namespace KoiShop.Application.Interfaces
     public interface IReviewService
     {
         Task<IEnumerable<ReviewDtos>> GetReview();
-        Task<bool> AddReview(ReviewDtos reviewdto);
+        Task<bool> AddReview(ReviewDtoComment reviewdto);
+        Task<bool> AddReviewStars(ReviewDtoStar reviewdto);
         Task<bool> DeleteReview(int? id);
         Task<IEnumerable<OrderDetailDtos>> GetAllOrderDetail();
         Task<IEnumerable<KoiDto>> GetKoiFromOrderDetail();

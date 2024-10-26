@@ -35,6 +35,7 @@ namespace KoiShop.Application.Extensions
             services.AddAutoMapper(typeof(ServiceCollectionExtensions).Assembly);
             services.AddScoped<FirebaseService>();
             services.AddScoped<IBlogService, BlogService>();
+            services.AddScoped<IEmailSender,EmailService>();
             services.AddScoped<IQuotationService, QuotationService>();
 
         }

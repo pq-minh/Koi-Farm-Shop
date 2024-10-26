@@ -1,4 +1,5 @@
-﻿using KoiShop.Domain.Entities;
+﻿using KoiShop.Application.Dtos.Pagination;
+using KoiShop.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace KoiShop.Domain.Respositories
     {
         Task<Koi> CreateRequest(Koi entity);
 
-        Task<IEnumerable<Request>> GetAllRequest(string userID);
+        Task<PaginatedResult<Request>> GetAllRequest(string userID,int pagnum,int pagesize);
         Task<string> DecisionRequest(int rqID,string decision);
     }
 }

@@ -19,6 +19,11 @@ namespace KoiShop.Application.Users.Command.RegisterUser
     {
         public async Task<bool> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
+            var existingUser = await identityUser.FindByEmailAsync(request.RegisterRQ.Email);
+            if (existingUser != null)
+            {
+                throw new InvalidOperationException("Email already exists.");
+            }
             var user = new User
             {
                 FirstName = request.RegisterRQ.FirstName,

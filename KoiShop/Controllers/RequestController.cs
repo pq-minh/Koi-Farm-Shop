@@ -5,6 +5,7 @@ using KoiShop.Application.Command.CreateRequest;
 using MediatR;
 using KoiShop.Application.Queries.GetAllRequest;
 using KoiShop.Application.Command.DecisionRequest;
+using KoiShop.Application.Queries.GetQuotation;
 namespace KoiShop.Controllers
 {
 
@@ -22,9 +23,10 @@ namespace KoiShop.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("get-request")]
-        public async Task<IActionResult> GetRequest()
+        public async Task<IActionResult> GetRequest(int pageNumber = 1, int pageSize = 10)
         {
-            var result = await mediator.Send(new GetAllRequestQuery() );
+            var query = new GetAllRequestQuery(pageNumber, pageSize);
+            var result = await mediator.Send(query );
             return Ok(result);
         }
 

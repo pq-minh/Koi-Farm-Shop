@@ -1,5 +1,7 @@
 ﻿using Azure.Core;
 using KoiShop.Application.Command.CreateRequest;
+using KoiShop.Application.Dtos.Pagination;
+using KoiShop.Domain.Constant;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using KoiShop.Infrastructure.Persistence;
@@ -23,15 +25,18 @@ namespace KoiShop.Infrastructure.Respositories
             return entity;
         }
 
-       public async Task<IEnumerable<Request>> GetAllRequest(string userId)
+       public async Task<PaginatedResult<Request>> GetAllRequest(string userId, int pageNumber, int pageSize)
         {
-          var result =  await koiShopV1DbContext.Requests.Where(us => us.UserId == userId).Include(pk => pk.Package)
-                .ThenInclude(k => k.Koi).ToListAsync();
-            if (result == null)
-            {
-                return null;
-            }
-            return result;
+            var query = koiShopV1DbContext.Requests
+                .Where(us => us.UserId == userId)
+                .Include(pk => pk.Package)
+                .ThenInclude(k => k.Koi);
+            var totalItems = await query.CountAsync();
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            return new PaginatedResult<Request>(items, totalItems, pageNumber, pageSize);
         }
 
 
@@ -45,7 +50,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 throw new KeyNotFoundException($"Request with ID {rqID} not found.");
             }
-            var quotation = await koiShopV1DbContext.Quotations.FindAsync(request.RequestId);
+            var quotation = await koiShopV1DbContext.Quotations.FirstOrDefaultAsync(q => q.RequestId == rqID);
             if (quotation == null)
             {
                 throw new KeyNotFoundException($"Quotation with ID {quotation.QuotationId} not found.");
@@ -80,6 +85,7 @@ namespace KoiShop.Infrastructure.Respositories
             }
 
             koiShopV1DbContext.Update(request);
+            koiShopV1DbContext.Update(quotation);
             koiShopV1DbContext.Update(kois);
 
             await koiShopV1DbContext.SaveChangesAsync();

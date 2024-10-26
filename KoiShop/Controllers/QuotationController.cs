@@ -22,9 +22,10 @@ namespace KoiShop.Controllers
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("get-quotation")]
-        public async Task<IActionResult> GetQuotation()
+        public async Task<IActionResult> GetQuotation(int pageNumber = 1, int pageSize = 10)
         {
-            var result = await mediator.Send(new GetQuotationQuery());
+            var query = new GetQuotationQuery(pageNumber, pageSize);
+            var result = await mediator.Send(query);
             return Ok(result);
         }
 

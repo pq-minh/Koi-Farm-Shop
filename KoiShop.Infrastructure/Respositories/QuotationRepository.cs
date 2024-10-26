@@ -1,4 +1,5 @@
-﻿using KoiShop.Domain.Constant;
+﻿using KoiShop.Application.Dtos.Pagination;
+using KoiShop.Domain.Constant;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using KoiShop.Infrastructure.Persistence;
@@ -33,6 +34,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 quotation.Status = "Rejected";
                 request.Status = "Rejected";
+                quotation.Note = entity.Note;
             }
            
             koiShopV1DbContext.Update(quotation);
@@ -40,36 +42,41 @@ namespace KoiShop.Infrastructure.Respositories
             await koiShopV1DbContext.SaveChangesAsync();
             return entity;
         }
-        public async Task<IEnumerable<QuotationWithKoi>> GetQuotation(string userid)
+        public async Task<PaginatedResult<QuotationWithKoi>> GetQuotation(string userid , int pageNumber, int pageSize)
         {
-            var quotationsWithKoi = await koiShopV1DbContext.Kois
+            var quotationsQuery = koiShopV1DbContext.Kois
          .Include(ft => ft.FishType)
          .Include(k => k.Packages)
              .ThenInclude(pk => pk.Requests)
                  .ThenInclude(rq => rq.Quotations)
          .SelectMany(k => k.Packages
-             .SelectMany(p => p.Requests                   
+             .SelectMany(p => p.Requests
                  .SelectMany(r => r.Quotations
                      .Where(q => q.UserId == userid || q.UserId == null)
-                        .Select(q => new QuotationWithKoi
-                        {
-                            QuotationId = q.QuotationId,
-                            RequestId = q.RequestId,
-                            CreateDate = q.CreateDate,
-                            Price = q.Price,
-                            Status = q.Status,
-                            UserId = q.UserId,
-                            Note = q.Note,
-                            KoiName = k.Name,
-                            KoiImage = k.Image,
-                            KoiAge = k.Age,
-                            KoiWeight = k.Weight,
-                            KoiSize = k.Size,
-                            FishType = k.FishType
-                        }))))
-         .ToListAsync();
+                     .Select(q => new QuotationWithKoi
+                     {
+                         QuotationId = q.QuotationId,
+                         RequestId = q.RequestId,
+                         CreateDate = q.CreateDate,
+                         Price = q.Price,
+                         Status = q.Status,
+                         UserId = q.UserId,
+                         Note = q.Note,
+                         KoiName = k.Name,
+                         KoiImage = k.Image,
+                         KoiAge = k.Age,
+                         KoiWeight = k.Weight,
+                         KoiSize = k.Size,
+                         FishType = k.FishType
+                     }))));
+            var totalItems = await quotationsQuery.CountAsync();
 
-            return quotationsWithKoi;
+
+            var items = await quotationsQuery
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+            return new PaginatedResult<QuotationWithKoi>(items, totalItems, pageNumber, pageSize);
         }
 
         public async Task<IEnumerable<Quotation>> GetQuotations(string status, DateTime startDate, DateTime endDate)

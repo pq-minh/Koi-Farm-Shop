@@ -139,7 +139,9 @@ namespace KoiShop.Infrastructure.Respositories
         {
             var userId = _userContext.GetCurrentUser().Id;
             var shoppingCart = await _koiShopV1DbContext.ShoppingCarts.Where(sc => sc.UserId == userId).FirstOrDefaultAsync();
-            var exsitFish = _koiShopV1DbContext.CartItems.FirstOrDefault(c => ((cart.KoiId.HasValue && cart.KoiId == c.KoiId) || (cart.BatchKoiId.HasValue && cart.BatchKoiId == c.BatchKoiId)) &&
+            var exsitFish = _koiShopV1DbContext.CartItems.FirstOrDefault(c => 
+            ((cart.KoiId.HasValue && cart.KoiId == c.KoiId) || 
+            (cart.BatchKoiId.HasValue && cart.BatchKoiId == c.BatchKoiId)) &&
               (c.ShoppingCartId == shoppingCart.ShoppingCartID));
             if (exsitFish != null)
             {

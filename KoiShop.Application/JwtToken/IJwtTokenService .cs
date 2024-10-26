@@ -10,5 +10,6 @@ namespace KoiShop.Application.JwtToken
     public interface IJwtTokenService
     {
         Task<string> GenerateToken(User identityUser);
+        Task<string> GenerateTokenClaims(IEnumerable<Claim> claims);
     }
 }
