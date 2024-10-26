@@ -14,7 +14,6 @@ namespace KoiShop.Domain.Respositories
         Task<Quotation> UpdatePriceQuotation(Quotation quotation, string decision);
 
         Task<PaginatedResult<QuotationWithKoi>> GetQuotation(string userId, int pageNumber, int pageSize);
-        Task<IEnumerable<QuotationWithKoi>> GetQuotation(string userid);
         Task<IEnumerable<Quotation>> GetQuotations(string status, DateTime startDate, DateTime endDate);
         Task<List<Package>> GetPackages(string status, DateTime startDate, DateTime endDate);
     }
