@@ -58,7 +58,7 @@ namespace KoiShop.Application.Service
             return orderDetailDto;
         }
 
-        public async Task<bool> AddReview (ReviewDtos reviewdto)
+        public async Task<bool> AddReview (ReviewDtoComment reviewdto)
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
             {
@@ -71,6 +71,25 @@ namespace KoiShop.Application.Service
             }
             var reviews = _mapper.Map<Review>(reviewdto);
             var result = await _reviewRepository.AddReview(reviews);
+            if (result)
+            {
+                return true;
+            }
+            return false;
+        }
+        public async Task<bool> AddReviewStars(ReviewDtoStar reviewdto)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null || reviewdto == null)
+            {
+                return false;
+            }
+            var reviews = _mapper.Map<Review>(reviewdto);
+            var result = await _reviewRepository.AddReviewStars(reviews);
             if (result)
             {
                 return true;

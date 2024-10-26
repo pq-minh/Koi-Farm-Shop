@@ -26,7 +26,7 @@ namespace KoiShop.Controllers
             return BadRequest("Not found any reviews");
         }
         [HttpPost]
-        public async Task<IActionResult> AddReview([FromBody] ReviewDtos reviewDtos)
+        public async Task<IActionResult> AddReview([FromBody] ReviewDtoComment reviewDtos)
         {
             var result = await _reviewService.AddReview(reviewDtos);
             if (result)
@@ -34,6 +34,16 @@ namespace KoiShop.Controllers
                 return Created();
             }
             return BadRequest("Can not add review");
+        }
+        [HttpPost("star")]
+        public async Task<IActionResult> AddReviewStar([FromBody] ReviewDtoStar reviewDtos)
+        {
+            var result = await _reviewService.AddReviewStars(reviewDtos);
+            if (result)
+            {
+                return Created();
+            }
+            return BadRequest("Can not add star");
         }
         [HttpDelete]
         public async Task<IActionResult> DeleteReview([FromBody] ReviewDtoV1 reviewDtoV1)

@@ -24,11 +24,24 @@ namespace KoiShop.Application.Profiles
                  .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Name : string.Empty))
                  .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
                  .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty));
+            CreateMap<OrderDetail, OrderDetailDtoV2>()
+                 .ForMember(dest => dest.KoiName, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Name : string.Empty))
+                 .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Name : string.Empty))
+                 .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
+                 .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty))
+                 .ForMember(dest => dest.KoiPrice, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Price : 0.0))
+                 .ForMember(dest => dest.BatchPrice, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Price : 0.0));
             CreateMap<Order, OrderDtos>();
             CreateMap<AddKoiDto, Koi>();
             CreateMap<AddBatchKoiDto, BatchKoi>();
             CreateMap<Discount, DiscountDto>();
-            CreateMap<Review, ReviewDtos>();
+            CreateMap<Review, ReviewDtos>()
+                .ForMember(dest => dest.KoiName, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Name : string.Empty))
+                 .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Name : string.Empty))
+                 .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
+                 .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty)); ;
+            CreateMap<Review, ReviewDtoComment>();
+            CreateMap<Review, ReviewDtoStar>();
             CreateMap<ReviewDtos, Review>();
             CreateMap<OrderDetailDtoV1, OrderDetail>();
             CreateMap<Request, RequestCareDtos>()
