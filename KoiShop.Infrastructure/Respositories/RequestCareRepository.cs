@@ -24,21 +24,6 @@ namespace KoiShop.Infrastructure.Respositories
             _userStore = userStore;
             _userContext = userContext;
         }
-
-        public async Task<IEnumerable<Request>> GetKoiOrBatchCare()
-        {
-            var user = _userContext.GetCurrentUser();
-            if (user == null)
-            {
-                return Enumerable.Empty<Request>();
-            }
-            var koiOrBatch = await _koiShopV1DbContext.Requests.Where(r => r.Status == "Care").Include(r => r.Package).Include(r => r.Package.Koi).Include(r => r.Package.BatchKoi).ToListAsync();
-            if (koiOrBatch == null)
-            {
-                return Enumerable.Empty<Request>();
-            }
-            return koiOrBatch;
-        }
         public async Task<IEnumerable<OrderDetail>> GetCurrentOrderdetail()
         {
             var user = _userContext.GetCurrentUser();
@@ -59,6 +44,21 @@ namespace KoiShop.Infrastructure.Respositories
             }
             return orderdetail;
         }
+        public async Task<IEnumerable<OrderDetail>> GetAllOrderDetail()
+        {
+            var userId = _userContext.GetCurrentUser().Id;
+            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId && o.OrderStatus != "Delivered").Select(o => o.OrderId).ToListAsync();
+            if (order == null)
+            {
+                return Enumerable.Empty<OrderDetail>();
+            }
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId)).ToListAsync();
+            if (orderDetail == null)
+            {
+                return Enumerable.Empty<OrderDetail>();
+            }
+            return orderDetail;
+        }
         public async Task<IEnumerable<Request>> GetAllRequestCareByCustomer()
         {
             var user = _userContext.GetCurrentUser();
@@ -66,8 +66,8 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return Enumerable.Empty<Request>();
             }
-            var request = await _koiShopV1DbContext.Requests.Where(r => r.UserId == user.Id).Include(r => r.Package).Include(r => r.Package.Koi).
-                Include(r => r.Package.BatchKoi).ToListAsync();
+            string[] status = { "Care", "Deliver", "Delivered" };
+            var request = await _koiShopV1DbContext.Requests.Where(r => status.Any(s => r.Status.Contains(s))).Include(r => r.Package).Include(r => r.Package.Koi).Include(r => r.Package.BatchKoi).ToListAsync();
             if (request == null)
             {
                 return Enumerable.Empty<Request>();

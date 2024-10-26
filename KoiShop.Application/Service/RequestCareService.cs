@@ -28,24 +28,6 @@ namespace KoiShop.Application.Service
             _requestCareRepository = requestCareRepository;
         }
 
-        public async Task<IEnumerable<Request>> GetKoiOrBatchCare()
-        {
-            if (_userContext.GetCurrentUser() == null || _userStore == null)
-            {
-                throw new ArgumentException("User context or user store is not valid.");
-            }
-            var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null)
-            {
-                return Enumerable.Empty<Request>();
-            }
-            var request = await _requestCareRepository.GetKoiOrBatchCare();
-            if (request == null)
-            {
-                return Enumerable.Empty<Request>();
-            }
-            return request;
-        }
         public async Task<IEnumerable<OrderDetailDtos>> GetCurrentOrderdetail()
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
@@ -65,6 +47,30 @@ namespace KoiShop.Application.Service
             var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtos>>(orderDetail);
             return orderDetailDto;
         }
+        public async Task<IEnumerable<OrderDetailDtos>> GetAllOrderDetail()
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return Enumerable.Empty<OrderDetailDtos>();
+            }
+            var orderDetail = await _requestCareRepository.GetAllOrderDetail();
+            if (orderDetail == null)
+            {
+                return Enumerable.Empty<OrderDetailDtos>();
+            }
+            var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtos>>(orderDetail);
+            if (orderDetailDto == null)
+            {
+                return Enumerable.Empty<OrderDetailDtos>();
+            }
+            return orderDetailDto;
+        }
+
         public async Task<IEnumerable<RequestCareDtos>> GetAllRequestCareByCustomer()
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
