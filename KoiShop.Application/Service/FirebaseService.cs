@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using KoiShop.Application.Dtos;
 using Google.Cloud.Firestore;
-using KoiShop.Application.Dtos.BlogDtos;
-using KoiShop.Application.Dtos.KoiShop.Application.Dtos;
 
 namespace KoiShop.Application.Service
 {
