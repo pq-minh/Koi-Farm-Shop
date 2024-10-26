@@ -23,4 +23,9 @@ namespace KoiShop.Application.Dtos
         public string? BatchKoiImage { get; set; }
 
     }
+    public class RequestCareDtoV1
+    {
+        public List<OrderDetailDtoV1> OrderDetails { get; set; }
+        public DateTime EndDate { get; set; }
+    }
 }

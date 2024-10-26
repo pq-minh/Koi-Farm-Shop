@@ -53,7 +53,7 @@ namespace KoiShop.Controllers
             return BadRequest();
         }
         [HttpPost("package")]
-        public async Task<IActionResult> AddKoiOrBatchToPackage(List<OrderDetailDtoV1> orderDetails)
+        public async Task<IActionResult> AddKoiOrBatchToPackage([FromBody]List<OrderDetailDtoV1> orderDetails)
         {
             var result = await _requestCareService.AddKoiOrBatchToPackage(orderDetails);
             if (result)
@@ -63,8 +63,10 @@ namespace KoiShop.Controllers
             return BadRequest("There was an error while adding data");
         }
         [HttpPost("request")]
-        public async Task<IActionResult> AddKoiOrBatchToRequest(List<OrderDetailDtoV1> orderDetails, DateTime endDate)
+        public async Task<IActionResult> AddKoiOrBatchToRequest([FromBody]RequestCareDtoV1 requestCareDtoV1)
         {
+            var orderDetails = requestCareDtoV1.OrderDetails;
+            var endDate = requestCareDtoV1.EndDate;
             var result = await _requestCareService.AddKoiOrBatchToRequest(orderDetails, endDate);
             if (result)
             {
