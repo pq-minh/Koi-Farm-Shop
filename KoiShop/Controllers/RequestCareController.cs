@@ -1,5 +1,6 @@
 ﻿using KoiShop.Application.Dtos;
 using KoiShop.Application.Interfaces;
+using KoiShop.Application.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,16 +16,6 @@ namespace KoiShop.Controllers
         {
             _requestCareService = requestCareService;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetKoiOrBatchRequest()
-        {
-            var KoiOrBatchRequest = await _requestCareService.GetKoiOrBatchCare();
-            if (KoiOrBatchRequest != null)
-            {
-                return Ok(KoiOrBatchRequest);
-            }
-            return BadRequest();
-        }
         [HttpGet("orderdetail")]
         public async Task<IActionResult> GetCurrentOrderDetail()
         {
@@ -35,7 +26,13 @@ namespace KoiShop.Controllers
             }
             return BadRequest();
         }
-        [HttpGet("user")]
+        [HttpGet("allorderdetail")]
+        public async Task<IActionResult> GetAllOrderDetail()
+        {
+            var orderDetail = await _requestCareService.GetAllOrderDetail();
+            return Ok(orderDetail);
+        }
+        [HttpGet]
         public async Task<IActionResult> GetAllRequestCareByCustomer()
         {
             var request = await _requestCareService.GetAllRequestCareByCustomer();

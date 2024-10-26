@@ -9,8 +9,8 @@ namespace KoiShop.Domain.Respositories
 {
     public interface IRequestCareRepository
     {
-        Task<IEnumerable<Request>> GetKoiOrBatchCare();
         Task<IEnumerable<OrderDetail>> GetCurrentOrderdetail();
+        Task<IEnumerable<OrderDetail>> GetAllOrderDetail();
         Task<IEnumerable<Request>> GetAllRequestCareByStaff();
         Task<IEnumerable<Request>> GetAllRequestCareByCustomer();
         Task<bool> AddKoiOrBatchToPackage(List<OrderDetail> orderDetails);
