@@ -13,6 +13,7 @@ namespace KoiShop.Domain.Respositories
         Task<bool> AddReview(Review reviews);
         Task<bool> DeleteReview(int id);
         Task<IEnumerable<T>> GetKoiOrBatch<T>();
+        Task<IEnumerable<OrderDetail>> GetAllOrderDetail();
         Task<bool> AddReviewStars(Review reviews);
     }
 }

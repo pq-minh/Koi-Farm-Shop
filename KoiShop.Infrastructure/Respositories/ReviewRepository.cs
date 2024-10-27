@@ -76,7 +76,7 @@ namespace KoiShop.Infrastructure.Respositories
             }
             if (reviews.Rating < 1 || reviews.Rating > 5)
             {
-                return false; 
+                return false;
             }
             review.Rating = reviews.Rating;
             _koiShopV1DbContext.Reviews.Update(review);
@@ -100,7 +100,21 @@ namespace KoiShop.Infrastructure.Respositories
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
-
+        public async Task<IEnumerable<OrderDetail>> GetAllOrderDetail()
+        {
+            var userId = _userContext.GetCurrentUser().Id;
+            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId).Select(o => o.OrderId).ToListAsync();
+            if (order == null)
+            {
+                return Enumerable.Empty<OrderDetail>();
+            }
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId)).ToListAsync();
+            if (orderDetail == null)
+            {
+                return Enumerable.Empty<OrderDetail>();
+            }
+            return orderDetail;
+        }
         public async Task<IEnumerable<T>> GetKoiOrBatch<T>()
         {
             var userId = _userContext.GetCurrentUser().Id;

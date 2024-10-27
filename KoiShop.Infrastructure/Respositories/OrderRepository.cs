@@ -176,9 +176,9 @@ namespace KoiShop.Infrastructure.Respositories
             if (discountId.HasValue)
             {
                 var pricePercentDiscount = await _discountRepository.CheckDiscount(discountId);
-                if (pricePercentDiscount != null && pricePercentDiscount > 0 && pricePercentDiscount <= 1)
+                if (pricePercentDiscount != null && pricePercentDiscount > 0 && pricePercentDiscount <= 100)
                 {
-                    totalAmount = totalAmount - (totalAmount * (float)pricePercentDiscount);
+                    totalAmount = totalAmount - (totalAmount * (float)(pricePercentDiscount/100));
                 }
             }
             order.TotalAmount = totalAmount;
@@ -302,37 +302,23 @@ namespace KoiShop.Infrastructure.Respositories
                 {
                     if (cart.KoiId.HasValue)
                     {
-                        var koi = await _koiShopV1DbContext.Kois
-                            .Where(k => k.KoiId == cart.KoiId)
-                            .FirstOrDefaultAsync();
-
-                        if (koi != null)
-                        {
-                            koi.Status = "Sold";
-                            _koiShopV1DbContext.Kois.Update(koi);
-                            anyUpdate = true; // Mark that an update occurred
-                        }
+                        var koi = await _koiShopV1DbContext.Kois.Where(k => k.KoiId == cart.KoiId).FirstOrDefaultAsync();
+                        koi.Status = "Sold";
+                        _koiShopV1DbContext.Kois.Update(koi);
+                        await _koiShopV1DbContext.SaveChangesAsync();
+                        
                     }
-                    else if (cart.BatchKoiId.HasValue)
+                    else
                     {
-                        var batchKoi = await _koiShopV1DbContext.BatchKois
-                            .Where(bk => bk.BatchKoiId == cart.BatchKoiId)
-                            .FirstOrDefaultAsync();
-
-                        if (batchKoi != null)
-                        {
-                            batchKoi.Status = "Sold";
-                            _koiShopV1DbContext.BatchKois.Update(batchKoi);
-                            anyUpdate = true; // Mark that an update occurred
-                        }
+                        var batchKoi = await _koiShopV1DbContext.BatchKois.Where(bk => bk.BatchKoiId == cart.BatchKoiId).FirstOrDefaultAsync();
+                        batchKoi.Status = "Sold";
+                        _koiShopV1DbContext.BatchKois.Update(batchKoi);
+                        await _koiShopV1DbContext.SaveChangesAsync();
+                        
                     }
                 }
-            }
-
-            // Save changes once after processing all carts
-            if (anyUpdate)
-            {
-                await _koiShopV1DbContext.SaveChangesAsync();
+                else
+                    return false;
             }
 
             return anyUpdate; // Return true if any updates were made

@@ -26,10 +26,10 @@ namespace KoiShop.Controllers
             return BadRequest("Not found any reviews");
         }
         [HttpPost]
-        public async Task<IActionResult> AddReview([FromBody]ReviewDtos reviewDtos)
+        public async Task<IActionResult> AddReview([FromBody] ReviewDtos reviewDtos)
         {
             var result = await _reviewService.AddReview(reviewDtos);
-            if(result)
+            if (result)
             {
                 return Created();
             }
@@ -57,6 +57,12 @@ namespace KoiShop.Controllers
         {
             var batch = await _reviewService.GetBatchFromOrderDetail();
             return Ok(batch);
+        }
+        [HttpGet("orderdetail")]
+        public async Task<IActionResult> GetAllOrderDetail()
+        {
+            var orderDetail = await _reviewService.GetAllOrderDetail();
+            return Ok(orderDetail);
         }
     }
 }
