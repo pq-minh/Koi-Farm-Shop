@@ -41,7 +41,9 @@ namespace KoiShop.Application.Profiles
                  .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
                  .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty)); ;
             CreateMap<Review, ReviewDtoComment>();
-            CreateMap<Review, ReviewDtoStar>();
+            CreateMap<ReviewDtos, Review>();
+            CreateMap<ReviewDtos, Review>();
+            CreateMap<ReviewAllDto, Review>();
             CreateMap<ReviewDtos, Review>();
             CreateMap<OrderDetailDtoV1, OrderDetail>();
             CreateMap<Request, RequestCareDtos>()

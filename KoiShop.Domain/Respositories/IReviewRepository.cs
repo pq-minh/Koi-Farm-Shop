@@ -15,5 +15,6 @@ namespace KoiShop.Domain.Respositories
         Task<IEnumerable<T>> GetKoiOrBatch<T>();
         Task<IEnumerable<OrderDetail>> GetAllOrderDetail();
         Task<bool> AddReviewStars(Review reviews);
+        Task<bool> AddAllReview(Review reviews);
     }
 }
