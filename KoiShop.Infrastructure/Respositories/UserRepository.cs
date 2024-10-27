@@ -53,7 +53,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return null;    
             }
-            user.Status = "Deleted";
+            user.Status = "Banned";
             await koiShopV1DbContext.SaveChangesAsync();
             return "Delete user succesffully";
             }
