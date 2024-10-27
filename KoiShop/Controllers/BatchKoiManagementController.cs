@@ -11,12 +11,12 @@ namespace KoiShop.Controllers
     [Route("api/batchkois/management")]
     public class BatchKoiManagementController : ControllerBase
     {
-        private readonly IBatchKoiService _batchKoiService;
+        private readonly IBatchKoiStaffService _batchKoiService;
         private readonly FirebaseService _firebaseService;
 
-        public BatchKoiManagementController(IBatchKoiService batchKoiService, FirebaseService firebaseService)
+        public BatchKoiManagementController(IBatchKoiStaffService batchKoiStaffService, FirebaseService firebaseService)
         {
-            _batchKoiService = batchKoiService;
+            _batchKoiService = batchKoiStaffService;
             _firebaseService = firebaseService;
         }
 

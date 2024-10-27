@@ -18,12 +18,12 @@ namespace KoiShop.Controllers
         //    //var kois = await mediator.Send(new GetAllKoiQuery());
         //    //return Ok(kois);
         //}
-        private readonly IKoiService _koiService;
+        private readonly IKoiStaffService _koiService;
         private readonly FirebaseService _firebaseService;
 
-        public KoiManagementController(IKoiService koiService, FirebaseService firebaseService)
+        public KoiManagementController(FirebaseService firebaseService, IKoiStaffService koiStaffService)
         {
-            _koiService = koiService;
+            _koiService = koiStaffService;
             _firebaseService = firebaseService;
         }
 
