@@ -106,7 +106,55 @@ namespace KoiShop.Infrastructure.Respositories
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
-
+        public async Task<bool> AddAllReview(Review reviews)
+        {
+            var user = _userContext.GetCurrentUser();
+            if (reviews == null || user.Id == null)
+            {
+                return false;
+            }
+            int? batchKoiId = null;
+            int? koiId = null;
+            if (reviews.KoiId == null)
+            {
+                batchKoiId = reviews.BatchKoiId;
+            }
+            else if (reviews.BatchKoiId == null || reviews.BatchKoiId == 0)
+            {
+                koiId = reviews.KoiId;
+            }
+            else if (batchKoiId == null && koiId == null)
+            {
+                return false;
+            }
+            var review = await _koiShopV1DbContext.Reviews.Where(r => (r.KoiId == reviews.KoiId || r.BatchKoiId == reviews.BatchKoiId) && r.UserId == user.Id).FirstOrDefaultAsync();
+            if (review == null)
+            {
+                var reviewnew = new Review
+                {
+                    BatchKoiId = batchKoiId,
+                    KoiId = koiId,
+                    Comments = reviews.Comments,
+                    UserId = user.Id,
+                    CreateDate = DateTime.Now,
+                    Rating = reviews.Rating,
+                };
+                _koiShopV1DbContext.Reviews.Add(reviewnew);
+                await _koiShopV1DbContext.SaveChangesAsync();
+            }
+            string? comment = review.Comments;
+            if (reviews.Comments != null)
+                comment = reviews.Comments;
+            review.Comments = comment;
+            review.CreateDate = DateTime.Now;
+            int? rating = review.Rating;
+            if (reviews.Rating != null && reviews.Rating >= 0 && reviews.Rating <= 5 && reviews.Rating != review.Rating)
+                rating = reviews.Rating;
+            review.Rating = rating;
+            _koiShopV1DbContext.Reviews.Update(review);
+            await _koiShopV1DbContext.SaveChangesAsync();
+            return true;
+        }
         public async Task<bool> DeleteReview(int id)
         {
             var user = _userContext.GetCurrentUser();
@@ -141,30 +189,38 @@ namespace KoiShop.Infrastructure.Respositories
         public async Task<IEnumerable<T>> GetKoiOrBatch<T>()
         {
             var userId = _userContext.GetCurrentUser().Id;
-            var orders = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId).ToListAsync();
-            if (orders == null)
+            var orderIds = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId).Select(o => o.OrderId).ToListAsync();
+            if (orderIds == null)
             {
                 return Enumerable.Empty<T>();
             }
+            var fish = await _koiShopV1DbContext.OrderDetails.Where(od => orderIds.Contains((int)od.OrderId)).ToListAsync();
 
-            var orderIds = orders.Select(o => o.OrderId).ToList();
-            var fish = await _koiShopV1DbContext.OrderDetails
-                .Where(od => orderIds.Contains((int)od.OrderId))
-                .ToListAsync();
-            if (fish == null)
+            if (fish == null || !fish.Any())
             {
                 return Enumerable.Empty<T>();
             }
-            var batch = await _koiShopV1DbContext.BatchKois.Where(b => fish.Any(f => b.BatchKoiId == f.BatchKoiId)).ToListAsync();
-            var koi = await _koiShopV1DbContext.Kois.Where(k => fish.Any(f => k.KoiId == f.KoiId)).ToListAsync();
+            var batchKoiIds = fish.Where(f => f.BatchKoiId.HasValue).Select(f => f.BatchKoiId.Value).ToList();
+            var koiIds = fish.Where(f => f.KoiId.HasValue).Select(f => f.KoiId.Value).ToList();
+
+            List<BatchKoi> batch = null;
+            List<Koi> koi = null;
+
             if (typeof(T) == typeof(BatchKoi))
             {
+                batch = await _koiShopV1DbContext.BatchKois
+                    .Where(b => batchKoiIds.Contains(b.BatchKoiId))
+                    .ToListAsync();
                 return batch as IEnumerable<T>;
             }
             else if (typeof(T) == typeof(Koi))
             {
+                koi = await _koiShopV1DbContext.Kois
+                    .Where(k => koiIds.Contains(k.KoiId))
+                    .ToListAsync();
                 return koi as IEnumerable<T>;
             }
+
             return Enumerable.Empty<T>();
         }
     }

@@ -5,16 +5,20 @@ using KoiShop.Application.Service;
 using KoiShop.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("api/batchkois/management")]
-public class BatchKoiManagementController : ControllerBase
+namespace KoiShop.Controllers
 {
-    private readonly IBatchKoiService _batchKoiService;
-
-    public BatchKoiManagementController(IBatchKoiService batchKoiService)
+    [ApiController]
+    [Route("api/batchkois/management")]
+    public class BatchKoiManagementController : ControllerBase
     {
-        _batchKoiService = batchKoiService;
-    }
+        private readonly IBatchKoiStaffService _batchKoiService;
+        private readonly FirebaseService _firebaseService;
+
+        public BatchKoiManagementController(IBatchKoiStaffService batchKoiStaffService, FirebaseService firebaseService)
+        {
+            _batchKoiService = batchKoiStaffService;
+            _firebaseService = firebaseService;
+        }
 
     [HttpGet("get")]
     public async Task<IActionResult> GetAllBatchKoi()

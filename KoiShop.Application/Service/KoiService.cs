@@ -9,16 +9,15 @@ using Microsoft.AspNetCore.Http;
 
 namespace KoiShop.Application.Service
 {
-    public class KoiService : IKoiService
+    public class KoiService : IKoiService 
     {
         private readonly IMapper _mapper;
         private readonly IKoiRepository _koiRepository;
         private readonly FirebaseService _firebaseService;
 
-        public KoiService(IKoiRepository koiRepository, FirebaseService firebaseService, IMapper mapper)
+        public KoiService(IKoiRepository koiRepository, IMapper mapper)
         {
             _koiRepository = koiRepository;
-            _firebaseService = firebaseService;
             _mapper = mapper;
         }
 
