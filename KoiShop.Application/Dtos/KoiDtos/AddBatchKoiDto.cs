@@ -66,7 +66,6 @@ namespace KoiShop.Application.Dtos.KoiDtos
         [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is 5 MB.")]
         [AllowedFileTypes(".pdf,.jpg,.jpeg,.png", ErrorMessage = "Only certificate files (pdf, jpg, jpeg, png) are allowed.")]
         public IFormFile Certificate { get; set; }
-
     }
 
 }

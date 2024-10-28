@@ -36,7 +36,7 @@ namespace KoiShop.Controllers
             return Ok(koi);
         }
 
-        [HttpPost]
+        [HttpPost("add")]
         public async Task<IActionResult> AddKoi([FromForm] AddKoiDto koiDto)
         {
             if (koiDto == null)
