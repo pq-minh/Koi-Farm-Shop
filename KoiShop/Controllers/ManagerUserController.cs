@@ -32,6 +32,7 @@ namespace KoiShop.Controllers
             var result = await mediator.Send(deleteUserCommand);
             return Ok(result);
         }
+
     }
    
 }
