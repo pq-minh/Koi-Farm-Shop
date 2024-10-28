@@ -1,4 +1,5 @@
-﻿using KoiShop.Application.Dtos;
+﻿using Datadog.Trace;
+using KoiShop.Application.Dtos;
 using KoiShop.Application.Interfaces;
 using KoiShop.Application.Queries.GetAllKoi;
 using MediatR;
@@ -26,8 +27,8 @@ namespace KoiShop.Controllers
         [HttpGet]
         public async Task<IActionResult> GetKois()
         {
-            var allKoi = await _koiService.GetAllKoi();
-            return Ok(allKoi);
+                var allKoi = await _koiService.GetAllKoi();
+                return Ok(allKoi);
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetKoi(int id)

@@ -28,8 +28,8 @@ namespace KoiShop.Infrastructure.Extensions
             services.AddScoped<IUserSeeder, UserSeeder>();
             services.AddScoped<IDiscountRepository, DiscountRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRequestCareRepository, RequestCareRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddDbContext<KoiShopV1DbContext>(options => options.UseSqlServer(connectionString));
             services.AddIdentity<User, IdentityRole>(options =>
             {

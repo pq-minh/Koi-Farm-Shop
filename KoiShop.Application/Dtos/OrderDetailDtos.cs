@@ -49,5 +49,7 @@ namespace KoiShop.Application.Dtos
         public double? BatchPrice { get; set; }
         public string KoiImage { get; set; }
         public string BatchKoiImage { get; set; }
+
+        public string? Certificate { get; set; }
     }
 }

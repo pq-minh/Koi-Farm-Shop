@@ -1,4 +1,5 @@
 ﻿using KoiShop.Application.Dtos.PackageDtos;
+using KoiShop.Application.Dtos.QuotationDtos;
 using KoiShop.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -22,5 +23,7 @@ namespace KoiShop.Application.Dtos.RequestDtos
         public string? Status { get; set; }
         public string? TypeRequest { get; set; }
         public virtual PackageDtoResponse? Package { get; set; }
+        public virtual ICollection<QuotationDtoResponse> Quotations { get; set; } = new List<QuotationDtoResponse>();
+
     }
 }

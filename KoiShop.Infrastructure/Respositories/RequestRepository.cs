@@ -30,7 +30,8 @@ namespace KoiShop.Infrastructure.Respositories
             var query = koiShopV1DbContext.Requests
                 .Where(us => us.UserId == userId)
                 .Include(pk => pk.Package)
-                .ThenInclude(k => k.Koi);
+                    .ThenInclude(k => k.Koi)
+                .Include(r => r.Quotations);
             var totalItems = await query.CountAsync();
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
@@ -71,6 +72,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 request.Status = "Completed";
                 kois.Status = "OnSale";
+                kois.Price = request.AgreementPrice;
                 quotation.Status = "Completed";
             }
             else if (decision == "reject")
