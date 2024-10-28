@@ -26,11 +26,10 @@ namespace KoiShop.Controllers
             this.userManager = userManager;
             this.jwtTokenService = jwtTokenService;
         }
-
         [HttpPost("external-login-callback")]
         public async Task<IActionResult> ExternalLoginCallback([FromBody] ExternalLoginRequest request)
         {
-            var token = request.Token; 
+            var token = request.Token;
             if (string.IsNullOrEmpty(token))
             {
                 return BadRequest(new { error = "Token is missing." });
@@ -54,9 +53,9 @@ namespace KoiShop.Controllers
             new Claim(ClaimTypes.GivenName, payload.GivenName),
             new Claim(ClaimTypes.Surname, payload.FamilyName)
                 })),
-                "Google", 
-                payload.Subject, 
-                email 
+                "Google",
+                payload.Subject,
+                email
             );
 
             var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider,
@@ -67,35 +66,42 @@ namespace KoiShop.Controllers
             if (signInResult.Succeeded)
             {
                 user = await userManager.FindByEmailAsync(email);
-                var jwtTokenLogin = await jwtTokenService.GenerateToken(user);
-                return Ok(new { redirectUrl = "/", token = jwtTokenLogin });
+               
             }
             else
             {
-                user = await userManager.FindByEmailAsync(email) ?? new User
+                user = await userManager.FindByEmailAsync(email);
+                if (user == null) 
                 {
-                    UserName = email,
-                    Email = email,
-                    FirstName = payload.GivenName,
-                    LastName = payload.FamilyName,
-                    PhoneNumber = string.Empty 
-                };
+                    user = new User
+                    {
+                        UserName = email,
+                        Email = email,
+                        FirstName = payload.GivenName,
+                        LastName = payload.FamilyName,
+                        PhoneNumber = string.Empty 
+                    };
+                    var createResult = await userManager.CreateAsync(user);
+                    if (!createResult.Succeeded)
+                    {
+                        return BadRequest(new { error = "User creation failed.", details = createResult.Errors });
+                    }
 
-                var createResult = await userManager.CreateAsync(user);
-                if (!createResult.Succeeded)
-                {
-                    return BadRequest(new { error = "User creation failed.", details = createResult.Errors });
+                    await userManager.AddLoginAsync(user, info);
+                    await userManager.AddToRoleAsync(user, UserRoles.Customer);
                 }
 
-                await userManager.AddLoginAsync(user, info);
-                await userManager.AddToRoleAsync(user, UserRoles.Customer);
                 await signInManager.SignInAsync(user, isPersistent: false);
             }
-            user = await userManager.FindByEmailAsync(user.Email);
+            if (string.IsNullOrEmpty(user.PhoneNumber))
+            {
+                return Ok(new { redirectUrl = "/userinfor", message = "Please complete your profile." });
+            }
             var jwtToken = await jwtTokenService.GenerateToken(user);
             return Ok(new { redirectUrl = "/", token = jwtToken });
-
         }
-    }
+
 
     }
+
+}
