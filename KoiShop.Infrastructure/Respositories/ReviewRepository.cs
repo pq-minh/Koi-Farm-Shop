@@ -68,8 +68,14 @@ namespace KoiShop.Infrastructure.Respositories
                 _koiShopV1DbContext.Reviews.Add(reviewnew);
                 await _koiShopV1DbContext.SaveChangesAsync();
             }
-         
-            review.Comments = reviews.Comments;
+
+
+            string? comment = null;
+            if (reviews.Comments != null)
+                comment = reviews.Comments;
+            else if (review.Comments != null)
+                comment = reviews.Comments;
+            review.Comments = comment;
             review.CreateDate = DateTime.Now;   
             _koiShopV1DbContext.Reviews.Update(review);
             await _koiShopV1DbContext.SaveChangesAsync();

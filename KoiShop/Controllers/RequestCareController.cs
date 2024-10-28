@@ -52,8 +52,28 @@ namespace KoiShop.Controllers
             }
             return BadRequest();
         }
+        [HttpPost]
+        public async Task<IActionResult> AddFullKoiOrBatchToRequest([FromBody] RequestCareDtoV1 requestCareDtoV1)
+        {
+            var orderDetails = requestCareDtoV1.OrderDetails;
+            var endDate = requestCareDtoV1.EndDate;
+            var result = await _requestCareService.AddFullKoiOrBatchToRequest(orderDetails, endDate);
+            switch (result)
+            {
+                case RequestCareEnum.Success:
+                    return Created();
+                case RequestCareEnum.UserNotAuthenticated:
+                    return BadRequest("User not authenticated");
+                case RequestCareEnum.FailAddRequest:
+                    return BadRequest("An error occurred during the final processing step");
+                case RequestCareEnum.Fail:
+                    return BadRequest("An error occurred during the add process");
+                default:
+                    return BadRequest("Unexpected error");
+            }
+        }
         [HttpPost("package")]
-        public async Task<IActionResult> AddKoiOrBatchToPackage([FromBody]List<OrderDetailDtoV1> orderDetails)
+        public async Task<IActionResult> AddKoiOrBatchToPackage([FromBody] List<OrderDetailDtoV1> orderDetails)
         {
             var result = await _requestCareService.AddKoiOrBatchToPackage(orderDetails);
             if (result)
@@ -63,7 +83,7 @@ namespace KoiShop.Controllers
             return BadRequest("There was an error while adding data");
         }
         [HttpPost("request")]
-        public async Task<IActionResult> AddKoiOrBatchToRequest([FromBody]RequestCareDtoV1 requestCareDtoV1)
+        public async Task<IActionResult> AddKoiOrBatchToRequest([FromBody] RequestCareDtoV1 requestCareDtoV1)
         {
             var orderDetails = requestCareDtoV1.OrderDetails;
             var endDate = requestCareDtoV1.EndDate;
