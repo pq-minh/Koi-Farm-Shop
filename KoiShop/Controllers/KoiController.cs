@@ -18,7 +18,7 @@ namespace KoiShop.Controllers
         //    var kois = await mediator.Send(new GetAllKoiQuery());
         //    return Ok(kois);
         //}
-        private readonly IKoiService _koiService;
+        private readonly IKoiService _koiService;      
         public KoiController(IKoiService koiService)
         {
             _koiService = koiService;

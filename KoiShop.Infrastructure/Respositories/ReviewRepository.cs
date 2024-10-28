@@ -106,7 +106,55 @@ namespace KoiShop.Infrastructure.Respositories
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
-
+        public async Task<bool> AddAllReview(Review reviews)
+        {
+            var user = _userContext.GetCurrentUser();
+            if (reviews == null || user.Id == null)
+            {
+                return false;
+            }
+            int? batchKoiId = null;
+            int? koiId = null;
+            if (reviews.KoiId == null)
+            {
+                batchKoiId = reviews.BatchKoiId;
+            }
+            else if (reviews.BatchKoiId == null || reviews.BatchKoiId == 0)
+            {
+                koiId = reviews.KoiId;
+            }
+            else if (batchKoiId == null && koiId == null)
+            {
+                return false;
+            }
+            var review = await _koiShopV1DbContext.Reviews.Where(r => (r.KoiId == reviews.KoiId || r.BatchKoiId == reviews.BatchKoiId) && r.UserId == user.Id).FirstOrDefaultAsync();
+            if (review == null)
+            {
+                var reviewnew = new Review
+                {
+                    BatchKoiId = batchKoiId,
+                    KoiId = koiId,
+                    Comments = reviews.Comments,
+                    UserId = user.Id,
+                    CreateDate = DateTime.Now,
+                    Rating = reviews.Rating,
+                };
+                _koiShopV1DbContext.Reviews.Add(reviewnew);
+                await _koiShopV1DbContext.SaveChangesAsync();
+            }
+            string? comment = review.Comments;
+            if (reviews.Comments != null)
+                comment = reviews.Comments;
+            review.Comments = comment;
+            review.CreateDate = DateTime.Now;
+            int? rating = review.Rating;
+            if (reviews.Rating != null && reviews.Rating >= 0 && reviews.Rating <= 5 && reviews.Rating != review.Rating)
+                rating = reviews.Rating;
+            review.Rating = rating;
+            _koiShopV1DbContext.Reviews.Update(review);
+            await _koiShopV1DbContext.SaveChangesAsync();
+            return true;
+        }
         public async Task<bool> DeleteReview(int id)
         {
             var user = _userContext.GetCurrentUser();

@@ -36,4 +36,11 @@ namespace KoiShop.Application.Dtos
         public int? KoiId { get; set; }
         public int? BatchKoiId { get; set; }
     }
+    public class ReviewAllDto
+    {
+        public int? Rating { get; set; }
+        public string? Comments { get; set; }
+        public int? KoiId { get; set; }
+        public int? BatchKoiId { get; set; }
+    }
 }

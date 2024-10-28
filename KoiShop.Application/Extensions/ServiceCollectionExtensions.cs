@@ -16,7 +16,9 @@ namespace KoiShop.Application.Extensions
         {
             services.AddAutoMapper(typeof(MapProfile));
             services.AddScoped<IKoiService, KoiService>();
+            services.AddScoped<IKoiStaffService, KoiStaffService>();
             services.AddScoped<IBatchKoiService, BatchKoiService>();
+            services.AddScoped<IBatchKoiStaffService, BatchKoiStaffService>();
             services.AddScoped<IKoiAndBatchKoiService, KoiAndBatchKoiService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
