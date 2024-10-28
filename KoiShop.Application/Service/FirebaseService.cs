@@ -25,7 +25,7 @@ namespace KoiShop.Application.Service
             {
                 FirebaseApp.Create(new AppOptions
                 {
-                    Credential = GoogleCredential.FromFile(serviceAccountPath),
+                    //Credential = GoogleCredential.FromFile(serviceAccountPath),
                     ProjectId = configuration["Firebase:ProjectId"]
                 });
             }
