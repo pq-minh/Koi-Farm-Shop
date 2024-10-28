@@ -8,5 +8,6 @@ namespace KoiShop.Application.Dtos.QuotationDtos
 {
     public class QuotationDtoResponse
     {
+        public string? Note { get; set; }
     }
 }

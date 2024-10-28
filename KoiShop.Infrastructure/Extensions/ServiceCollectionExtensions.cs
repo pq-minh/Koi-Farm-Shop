@@ -28,7 +28,6 @@ namespace KoiShop.Infrastructure.Extensions
             services.AddScoped<IUserSeeder, UserSeeder>();
             services.AddScoped<IDiscountRepository, DiscountRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
-<<<<<<<<< Temporary merge branch 1
             services.AddScoped<IRequestCareRepository, RequestCareRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddDbContext<KoiShopV1DbContext>(options => options.UseSqlServer(connectionString));
