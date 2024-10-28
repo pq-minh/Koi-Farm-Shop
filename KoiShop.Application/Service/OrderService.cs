@@ -14,6 +14,8 @@ using Microsoft.IdentityModel.Tokens;
 using PhoneNumbers;
 using static Google.Rpc.Context.AttributeContext.Types;
 using KoiShop.Application.Dtos.VnPayDtos;
+using System.Runtime.CompilerServices;
+using KoiShop.Application.Dtos.OrderDtos;
 
 namespace KoiShop.Application.Service
 {
@@ -356,6 +358,35 @@ namespace KoiShop.Application.Service
                 count++;
             }
             return count;
+        }
+
+
+        public async Task<bool> UpdateOrder(UpdateOrderDtos order)
+        {
+            var currentOrder = await _orderRepository.GetOrderById(order.OrderId);
+            if(currentOrder == null)
+            {
+                return false;
+            }
+
+            if(order.TotalAmount.HasValue)  currentOrder.TotalAmount = order.TotalAmount.Value;
+            if(order.CreateDate.HasValue)    currentOrder.CreateDate = order.CreateDate.Value;
+            if(!string.IsNullOrEmpty(order.OrderStatus)) currentOrder.OrderStatus = order.OrderStatus;
+            if(order.DiscountId.HasValue) currentOrder.DiscountId = order.DiscountId.Value;
+            if(!string.IsNullOrEmpty(order.PhoneNumber)) currentOrder.PhoneNumber = order.PhoneNumber;
+            if (!string.IsNullOrEmpty(order.ShippingAddress)) currentOrder.ShippingAddress = order.ShippingAddress;
+
+            return await _orderRepository.UpdateOrder(currentOrder);
+        }
+
+        public async Task<bool> UpdateOrderStatus(int orderId, string status)
+        {
+            var orders = await _orderRepository.GetOrderById(orderId);
+            if(orders == null) return false;
+            
+            orders.OrderStatus = status;
+
+            return await _orderRepository.UpdateOrder(orders);
         }
 
     }

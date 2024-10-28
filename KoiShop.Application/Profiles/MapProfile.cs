@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KoiShop.Application.Dtos;
 using KoiShop.Application.Dtos.KoiDtos;
+using KoiShop.Application.Dtos.OrderDtos;
 using KoiShop.Domain.Entities;
 using System;
 using System.Collections.Generic;

@@ -24,130 +24,141 @@ namespace KoiShop.Application.Service
             _mapper = mapper;
         }
 
-        // Staff =====================
-
         // BatchKoi Methods ===========================================================================================
         public async Task<IEnumerable<BatchKoi>> GetAllBatchKoiStaff()
         {
-            return await _batchKoiRepository.GetAllBatchKoiAsync();
+            return await _batchKoiRepository.GetBatchKois();
+        }
+
+        public async Task<BatchKoi> GetBatchKoiById(int batchKoiId)
+        {
+            return await _batchKoiRepository.GetBatchKoiById(batchKoiId);
         }
 
         public async Task<bool> AddBatchKoi(AddBatchKoiDto batchKoiDto)
         {
-            var batchKoi = _mapper.Map<BatchKoi>(batchKoiDto);
+            if (batchKoiDto == null) return false;
+
+            var allCates = await _batchKoiRepository.GetBatchKoiCategories();
+            bool exist = allCates.Any(cate => cate.BatchTypeId == batchKoiDto.BatchTypeId);
+
+            if (!exist)
+                return false;
 
             var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorage(batchKoiDto.KoiImage, "KoiFishImage");
             var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorage(batchKoiDto.Certificate, "KoiFishCertificate");
 
-            batchKoi.Image = koiImageUrl;
-            batchKoi.Certificate = cerImageUrl;
-            return await _batchKoiRepository.AddBatchKoiAsync(batchKoi);
-        }
-
-        public async Task<bool> UpdateBatchKoi(BatchKoi batchKoi)
-        {
-            return await _batchKoiRepository.UpdateBatchKoiAsync(batchKoi);
-        }
-        public async Task<BatchKoi> GetBatchKoiById(int id)
-        {
-            return await _batchKoiRepository.GetBatchKoiByIdAsync(id);
-        }
-
-        public async Task<bool> ValidateBatchTypeIdInBatchKoi(int batchTypeId)
-        {
-            if (batchTypeId < 1) return false;
-            // ktra xem có tồn tại BtachTypeId trong BatchKoi
-            var list = await GetAllBatchKoiCategory();
-            bool contain = false;
-            foreach (var item in list)
+            var batchKoi = new BatchKoi
             {
-                if (batchTypeId == item.BatchTypeId)
-                {
-                    contain = true;
-                }
-            }
-            if (!contain) return false;
+                BatchTypeId = batchKoiDto.BatchTypeId,
+                Name = batchKoiDto.Name,
+                Description = batchKoiDto.Description,
+                Quantity = batchKoiDto.Quantity,
+                Weight = batchKoiDto.Weight,
+                Size = batchKoiDto.Size,
+                Origin = batchKoiDto.Origin,
+                Gender = batchKoiDto.Gender,
+                Age = batchKoiDto.Age,
+                Certificate = cerImageUrl,
+                Image = koiImageUrl,
+                Price = batchKoiDto.Price,
+                Status = batchKoiDto.Status
+            };
 
-            return true;
+            return await _batchKoiRepository.AddBatchKoi(batchKoi);
         }
 
-        public async Task<BatchKoi> ValidateUpdateBatchKoiInfo(int batchKoiId, UpdateBatchKoiDto batchKoiDto)
+        public async Task<bool> UpdateBatchKoi(UpdateBatchKoiDto batchKoiDto)
         {
-            // lấy cá koi cần update từ database 
-            var currentBatchKoi = await GetBatchKoiById(batchKoiId);
-            if (currentBatchKoi == null)
-                return null;
+            if (batchKoiDto == null) return false;
 
-            // so sánh koi từ db vs koi gửi từ frontend
-            // nếu property nào có tt hợp lệ gửi từ Form thì update, ko thì thôi
+            var currentKoi = await _batchKoiRepository.GetBatchKoiById(batchKoiDto.BatchKoiId);
+            if (currentKoi == null) return false;
+
             if (batchKoiDto.BatchTypeId.HasValue)
             {
-                if (await ValidateBatchTypeIdInBatchKoi((int)batchKoiDto.BatchTypeId))
-                    currentBatchKoi.BatchTypeId = batchKoiDto.BatchTypeId;
+                var allCates = await _batchKoiRepository.GetBatchKoiCategories();
+                bool exist = allCates.Any(cate => cate.BatchTypeId == batchKoiDto.BatchTypeId.Value);
+
+                if (exist)
+                    currentKoi.BatchTypeId = batchKoiDto.BatchTypeId.Value;
                 else
-                    return null;
+                    return false;
             }
 
-            if (!string.IsNullOrEmpty(batchKoiDto.BatchKoiName)) currentBatchKoi.Name = batchKoiDto.BatchKoiName;
-            if (!string.IsNullOrEmpty(batchKoiDto.Origin)) currentBatchKoi.Origin = batchKoiDto.Origin;
-            if (!string.IsNullOrEmpty(batchKoiDto.Description)) currentBatchKoi.Description = batchKoiDto.Description;
-            if (!string.IsNullOrEmpty(batchKoiDto.Age)) currentBatchKoi.Age = batchKoiDto.Age;
-            if (!string.IsNullOrEmpty(batchKoiDto.Gender)) currentBatchKoi.Gender = batchKoiDto.Gender;
-            if (!string.IsNullOrEmpty(batchKoiDto.Quantity)) currentBatchKoi.Quantity = batchKoiDto.Quantity;
-            if (!string.IsNullOrEmpty(batchKoiDto.Weight)) currentBatchKoi.Weight = batchKoiDto.Weight;
-            if (!string.IsNullOrEmpty(batchKoiDto.Size)) currentBatchKoi.Size = batchKoiDto.Size;
-            if (!string.IsNullOrEmpty(batchKoiDto.Status)) currentBatchKoi.Status = batchKoiDto.Status;
-            if (batchKoiDto.Price.HasValue && batchKoiDto.Price > 0) currentBatchKoi.Price = batchKoiDto.Price;
+            if (!string.IsNullOrEmpty(batchKoiDto.Name)) currentKoi.Name = batchKoiDto.Name;
+            if (!string.IsNullOrEmpty(batchKoiDto.Description)) currentKoi.Description = batchKoiDto.Description;
+            if (!string.IsNullOrEmpty(batchKoiDto.Quantity)) currentKoi.Quantity = batchKoiDto.Quantity;
+            if (!string.IsNullOrEmpty(batchKoiDto.Weight)) currentKoi.Weight = batchKoiDto.Weight;
+            if (!string.IsNullOrEmpty(batchKoiDto.Size)) currentKoi.Size = batchKoiDto.Size;
+            if (!string.IsNullOrEmpty(batchKoiDto.Origin)) currentKoi.Origin = batchKoiDto.Origin;
+            if (!string.IsNullOrEmpty(batchKoiDto.Gender)) currentKoi.Gender = batchKoiDto.Gender;
+            if (!string.IsNullOrEmpty(batchKoiDto.Age)) currentKoi.Age = batchKoiDto.Age;
+            if (batchKoiDto.Price.HasValue) currentKoi.Price = batchKoiDto.Price.Value;
+            if (!string.IsNullOrEmpty(batchKoiDto.Status)) currentKoi.Status = batchKoiDto.Status;
 
-            string batchKoiImage = await ValidateImage(batchKoiDto.KoiImage, currentBatchKoi.Image, "KoiFishImage");
-            string batchKoiCertificate = await ValidateImage(batchKoiDto.Certificate, currentBatchKoi.Certificate, "KoiFishCertificate");
-
-            if (!string.IsNullOrEmpty(batchKoiImage))
-                currentBatchKoi.Image = batchKoiImage;
-
-            if (!string.IsNullOrEmpty(batchKoiCertificate))
-                currentBatchKoi.Certificate = batchKoiCertificate;
-
-            return currentBatchKoi;
-        }
-
-        public async Task<string> ValidateImage(IFormFile image, string oldImagePath, string path)
-        {
-            string currentImagePath = null;
-            if (image != null)
+            if (batchKoiDto.KoiImage != null)
             {
-                string imagePath = _firebaseService.GetRelativeFilePath(oldImagePath);
-                if (imagePath != null)       // xóa ảnh cũ trong firebase
-                    await _firebaseService.DeleteFileInFirebaseStorage(imagePath);
-
-                // upload ảnh mới lên firebase
-                currentImagePath = await _firebaseService.UploadFileToFirebaseStorage(image, path);
-                if (currentImagePath == null)
-                    return null;
+                string koiImage = await UpdateImage(batchKoiDto.KoiImage, currentKoi.Image, "KoiFishImage");
+                if (!string.IsNullOrEmpty(koiImage))
+                    currentKoi.Image = koiImage;
             }
-            return currentImagePath;
+
+            if (batchKoiDto.Certificate != null)
+            {
+                string koiCer = await UpdateImage(batchKoiDto.Certificate, currentKoi.Certificate, "KoiFishCertificate");
+                if (!string.IsNullOrEmpty(koiCer))
+                    currentKoi.Certificate = koiCer;
+            }
+
+            return await _batchKoiRepository.UpdateBatchKoi(currentKoi);
         }
 
-        public async Task<bool> UpdateBatchKoiStatus(int batchkoiId, string status)
+
+        public async Task<string> UpdateImage(IFormFile imageFile, string oldImagePath, string directory)
         {
-            var batchKoi = await _batchKoiRepository.GetBatchKoiByIdAsync(batchkoiId);
+            if (imageFile == null)
+            {
+                return null;
+            }
+
+            // sóa ảnh cũ 
+            string imagePath = _firebaseService.GetRelativeFilePath(oldImagePath);
+            if (!string.IsNullOrEmpty(imagePath))
+            {
+                await _firebaseService.DeleteFileInFirebaseStorage(imagePath);
+            }
+
+            // up ảnh mới
+            string newImageUrl = await _firebaseService.UploadFileToFirebaseStorage(imageFile, directory);
+            if (string.IsNullOrEmpty(newImageUrl))
+            {
+                return null;
+            }
+
+            return newImageUrl;
+        }
+
+
+        public async Task<bool> UpdateBatchKoiStatus(int batchKoiId, string status)
+        {
+            var batchKoi = await _batchKoiRepository.GetBatchKoiById(batchKoiId);
             if (batchKoi == null) return false;
 
             batchKoi.Status = status;
 
-            return await _batchKoiRepository.UpdateBatchKoiAsync(batchKoi); ;
+            return await _batchKoiRepository.UpdateBatchKoi(batchKoi);
         }
 
-        // BatchKoiCategory Methods ====================================================================================
-
+        // KoiCategory Methods ======================================================================================
         public async Task<IEnumerable<BatchKoiCategory>> GetAllBatchKoiCategory()
         {
-            return await _batchKoiRepository.GetAllBatchKoiCategoryAsync();
+            return await _batchKoiRepository.GetBatchKoiCategories();
         }
 
         public async Task<List<BatchKoi>> GetBatchKoiInBatchKoiCategory(int batchTypeId)
         {
-            return await _batchKoiRepository.GetBatchKoiInBatchKoiCategoryAsync(batchTypeId);
+            return await _batchKoiRepository.GetBatchKoiInBatchKoiCategory(batchTypeId);
         }
     }
 }

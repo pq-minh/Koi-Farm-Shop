@@ -33,7 +33,7 @@ namespace KoiShop.Application.Service
 
             foreach (var item in packages)
             {
-                if (item.KoiId.HasValue && item.Quantity.HasValue) // Kiểm tra các thuộc tính hợp lệ
+                if (item.KoiId.HasValue && item.Quantity.HasValue) 
                 {
                     if (koiDic.ContainsKey(item.KoiId.Value))
                         koiDic[item.KoiId.Value] += item.Quantity.Value;

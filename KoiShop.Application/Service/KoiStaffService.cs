@@ -26,129 +26,162 @@ namespace KoiShop.Application.Service
         }
 
 
-        // Staff =====================
         // Koi Methods =============================================================================================
         public async Task<IEnumerable<Koi>> GetAllKoiStaff()
         {
-            return await _koiRepository.GetAllKoiAsync();
+            return await _koiRepository.GetKois();
         }
 
         public async Task<Koi> GetKoiById(int koiId)
         {
-            return await _koiRepository.GetKoiByIdAsync(koiId);
+            return await _koiRepository.GetKoiById(koiId);
         }
 
         public async Task<bool> AddKoi(AddKoiDto koiDto)
         {
-            var koi = _mapper.Map<Koi>(koiDto);
+
+            if (koiDto == null) return false;
+
+            var allCates = await _koiRepository.GetAllKoiCategories();
+
+            bool exist = false;
+            foreach (var cate in allCates)
+            {
+                if (cate.FishTypeId == koiDto.FishTypeId)
+                    exist = true;
+            }
+
+            if (!exist)
+                return false;
+
+
             var koiImageUrl = await _firebaseService.UploadFileToFirebaseStorage(koiDto.KoiImage, "KoiFishImage");
             var cerImageUrl = await _firebaseService.UploadFileToFirebaseStorage(koiDto.Certificate, "KoiFishCertificate");
 
-            koi.Image = koiImageUrl;
-            koi.Certificate = cerImageUrl;
-            return await _koiRepository.AddKoiAsync(koi);
-        }
 
-        public async Task<bool> UpdateKoi(Koi koi)
-        {
-            return await _koiRepository.UpdateKoiAsync(koi);
-        }
-
-        public async Task<bool> ValidateFishTypeIdInKoi(int FishTypeId)
-        {
-            if (FishTypeId < 1) return false;
-            // ktra xem có tồn tại FishTypeId trong Koi
-            var KgList = await GetAllKoiCategory();
-            bool contain = false;
-            foreach (var item in KgList)
+            var koi = new Koi
             {
-                if (FishTypeId == item.FishTypeId)
-                {
-                    contain = true;
-                }
-            }
-            if (!contain) return false;
+                FishTypeId = koiDto.FishTypeId,
+                Name = koiDto.Name,
+                Origin = koiDto.Origin,
+                Description = koiDto.Description,
+                Gender = koiDto.Gender,
+                Image = koiImageUrl,
+                Age = koiDto.Age,
+                Weight = koiDto.Weight,
+                Size = koiDto.Size,
+                Personality = koiDto.Personality,
+                Status = koiDto.Status,
+                Price = koiDto.Price,
+                Certificate = cerImageUrl
+            };
 
-            return true;
+            return await _koiRepository.AddKoi(koi);
         }
 
-
-        public async Task<string> ValidateImage(IFormFile image, string oldImagePath, string path)
+        public async Task<bool> UpdateKoi(UpdateKoiDto koiDto)
         {
-            string currentImagePath = null;
-            if (image != null)
-            {
-                string imagePath = _firebaseService.GetRelativeFilePath(oldImagePath);
-                if (imagePath != null)       // xóa ảnh cũ trong firebase
-                    await _firebaseService.DeleteFileInFirebaseStorage(imagePath);
 
-                // upload ảnh mới lên firebase
-                currentImagePath = await _firebaseService.UploadFileToFirebaseStorage(image, path);
-                if (currentImagePath == null)
-                    return null;
-            }
-            return currentImagePath;
-        }
+            if (koiDto == null) return false;
 
-        public async Task<Koi> ValidateUpdateKoiInfo(int koiId, UpdateKoiDto koiDto)
-        {
-            // lấy cá koi cần update từ database 
-            var currentKoi = await GetKoiById(koiId);
-            if (currentKoi == null)
-                return null;
+            var currentKoi = await _koiRepository.GetKoiById(koiDto.KoiId);
+            if (currentKoi == null) return false;
 
-            // so sánh koi từ db vs koi gửi từ frontend
-            // nếu property nào có tt hợp lệ gửi từ Form thì update, ko thì thôi
             if (koiDto.FishTypeId.HasValue)
             {
-                if (await ValidateFishTypeIdInKoi((int)koiDto.FishTypeId))
+                var allCates = await _koiRepository.GetAllKoiCategories();
+
+                bool exist = false;
+                foreach (var cate in allCates)
+                {
+                    if (cate.FishTypeId == koiDto.FishTypeId)
+                        exist = true;
+                }
+
+                if (exist)
                     currentKoi.FishTypeId = koiDto.FishTypeId;
                 else
-                    return null;
+                    return false;
             }
 
-            if (!string.IsNullOrEmpty(koiDto.KoiName)) currentKoi.Name = koiDto.KoiName;
+            if (!string.IsNullOrEmpty(koiDto.Name)) currentKoi.Name = koiDto.Name;
             if (!string.IsNullOrEmpty(koiDto.Origin)) currentKoi.Origin = koiDto.Origin;
             if (!string.IsNullOrEmpty(koiDto.Description)) currentKoi.Description = koiDto.Description;
             if (!string.IsNullOrEmpty(koiDto.Gender)) currentKoi.Gender = koiDto.Gender;
-            if (koiDto.Age.HasValue && koiDto.Age > 0) currentKoi.Age = koiDto.Age;
-            if (koiDto.Weight.HasValue && koiDto.Weight > 0) currentKoi.Weight = koiDto.Weight;
-            if (koiDto.Size.HasValue && koiDto.Size > 0) currentKoi.Size = koiDto.Size;
+            if (koiDto.Age.HasValue) currentKoi.Age = koiDto.Age;
+            if (koiDto.Weight.HasValue) currentKoi.Weight = koiDto.Weight;
+            if (koiDto.Size.HasValue) currentKoi.Size = koiDto.Size;
             if (!string.IsNullOrEmpty(koiDto.Personality)) currentKoi.Personality = koiDto.Personality;
             if (!string.IsNullOrEmpty(koiDto.Status)) currentKoi.Status = koiDto.Status;
-            if (koiDto.Price.HasValue && koiDto.Price > 0) currentKoi.Price = koiDto.Price;
+            if (koiDto.Price.HasValue) currentKoi.Price = koiDto.Price;
 
-            string koiImage = await ValidateImage(koiDto.KoiImage, currentKoi.Image, "KoiFishImage");
-            string koiCertificate = await ValidateImage(koiDto.Certificate, currentKoi.Certificate, "KoiFishCertificate");
+            if (koiDto.KoiImage != null)
+            {
+                var koiImage = await UpdateImage(koiDto.KoiImage, currentKoi.Image, "KoiFishImage");
+                if (string.IsNullOrEmpty(koiImage))
+                    return false;
+                else
+                    currentKoi.Image = koiImage;
+            }
 
-            if (!string.IsNullOrEmpty(koiImage))
-                currentKoi.Image = koiImage;
 
-            if (!string.IsNullOrEmpty(koiCertificate))
-                currentKoi.Certificate = koiCertificate;
+            if (koiDto.Certificate != null)
+            {
+                var koiCer = await UpdateImage(koiDto.Certificate, currentKoi.Certificate, "KoiFishCertificate");
+                if (string.IsNullOrEmpty(koiCer))
+                    return false;
+                else
+                    currentKoi.Certificate = koiCer;
+            }
 
-            return currentKoi;
+            return await _koiRepository.UpdateKoi(currentKoi);
         }
+
+
+        public async Task<string> UpdateImage(IFormFile imageFile, string oldImagePath, string directory)
+        {
+            if (imageFile == null)
+            {
+                return null;
+            }
+
+            // sóa ảnh cũ 
+            string imagePath = _firebaseService.GetRelativeFilePath(oldImagePath);
+            if (!string.IsNullOrEmpty(imagePath))
+            {
+                await _firebaseService.DeleteFileInFirebaseStorage(imagePath);
+            }
+
+            // up ảnh mới
+            string newImageUrl = await _firebaseService.UploadFileToFirebaseStorage(imageFile, directory);
+            if (string.IsNullOrEmpty(newImageUrl))
+            {
+                return null;
+            }
+
+            return newImageUrl;
+        }
+
 
         public async Task<bool> UpdateKoiStatus(int koiId, string status)
         {
-            var koi = await _koiRepository.GetKoiByIdAsync(koiId);
+            var koi = await _koiRepository.GetKoiById(koiId);
             if (koi == null) return false;
 
             koi.Status = status;
 
-            return await _koiRepository.UpdateKoiAsync(koi); ;
+            return await _koiRepository.UpdateKoi(koi);
         }
 
         // KoiCategory Methods ======================================================================================
         public async Task<IEnumerable<KoiCategory>> GetAllKoiCategory()
         {
-            return await _koiRepository.GetAllKoiCategoryAsync();
+            return await _koiRepository.GetAllKoiCategories();
         }
 
-        public async Task<List<Koi>> GetKoiInKoiCategory(int fishTypeId)
+        public async Task<List<Koi>> GetKoisInKoiCategory(int fishTypeId)
         {
-            return await _koiRepository.GetKoiInKoiCategoryAsync(fishTypeId);
+            return await _koiRepository.GetKoisInKoiCategory(fishTypeId);
         }
 
     }
