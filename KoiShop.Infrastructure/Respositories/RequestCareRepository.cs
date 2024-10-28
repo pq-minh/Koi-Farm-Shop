@@ -52,7 +52,8 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return Enumerable.Empty<OrderDetail>();
             }
-            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId)).ToListAsync();
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId)).
+                Include(od => od.Koi).Include(od => od.BatchKoi).ToListAsync();
             if (orderDetail == null)
             {
                 return Enumerable.Empty<OrderDetail>();
