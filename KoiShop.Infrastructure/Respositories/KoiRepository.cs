@@ -84,25 +84,23 @@ namespace KoiShop.Infrastructure.Respositories
             return await allKoi.ToListAsync();
         }
 
-        // Staff =================================================================================
-
         // Koi Methods ============================================================================================
-        public async Task<IEnumerable<Koi>> GetAllKoiAsync()
+        public async Task<IEnumerable<Koi>> GetKois()
         {
             return await _KoiShopV1DbContext.Kois.ToListAsync();
         }
-        public async Task<bool> AddKoiAsync(Koi koi)
+        public async Task<bool> AddKoi(Koi koi)
         {
             _KoiShopV1DbContext.Kois.Add(koi);
             var result = await _KoiShopV1DbContext.SaveChangesAsync();
             return result > 0;
         }
-        public async Task<Koi> GetKoiByIdAsync(int id)
+        public async Task<Koi> GetKoiById(int id)
         {
             return await _KoiShopV1DbContext.Kois.FindAsync(id);
         }
 
-        public async Task<bool> UpdateKoiAsync(Koi koi)
+        public async Task<bool> UpdateKoi(Koi koi)
         {
             _KoiShopV1DbContext.Kois.Update(koi);
             var result = await _KoiShopV1DbContext.SaveChangesAsync();
@@ -110,15 +108,15 @@ namespace KoiShop.Infrastructure.Respositories
         }
 
         // KoiCategory Methods =====================================================================================
-        public async Task<IEnumerable<KoiCategory>> GetAllKoiCategoryAsync()
+        public async Task<IEnumerable<KoiCategory>> GetAllKoiCategories()
         {
             return await _KoiShopV1DbContext.KoiCategories.ToListAsync();
         }
-        public async Task<KoiCategory> GetKoiCategoryByIdAsync(int id)
+        public async Task<KoiCategory> GetKoiCategoryById(int id)
         {
             return await _KoiShopV1DbContext.KoiCategories.FindAsync(id);
         }
-        public async Task<List<Koi>> GetKoiInKoiCategoryAsync(int fishTypeId)
+        public async Task<List<Koi>> GetKoisInKoiCategory(int fishTypeId)
         {
             return await _KoiShopV1DbContext.Kois.Where(koi => koi.FishTypeId == fishTypeId).ToListAsync();
         }

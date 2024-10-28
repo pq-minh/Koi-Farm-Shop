@@ -11,36 +11,31 @@ namespace KoiShop.Application.Dtos.KoiDtos
 {
     public class UpdateBatchKoiDto
     {
+        [Required(ErrorMessage = "BatchKoiId is required.")]
+        public int BatchKoiId { get; set; }
 
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 100 characters.")]
-        public string? BatchKoiName { get; set; }
+
+        public string? Name { get; set; }
 
 
-        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
         public string? Description { get; set; }
 
 
-        [StringLength(50, ErrorMessage = "Age cannot exceed 50 characters.")]
         public string? Age { get; set; }
 
 
-        [StringLength(50, ErrorMessage = "Quantity cannot exceed 50 characters.")]
         public string? Quantity { get; set; }
 
 
-        [StringLength(50, ErrorMessage = "Weight cannot exceed 50 characters.")]
         public string? Weight { get; set; }
 
 
-        [StringLength(50, ErrorMessage = "Size cannot exceed 50 characters.")]
         public string? Size { get; set; }
 
 
-        [StringLength(100, ErrorMessage = "Origin cannot exceed 100 characters.")]
         public string? Origin { get; set; }
 
 
-        [StringLength(50, ErrorMessage = "Gender cannot exceed 50 characters.")]
         public string? Gender { get; set; }
  
         public int? BatchTypeId { get; set; }
@@ -49,8 +44,6 @@ namespace KoiShop.Application.Dtos.KoiDtos
         [Range(0.1, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
         public double? Price { get; set; }
 
-
-        [StringLength(50, ErrorMessage = "Status cannot exceed 50 characters.")]
         public string? Status { get; set; }
 
 

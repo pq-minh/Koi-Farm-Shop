@@ -15,24 +15,23 @@ namespace KoiShop.Application.Service
         private readonly FirestoreDb _firestoreDb;
         private readonly string _firebaseStorageBucket;
 
-        public FirebaseService(ILogger<FirebaseService> logger, IConfiguration configuration)
+        public FirebaseService(ILogger<FirebaseService> logger, IConfiguration config)
         {
-               
-            var serviceAccountPath = configuration["Firebase:ServiceAccountPath"];
+            var serviceAccountPath = config["Firebase:ServiceAccountPath"];
             Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", serviceAccountPath);
 
-            if (FirebaseApp.DefaultInstance == null)
-            {
-                FirebaseApp.Create(new AppOptions
-                {
-                    Credential = GoogleCredential.FromFile(serviceAccountPath),
-                    //ProjectId = configuration["Firebase:ProjectId"]
-                });
-            }
+            //if (FirebaseApp.DefaultInstance == null)
+            //{
+            //    FirebaseApp.Create(new AppOptions
+            //    {
+            //        Credential = GoogleCredential.FromFile(serviceAccountPath),
+            //        //ProjectId = configuration["Firebase:ProjectId"]
+            //    });
+            //}
 
             _logger = logger;
-            _firebaseStorageBucket = configuration["Firebase:StorageBucket"];
-            _firestoreDb = FirestoreDb.Create(configuration["Firebase:ProjectId"]);
+            _firebaseStorageBucket = config["Firebase:StorageBucket"];
+            _firestoreDb = FirestoreDb.Create(config["Firebase:ProjectId"]);
         }
 
         public async Task<string> UploadFileToFirebaseStorage(IFormFile file, string directory)
@@ -40,7 +39,7 @@ namespace KoiShop.Application.Service
             directory = directory.Trim('/');
 
             var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
-            var filePath = $"{directory}/{fileName}"; 
+            var filePath = $"{directory}/{fileName}";
 
             try
             {
@@ -76,8 +75,8 @@ namespace KoiShop.Application.Service
         public string GetRelativeFilePath(string filePath)
         {
             if (!string.IsNullOrEmpty(filePath))
-            { 
-                var startIndex = filePath.IndexOf("/o/") + 3; 
+            {
+                var startIndex = filePath.IndexOf("/o/") + 3;
                 var endIndex = filePath.IndexOf("?");
 
                 if (startIndex < 3 || endIndex <= startIndex) return null;
@@ -87,7 +86,7 @@ namespace KoiShop.Application.Service
             return null;
         }
 
-        
+
         public async Task<string> SaveDocument<T>(T document, string collectionName)
         {
             try
@@ -96,9 +95,9 @@ namespace KoiShop.Application.Service
                 await docRef.SetAsync(document);
                 return docRef.Id;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.LogError($"Error saving document to {collectionName}: {ex.Message}");
+                _logger.LogError(e.Message);
                 throw;
             }
         }
@@ -118,12 +117,11 @@ namespace KoiShop.Application.Service
                     );
 
                 await docRef.UpdateAsync(updates);
-                _logger.LogInformation($"Document with ID: {documentId} in {collectionName} updated successfully.");
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.LogError($"Error updating document in {collectionName}: {ex.Message}");
+                _logger.LogError(e.Message);
                 return false;
             }
         }
@@ -153,9 +151,9 @@ namespace KoiShop.Application.Service
                 }
                 return documents;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.LogError($"Error retrieving documents from {collectionName}: {ex.Message}");
+                _logger.LogError(e.Message);
                 throw;
             }
         }
@@ -182,12 +180,12 @@ namespace KoiShop.Application.Service
                 }
                 else
                 {
-                    return null; 
+                    return null;
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.LogError($"Error retrieving document: {ex.Message}");
+                _logger.LogError(e.Message);
                 throw;
             }
         }

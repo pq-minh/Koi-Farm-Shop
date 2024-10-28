@@ -16,52 +16,46 @@ namespace KoiShop.Application.Dtos.KoiDtos
 
 
         [Required(ErrorMessage = "Name is required.")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 100 characters.")]
         public string Name { get; set; }
 
 
         [Required(ErrorMessage = "Origin is required.")]
-        [StringLength(100, ErrorMessage = "Origin cannot exceed 100 characters.")]
         public string Origin { get; set; }
 
 
         [Required(ErrorMessage = "Description is required.")]
-        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
         public string Description { get; set; }
 
 
         [Required(ErrorMessage = "Gender is required.")]
-        [StringLength(50, ErrorMessage = "Gender cannot exceed 50 characters.")]
         public string Gender { get; set; }
 
 
         [Required(ErrorMessage = "Age is required.")]
-        [Range(0, 100, ErrorMessage = "Age must be between 0 and 100.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Age must be greater than 0.")]
         public int Age { get; set; }
 
 
         [Required(ErrorMessage = "Weight is required.")]
-        [Range(0.1, 100.0, ErrorMessage = "Weight must be between 0.1 and 100.0 kg.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Weight must be greater than 0.")]
         public double Weight { get; set; }
 
 
         [Required(ErrorMessage = "Size is required.")]
-        [Range(0.1, 300.0, ErrorMessage = "Size must be between 0.1 and 300.0 cm.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Size must be greater than 0.")]
         public double Size { get; set; }
 
 
         [Required(ErrorMessage = "Personality is required.")]
-        [StringLength(200, ErrorMessage = "Personality description cannot exceed 200 characters.")]
         public string Personality { get; set; }
 
 
         [Required(ErrorMessage = "Status is required.")]
-        [StringLength(50, ErrorMessage = "Status cannot exceed 50 characters.")]
         public string Status { get; set; }
 
 
         [Required(ErrorMessage = "Price is required.")]
-        [Range(0.1, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
         public double Price { get; set; }
 
 

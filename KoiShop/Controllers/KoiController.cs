@@ -11,12 +11,6 @@ namespace KoiShop.Controllers
     [Route("api/kois")]
     public class KoiController : ControllerBase
     {
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    var kois = await mediator.Send(new GetAllKoiQuery());
-        //    return Ok(kois);
-        //}
         private readonly IKoiService _koiService;
         public KoiController(IKoiService koiService)
         {

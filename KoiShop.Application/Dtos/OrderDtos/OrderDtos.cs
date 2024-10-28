@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KoiShop.Application.Dtos
+namespace KoiShop.Application.Dtos.OrderDtos
 {
     public class OrderDtos
     {
@@ -38,3 +38,4 @@ namespace KoiShop.Application.Dtos
         public string Message { get; set; }
     }
 }
+

@@ -17,22 +17,16 @@ namespace KoiShop.Application.Interfaces
         Task<IEnumerable<KoiDto>> GetAllKoiWithCondition(KoiFilterDto koiFilterDto);
 
 
-        // Staff ====================
-
         // Koi Methods =============================================================================================
         Task<IEnumerable<Koi>> GetAllKoiStaff();
         Task<Koi> GetKoiById(int id);
         Task<bool> AddKoi(AddKoiDto koiDto);
-        Task<Koi> ValidateUpdateKoiInfo(int koiId, UpdateKoiDto koiDto);
-        Task<string> ValidateImage(IFormFile image, string oldImagePath, string path);
-        Task<bool> UpdateKoi(Koi koi);
-        Task<bool> ValidateFishTypeIdInKoi(int FishTypeId);
+        Task<string> UpdateImage(IFormFile imageFile, string oldImagePath, string directory);
+        Task<bool> UpdateKoi(UpdateKoiDto koiDto);
         Task<bool> UpdateKoiStatus(int koiId, string status);
 
         // KoiCategory Methods ======================================================================================
         Task<IEnumerable<KoiCategory>> GetAllKoiCategory();
-        Task<List<Koi>> GetKoiInKoiCategory(int fishTypeId);
-
-
+        Task<List<Koi>> GetKoisInKoiCategory(int fishTypeId);
     }
 }

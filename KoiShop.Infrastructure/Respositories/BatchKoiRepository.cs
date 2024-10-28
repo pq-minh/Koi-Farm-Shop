@@ -77,38 +77,38 @@ namespace KoiShop.Infrastructure.Repositories
         }
 
         // BatchKoi Methods ===========================================================================================
-        public async Task<IEnumerable<BatchKoi>> GetAllBatchKoiAsync()
+        public async Task<IEnumerable<BatchKoi>> GetBatchKois()
         {
             return await _KoiShopV1DbContext.BatchKois.ToListAsync();
         }
-        public async Task<bool> AddBatchKoiAsync(BatchKoi batchKoi)
+        public async Task<bool> AddBatchKoi(BatchKoi batchKoi)
         {
             _KoiShopV1DbContext.BatchKois.Add(batchKoi);
             var result = await _KoiShopV1DbContext.SaveChangesAsync();
             return result > 0;
         }
 
-        public async Task<bool> UpdateBatchKoiAsync(BatchKoi batchKoi)
+        public async Task<bool> UpdateBatchKoi(BatchKoi batchKoi)
         {
             _KoiShopV1DbContext.BatchKois.Update(batchKoi);
             var result = await _KoiShopV1DbContext.SaveChangesAsync();
             return result > 0;
         }
-        public async Task<BatchKoi> GetBatchKoiByIdAsync(int id)
+        public async Task<BatchKoi> GetBatchKoiById(int id)
         {
             return await _KoiShopV1DbContext.BatchKois.FindAsync(id);
         }
 
         // BatchKoiCategory Methods ===========================================================================================
-        public async Task<IEnumerable<BatchKoiCategory>> GetAllBatchKoiCategoryAsync()
+        public async Task<IEnumerable<BatchKoiCategory>> GetBatchKoiCategories()
         {
             return await _KoiShopV1DbContext.BatchKoiCategories.ToListAsync();
         }
-        public async Task<BatchKoiCategory> GetBatchKoiCategoryByIdAsync(int id)
+        public async Task<BatchKoiCategory> GetBatchKoiCategoryById(int id)
         {
             return await _KoiShopV1DbContext.BatchKoiCategories.FindAsync(id);
         }
-        public async Task<List<BatchKoi>> GetBatchKoiInBatchKoiCategoryAsync(int batchTypeId)
+        public async Task<List<BatchKoi>> GetBatchKoiInBatchKoiCategory(int batchTypeId)
         {
             return await _KoiShopV1DbContext.BatchKois.Where(batchKoi => batchKoi.BatchTypeId == batchTypeId).ToListAsync();
         }

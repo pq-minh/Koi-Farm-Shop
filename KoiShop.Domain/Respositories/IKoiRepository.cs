@@ -14,17 +14,15 @@ namespace KoiShop.Domain.Respositories
         Task<Koi> GetKoi(int id);
         Task<IEnumerable<Koi>> GetKoiWithCondition(string koiName, string typeFish, double? from, double? to, string sortBy, int pageNumber, int pageSize);
 
-        // Staff =================================================================================
-
         // Koi Methods ============================================================================================
-        Task<IEnumerable<Koi>> GetAllKoiAsync();
-        Task<bool> AddKoiAsync(Koi koi);
-        Task<Koi> GetKoiByIdAsync(int id);
-        Task<bool> UpdateKoiAsync(Koi koi);
+        Task<IEnumerable<Koi>> GetKois();
+        Task<bool> AddKoi(Koi koi);
+        Task<Koi> GetKoiById(int id);
+        Task<bool> UpdateKoi(Koi koi);
 
         // KoiCategory Methods  =====================================================================================
-        Task<IEnumerable<KoiCategory>> GetAllKoiCategoryAsync();
-        Task<KoiCategory> GetKoiCategoryByIdAsync(int id);
-        Task<List<Koi>> GetKoiInKoiCategoryAsync(int fishTypeId);
+        Task<IEnumerable<KoiCategory>> GetAllKoiCategories();
+        Task<KoiCategory> GetKoiCategoryById(int id);
+        Task<List<Koi>> GetKoisInKoiCategory(int fishTypeId);
     }
 }

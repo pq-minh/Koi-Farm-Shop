@@ -27,5 +27,7 @@ namespace KoiShop.Domain.Respositories
         Task<IEnumerable<Order>> GetOrders(DateTime startDate, DateTime endDate);
         Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate);
         Task<IEnumerable<OrderDetail>> GetOrderDetails(DateTime startDate, DateTime endDate);
+        Task<bool> UpdateOrder(Order order);
+        Task<Order> GetOrderById(int orderId);
     }
 }
