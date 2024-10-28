@@ -27,13 +27,8 @@ namespace KoiShop.Controllers
         [HttpGet]
         public async Task<IActionResult> GetKois()
         {
-            using (var scope = Tracer.Instance.StartActive("koi.controller.getKois"))
-            {
-                scope.Span.SetTag("custom.tag", "value");
-
                 var allKoi = await _koiService.GetAllKoi();
                 return Ok(allKoi);
-            }
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetKoi(int id)
