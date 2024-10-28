@@ -86,17 +86,17 @@ namespace KoiShop.Controllers
             return Ok(total);
         }
 
-        [HttpPut("update")]
-        public async Task<IActionResult> UpdateOder(UpdateOrderDtos order)
-        {
-            var result = await _orderService.UpdateOrder(order);
-            if (result)
-                return Ok("Order updated successfully.");
+        //[HttpPut("update")]
+        //public async Task<IActionResult> UpdateOder(UpdateOrderDtos order)
+        //{
+        //    var result = await _orderService.UpdateOrder(order);
+        //    if (result)
+        //        return Ok("Order updated successfully.");
 
-            return BadRequest("Order updated unsuccessfully.");
-        }
+        //    return BadRequest("Order updated unsuccessfully.");
+        //}
 
-        [HttpPut("update/{orderId}-{status}")]
+        [HttpPut("update/status")]
         public async Task<IActionResult> UpdateOderStatus(int orderId, string status)
         {
             var result = await _orderService.UpdateOrderStatus(orderId, status);

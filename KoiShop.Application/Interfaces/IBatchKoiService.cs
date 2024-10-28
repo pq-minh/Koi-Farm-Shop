@@ -16,15 +16,5 @@ namespace KoiShop.Application.Interfaces
         Task<BatchKoiDto> GetBatchKoi(int id);
         Task<IEnumerable<BatchKoiDto>> GetAllBatchKoiWithCondition(KoiFilterDto koiFilterDto);
 
-        // BatchKoi Methods ===========================================================================================
-        Task<IEnumerable<BatchKoi>> GetAllBatchKoiStaff();
-        Task<BatchKoi> GetBatchKoiById(int id);
-        Task<bool> AddBatchKoi(AddBatchKoiDto batchKoiDto);
-        Task<bool> UpdateBatchKoi(UpdateBatchKoiDto batchKoiDto);
-        Task<string> UpdateImage(IFormFile imageFile, string oldImagePath, string direction);
-        Task<bool> UpdateBatchKoiStatus(int batchkoiId, string status);
-        // BatchKoiCategory Methods ====================================================================================
-        Task<IEnumerable<BatchKoiCategory>> GetAllBatchKoiCategory();
-        Task<List<BatchKoi>> GetBatchKoiInBatchKoiCategory(int batchTypeId);
     }
 }
