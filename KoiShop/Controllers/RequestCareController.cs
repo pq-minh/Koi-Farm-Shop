@@ -1,5 +1,6 @@
 ﻿using KoiShop.Application.Dtos;
 using KoiShop.Application.Interfaces;
+using KoiShop.Application.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,16 +16,6 @@ namespace KoiShop.Controllers
         {
             _requestCareService = requestCareService;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetKoiOrBatchRequest()
-        {
-            var KoiOrBatchRequest = await _requestCareService.GetKoiOrBatchCare();
-            if (KoiOrBatchRequest != null)
-            {
-                return Ok(KoiOrBatchRequest);
-            }
-            return BadRequest();
-        }
         [HttpGet("orderdetail")]
         public async Task<IActionResult> GetCurrentOrderDetail()
         {
@@ -35,7 +26,13 @@ namespace KoiShop.Controllers
             }
             return BadRequest();
         }
-        [HttpGet("user")]
+        [HttpGet("allorderdetail")]
+        public async Task<IActionResult> GetAllOrderDetail()
+        {
+            var orderDetail = await _requestCareService.GetAllOrderDetail();
+            return Ok(orderDetail);
+        }
+        [HttpGet]
         public async Task<IActionResult> GetAllRequestCareByCustomer()
         {
             var request = await _requestCareService.GetAllRequestCareByCustomer();
@@ -56,7 +53,7 @@ namespace KoiShop.Controllers
             return BadRequest();
         }
         [HttpPost("package")]
-        public async Task<IActionResult> AddKoiOrBatchToPackage(List<OrderDetailDtoV1> orderDetails)
+        public async Task<IActionResult> AddKoiOrBatchToPackage([FromBody]List<OrderDetailDtoV1> orderDetails)
         {
             var result = await _requestCareService.AddKoiOrBatchToPackage(orderDetails);
             if (result)
@@ -66,8 +63,10 @@ namespace KoiShop.Controllers
             return BadRequest("There was an error while adding data");
         }
         [HttpPost("request")]
-        public async Task<IActionResult> AddKoiOrBatchToRequest(List<OrderDetailDtoV1> orderDetails, DateTime endDate)
+        public async Task<IActionResult> AddKoiOrBatchToRequest([FromBody]RequestCareDtoV1 requestCareDtoV1)
         {
+            var orderDetails = requestCareDtoV1.OrderDetails;
+            var endDate = requestCareDtoV1.EndDate;
             var result = await _requestCareService.AddKoiOrBatchToRequest(orderDetails, endDate);
             if (result)
             {

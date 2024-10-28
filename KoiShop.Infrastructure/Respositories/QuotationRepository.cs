@@ -78,5 +78,41 @@ namespace KoiShop.Infrastructure.Respositories
                     .ToListAsync();
             return new PaginatedResult<QuotationWithKoi>(items, totalItems, pageNumber, pageSize);
         }
+
+        public async Task<IEnumerable<Quotation>> GetQuotations(string status, DateTime startDate, DateTime endDate)
+        {
+            var quotations = await koiShopV1DbContext.Quotations
+                .Where(q => q.CreateDate.HasValue &&
+                             q.CreateDate >= startDate &&  
+                             q.CreateDate <= endDate &&    
+                             q.Status == status)
+                .ToListAsync();
+            return quotations;
+        }
+
+
+        public async Task<List<Package>> GetPackages(string status, DateTime startDate, DateTime endDate)
+        {
+            var packages = await koiShopV1DbContext.Quotations
+                .Where(q => q.CreateDate.HasValue &&
+                             q.CreateDate >= startDate &&
+                             q.CreateDate <= endDate &&
+                             q.Status == status)
+                .Select(q => q.Request.Package)  
+                .Where(p => p != null)  
+                .Distinct()
+                .ToListAsync();
+
+            return packages;
+        }
+
+
+
+
+
+
+
+
+
     }
 }

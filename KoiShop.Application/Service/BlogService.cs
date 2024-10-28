@@ -1,6 +1,7 @@
-﻿using KoiShop.Application.Dtos.BlogDtos;
-using KoiShop.Application.Dtos.KoiShop.Application.Dtos;
+﻿using KoiShop.Application.Dtos;
+using KoiShop.Application.Dtos.BlogDtos;
 using KoiShop.Application.Interfaces;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace KoiShop.Application.Service
             return result != null;
         }
 
-        public async Task<bool> UpdateBlog(string blogId, UpdateBlogDto blogPost)
+        public async Task<bool> UpdateBlog(UpdateBlogDto blogPost)
         {
             if (blogPost == null)
             {
@@ -38,15 +39,13 @@ namespace KoiShop.Application.Service
 
             try
             {
-                // Lấy đối tượng blog hiện tại từ Firestore theo id
-                var currentBlog = await _firebaseService.GetDocumentById<AddBlogDto>(blogId, "Blogs");
+                var currentBlog = await _firebaseService.GetDocumentById<AddBlogDto>(blogPost.id, "Blogs");
 
                 if (currentBlog == null)
                 {
                     return false;
                 }
 
-                // Kiểm tra và cập nhật các thuộc tính từ UpdateBlogDto
                 if (!string.IsNullOrWhiteSpace(blogPost.title))
                 {
                     currentBlog.title = blogPost.title;
@@ -57,7 +56,6 @@ namespace KoiShop.Application.Service
                     currentBlog.content = blogPost.content;
                 }
 
-                // Cập nhật ngày chỉnh sửa
                 currentBlog.updateDate = DateTime.UtcNow;
 
                 if (!string.IsNullOrWhiteSpace(blogPost.status))
@@ -75,7 +73,6 @@ namespace KoiShop.Application.Service
                     currentBlog.userId = blogPost.userId;
                 }
 
-                // Cập nhật document trong Firestore
                 await _firebaseService.UpdateDocument(currentBlog.id, currentBlog, "Blogs");
                 return true;
             }

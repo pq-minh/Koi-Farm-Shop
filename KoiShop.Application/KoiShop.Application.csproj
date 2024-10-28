@@ -7,10 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Dtos\UserDto\**" />
     <Compile Remove="Users\Command\UpdateAddress\**" />
     <Compile Remove="ViewModel\**" />
+    <EmbeddedResource Remove="Dtos\UserDto\**" />
     <EmbeddedResource Remove="Users\Command\UpdateAddress\**" />
     <EmbeddedResource Remove="ViewModel\**" />
+    <None Remove="Dtos\UserDto\**" />
     <None Remove="Users\Command\UpdateAddress\**" />
     <None Remove="ViewModel\**" />
   </ItemGroup>
@@ -35,10 +38,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KoiShop.Domain\KoiShop.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Dtos\UserDto\" />
   </ItemGroup>
 
 </Project>

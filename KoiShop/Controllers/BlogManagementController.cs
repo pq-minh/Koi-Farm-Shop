@@ -1,5 +1,5 @@
-﻿using KoiShop.Application.Dtos.BlogDtos;
-using KoiShop.Application.Dtos.KoiShop.Application.Dtos;
+﻿using KoiShop.Application.Dtos;
+using KoiShop.Application.Dtos.BlogDtos;
 using KoiShop.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,7 +27,7 @@ namespace KoiShop.Controllers
             try
             {
                 var create = await _blogService.CreateBlogPost(blogPost);
-                if(create)
+                if (create)
                     return Ok("Create Blog successfully.");
 
                 return BadRequest("An error occurred while creating the blog post...");
@@ -38,8 +38,8 @@ namespace KoiShop.Controllers
             }
         }
 
-        [HttpPut("{blogId}")]
-        public async Task<IActionResult> UpdateBlog(string blogId, [FromBody] UpdateBlogDto blogPost)
+        [HttpPut]
+        public async Task<IActionResult> UpdateBlog([FromBody] UpdateBlogDto blogPost)
         {
             if (blogPost == null)
             {
@@ -48,7 +48,7 @@ namespace KoiShop.Controllers
 
             try
             {
-                bool updated = await _blogService.UpdateBlog(blogId, blogPost);
+                bool updated = await _blogService.UpdateBlog(blogPost);
                 if (updated)
                 {
                     return Ok("Blog post updated successfully.");

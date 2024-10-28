@@ -268,7 +268,6 @@ namespace KoiShop.Infrastructure.Respositories
                 return false;
             }
             payment.Status = "Complete";
-            order.OrderStatus = "Complete"; 
             _koiShopV1DbContext.Orders.Update(order);
             _koiShopV1DbContext.Payments.Update(payment);
             await _koiShopV1DbContext.SaveChangesAsync();
@@ -290,10 +289,8 @@ namespace KoiShop.Infrastructure.Respositories
         {
             if (carts == null || carts.Count == 0)
             {
-                return false; // Return false if carts is null or empty
+                return false;
             }
-
-            bool anyUpdate = false; // Track if any update was successful
 
             foreach (var cart in carts)
             {
@@ -320,10 +317,8 @@ namespace KoiShop.Infrastructure.Respositories
                 else
                     return false;
             }
-
-            return anyUpdate; // Return true if any updates were made
+            return true;
         }
-
 
 
         // =================================================================================================

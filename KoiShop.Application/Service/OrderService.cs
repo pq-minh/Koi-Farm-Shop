@@ -63,7 +63,7 @@ namespace KoiShop.Application.Service
             var orderDto = _mapper.Map<IEnumerable<OrderDtos>>(order);
             return orderDto;
         }
-        public async Task<IEnumerable<OrderDetailDtos>> GetOrderDetailById(int? id)
+        public async Task<IEnumerable<OrderDetailDtoV2>> GetOrderDetailById(int? id)
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
             {
@@ -72,10 +72,10 @@ namespace KoiShop.Application.Service
             var userId = _userContext.GetCurrentUser().Id;
             if (userId == null || id == null)
             {
-                return Enumerable.Empty<OrderDetailDtos>();
+                return Enumerable.Empty<OrderDetailDtoV2>();
             }
             var orderDetail = await _orderRepository.GetOrderDetailById((int)id);
-            var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtos>>(orderDetail);
+            var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtoV2>>(orderDetail);
             return orderDetailDto;
         }
         public async Task<IEnumerable<KoiDto>> GetKoiFromOrderDetail(int? orderId)

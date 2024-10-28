@@ -9,38 +9,38 @@ using System.Threading.Tasks;
 namespace KoiShop.Application.Dtos.BlogDtos
 {
     [FirestoreData]
-    public class UpdateBlogDto
+    public class GetBlogDto
     {
         [FirestoreProperty]
         public string id { get; set; }
 
 
         [FirestoreProperty]
-        public string? title { get; set; }
+        public string title { get; set; }
 
 
         [FirestoreProperty]
-        public string? content { get; set; }
+        public string content { get; set; }
 
 
         [FirestoreProperty]
-        public DateTime? createDate { get; set; }
-
-
-        //[FirestoreProperty]
-        //public DateTime updateDate { get; set; } = DateTime.UtcNow;
+        public DateTime createDate { get; set; }
 
 
         [FirestoreProperty]
-        public string? status { get; set; }
+        public DateTime updateDate { get; set; }
 
 
         [FirestoreProperty]
-        public string? blogType { get; set; }
+        public string status { get; set; }
 
 
         [FirestoreProperty]
-        public string? userId { get; set; }
+        public string blogType { get; set; }
+
+
+        [FirestoreProperty]
+        public string userId { get; set; }
 
     }
 }
