@@ -20,11 +20,24 @@ namespace KoiShop.Infrastructure.Seeder
         }
         public IEnumerable<IdentityRole> GetRoles()
         {
-            List<IdentityRole> roles = [
-                    new (UserRoles.Customer),
-                    new (UserRoles.Admin),
-                    new (UserRoles.Staff)
-                ];
+            List<IdentityRole> roles = new List<IdentityRole>
+    {
+        new IdentityRole
+        {
+            Name = UserRoles.Customer,
+            NormalizedName = UserRoles.Customer.ToUpper() 
+        },
+        new IdentityRole
+        {
+            Name = UserRoles.Admin,
+            NormalizedName = UserRoles.Admin.ToUpper() 
+        },
+        new IdentityRole
+        {
+            Name = UserRoles.Staff,
+            NormalizedName = UserRoles.Staff.ToUpper() 
+        }
+    };
             return roles;
         }
     }
