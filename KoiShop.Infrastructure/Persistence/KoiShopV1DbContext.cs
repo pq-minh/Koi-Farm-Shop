@@ -288,7 +288,7 @@ namespace KoiShop.Infrastructure.Persistence
                 entity.Property(e => e.BatchKoiId).HasColumnName("BatchKoiID");
                 entity.Property(e => e.KoiId).HasColumnName("KoiID");
                 entity.Property(e => e.OrderId).HasColumnName("OrderID");
-
+                entity.Property(e => e.Price).HasColumnName("Price");
                 entity.HasOne(d => d.BatchKoi).WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.BatchKoiId)
                     .HasConstraintName("FK__OrderDeta__Batch__4E88ABD4");
@@ -380,7 +380,7 @@ namespace KoiShop.Infrastructure.Persistence
                 entity.Property(e => e.BatchKoiId).HasColumnName("BatchKoiID");
                 entity.Property(e => e.Comments).HasColumnType("text");
                 entity.Property(e => e.KoiId).HasColumnName("KoiID");
-
+                entity.Property(e => e.Status).HasColumnName("Status");
                 entity.HasOne(d => d.BatchKoi).WithMany(p => p.Reviews)
                     .HasForeignKey(d => d.BatchKoiId)
                     .HasConstraintName("FK__Review__BatchKoi__5165187F");

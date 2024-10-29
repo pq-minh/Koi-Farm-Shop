@@ -1,4 +1,5 @@
-﻿using KoiShop.Application.Users.Command.UpdateAddress;
+﻿using KoiShop.Application.Command.UpdateAddress;
+using KoiShop.Application.Users.Command.UpdateAddress;
 using KoiShop.Application.Users.Queries.GetAllAddress;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,7 +11,7 @@ namespace KoiShop.Controllers
 
     [ApiController]
     [Route("api/address")]
-    public class AddressController(IMediator mediator): Controller
+    public class AddressController(IMediator mediator) : Controller
     {
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -25,7 +26,17 @@ namespace KoiShop.Controllers
         [HttpGet("getall-address")]
         public async Task<IActionResult> GetAllAddress()
         {
-            var result = await mediator.Send( new GetAllAddressQuery() );
+            var result = await mediator.Send(new GetAllAddressQuery());
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+        [HttpPost("updateaddress")]
+        public async Task<IActionResult> UpdateAddress([FromBody] UpdateAddressCommand updateAddressCommand)
+        {
+            var result = await mediator.Send(updateAddressCommand);
             if (result == null)
             {
                 return NotFound();
