@@ -28,4 +28,9 @@ namespace KoiShop.Application.Dtos
         public List<OrderDetailDtoV1> OrderDetails { get; set; }
         public DateTime EndDate { get; set; }
     }
+    public class RequestCareDtoV2
+    {
+        public int? Id { get; set; }
+        public int? Status { get; set; }
+    }
 }

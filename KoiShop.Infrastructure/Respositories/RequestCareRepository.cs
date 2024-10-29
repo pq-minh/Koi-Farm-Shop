@@ -58,7 +58,7 @@ namespace KoiShop.Infrastructure.Respositories
         public async Task<IEnumerable<OrderDetail>> GetAllOrderDetail()
         {
             var userId = _userContext.GetCurrentUser().Id;
-            
+
             var request = await _koiShopV1DbContext.Requests.Where(r => r.UserId == userId).Include(r => r.Package).ToListAsync();
             var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId && o.OrderStatus != "Delivered").Select(o => o.OrderId).ToListAsync();
             if (order == null)
@@ -178,14 +178,14 @@ namespace KoiShop.Infrastructure.Respositories
                     TypeRequest = "Care",
                     EndDate = endDate,
                     UserId = user.Id,
-                    Status = "accepted"
+                    Status = "Pending"
                 };
                 _koiShopV1DbContext.Requests.Add(request);
             }
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> UpdateKoiOrBatchToCare(int? id)
+        public async Task<bool> UpdateKoiOrBatchToCare(int? id, string? status)
         {
             var user = _userContext.GetCurrentUser();
             if (user.Id == null || id == null || id <= 0)
@@ -197,7 +197,12 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
-            request.Status = "Delivery";
+            var reviewStatus = request.Status;
+            if (!string.IsNullOrEmpty(status))
+            {
+                reviewStatus = status;
+            }
+            request.Status = reviewStatus;
             _koiShopV1DbContext.Update(request);
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;

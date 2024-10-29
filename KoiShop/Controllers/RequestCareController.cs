@@ -95,9 +95,11 @@ namespace KoiShop.Controllers
             return BadRequest("There was an error while adding data");
         }
         [HttpPatch("request")]
-        public async Task<IActionResult> AddKoiOrBatchToRequest(int id)
+        public async Task<IActionResult> UpdateKoiOrBatchToRequest([FromBody] RequestCareDtoV2 requestCareDtoV2)
         {
-            var result = await _requestCareService.UpdateKoiOrBatchToCare(id);
+            var id = requestCareDtoV2.Id;
+            var status = requestCareDtoV2.Status;
+            var result = await _requestCareService.UpdateKoiOrBatchToCare(id, status);
             if (result)
             {
                 return Created();
