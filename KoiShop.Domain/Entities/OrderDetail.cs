@@ -15,6 +15,8 @@ public partial class OrderDetail
 
     public int? ToTalQuantity { get; set; }
 
+    public double? Price { get; set; }
+
     public virtual BatchKoi? BatchKoi { get; set; }
 
     public virtual Koi? Koi { get; set; }

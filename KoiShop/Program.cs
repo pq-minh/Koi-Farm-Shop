@@ -21,7 +21,7 @@ namespace KoiShop
             builder.Services.AddSwaggerGen();
 
             // Cấu hình CORS
-            builder.Services.AddCors(options =>
+            builder.Services.AddCors(options => 
             {
                 options.AddPolicy("AllowAllOrigin",
                     policy => policy.WithOrigins("http://localhost:5173")

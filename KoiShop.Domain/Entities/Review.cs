@@ -13,6 +13,8 @@ public partial class Review
 
     public string? Comments { get; set; }
 
+    public string? Status { get; set; }
+
     public int? KoiId { get; set; }
 
     public int? BatchKoiId { get; set; }
