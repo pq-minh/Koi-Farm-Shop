@@ -12,6 +12,8 @@ namespace KoiShop.Domain.Respositories
         Task<PaginatedResult<User>> GetAllUser(int pageNumber, int pageSize);
         Task<string> UpdateUser(string userId, string FirstName, string LastName, int point);
 
-        Task<string> DeleteUser(string userID);
+        Task<string> DeleteUser(string userID,string reason);
+
+        Task<string> UnbanUser(string userID);
     }
 }

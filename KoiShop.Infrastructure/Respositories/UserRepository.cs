@@ -46,7 +46,7 @@ namespace KoiShop.Infrastructure.Respositories
                 await koiShopV1DbContext.SaveChangesAsync();
                 return "Update user succesffully";     
             }
-            public async Task<string> DeleteUser(string userID)
+            public async Task<string> DeleteUser(string userID, string reason)
             {
                 var user = await koiShopV1DbContext.Users.FirstOrDefaultAsync(us => us.Id == userID);
             if (user == null)
@@ -54,11 +54,23 @@ namespace KoiShop.Infrastructure.Respositories
                 return null;    
             }
             user.Status = "Banned";
+            user.Note = reason;
             await koiShopV1DbContext.SaveChangesAsync();
             return "Delete user succesffully";
             }
-            
-           
-        
+
+
+        public async Task<string> UnbanUser(string userID)
+        {
+            var user = await koiShopV1DbContext.Users.FirstOrDefaultAsync(us => us.Id == userID);
+            if (user == null)
+            {
+                return null;
+            }
+            user.Status = "IsActived";
+            user.Note = null;
+            await koiShopV1DbContext.SaveChangesAsync();
+            return "Unban user succesffully";
+        }
     }
 }

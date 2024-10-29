@@ -13,7 +13,7 @@ namespace KoiShop.Application.Command.DeleteUser
     {
         public async Task<string> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.DeleteUser(request.userId);
+            var user = await userRepository.DeleteUser(request.userId,request.Reason);
             if ( user != null)
             {
                 return "Delete user complete";

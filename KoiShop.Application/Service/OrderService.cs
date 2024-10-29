@@ -340,7 +340,7 @@ namespace KoiShop.Application.Service
 
         public async Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate)
         {
-            var orders = await _orderRepository.GetOrders("Completed", startDate, endDate);
+            var orders = await _orderRepository.GetOrders("Complete", startDate, endDate);
             int count = 0;
             foreach (var item in orders)
             {
