@@ -45,11 +45,11 @@ namespace KoiShop.Application.Dtos
 
         public string KoiName { get; set; }
         public string BatchKoiName { get; set; }
-        public double? KoiPrice { get; set; }
-        public double? BatchPrice { get; set; }
+        public double? Price { get; set; }
         public string KoiImage { get; set; }
         public string BatchKoiImage { get; set; }
 
         public string? Certificate { get; set; }
     }
+
 }

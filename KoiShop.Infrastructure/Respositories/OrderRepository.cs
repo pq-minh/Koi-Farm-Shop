@@ -116,7 +116,8 @@ namespace KoiShop.Infrastructure.Respositories
                         KoiId = cart.KoiId,
                         BatchKoiId = cart.BatchKoiId,
                         ToTalQuantity = cart.Quantity,
-                        OrderId = order.OrderId
+                        OrderId = order.OrderId,
+                        Price = cart.UnitPrice
                     };
                     _koiShopV1DbContext.OrderDetails.Add(orderDetail);
                 }
