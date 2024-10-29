@@ -143,6 +143,30 @@ namespace KoiShop.Application.Service
             }
             return false;
         }
+        public async Task< RequestCareEnum> AddFullKoiOrBatchToRequest(List<OrderDetailDtoV1> orderDetails, DateTime endDate)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                return RequestCareEnum.UserNotAuthenticated;
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null || orderDetails == null)
+            {
+                return RequestCareEnum.UserNotAuthenticated;
+            }
+            var orderDetail = _mapper.Map<List<OrderDetail>>(orderDetails);
+            var result = await _requestCareRepository.AddKoiOrBatchToPackage(orderDetail);
+            if (result)
+            {
+                var request = await _requestCareRepository.AddKoiOrBatchToRequest(orderDetail, endDate);
+                if (request)
+                {
+                    return RequestCareEnum.Success;
+                }
+                return RequestCareEnum.FailAddRequest;
+            }
+            return RequestCareEnum.Fail;
+        }
         public async Task<bool> UpdateKoiOrBatchToCare(int? id)
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)

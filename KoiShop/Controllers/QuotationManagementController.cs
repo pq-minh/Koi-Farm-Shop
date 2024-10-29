@@ -16,32 +16,20 @@ namespace KoiShop.Controllers
             _quotationService = quotationService;
         }
 
-        [HttpGet("list")] 
+        [HttpGet("get")]
         public async Task<IActionResult> GetQuotations([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            try
-            {
-                var quotations = await _quotationService.GetQuotations(status, startDate, endDate);
-                return Ok(quotations);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"There is an error: {ex.Message}");
-            }
+            var quotations = await _quotationService.GetQuotations(status, startDate, endDate);
+            if (quotations == null) return NotFound();
+            return Ok(quotations);
         }
 
-        [HttpGet("most-consigned-koi")] 
+        [HttpGet("most-consigned-koi")]
         public async Task<IActionResult> GetMostConsignedKoi([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            try
-            {
-                int koiId = await _quotationService.GetMostConsignedKoi(startDate, endDate);
-                return Ok(koiId);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"There is an error: {ex.Message}");
-            }
+            int koiId = await _quotationService.GetMostConsignedKoi(startDate, endDate);
+            if (koiId == -1) return NotFound();
+            return Ok(koiId);
         }
     }
 }

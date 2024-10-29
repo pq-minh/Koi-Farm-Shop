@@ -361,5 +361,18 @@ namespace KoiShop.Infrastructure.Respositories
             return orders;
         }
 
+
+        public async Task<Order> GetOrderById(int orderId)
+        {
+            return await _koiShopV1DbContext.Orders.FindAsync(orderId);
+        }
+
+        public async Task<bool> UpdateOrder(Order order)
+        {
+            _koiShopV1DbContext.Orders.Update(order);
+            var result = await _koiShopV1DbContext.SaveChangesAsync();
+            return result > 0;
+        }
+
     }
 }

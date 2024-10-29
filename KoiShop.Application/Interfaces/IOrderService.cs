@@ -1,4 +1,5 @@
 ﻿using KoiShop.Application.Dtos;
+using KoiShop.Application.Dtos.OrderDtos;
 using KoiShop.Application.Dtos.VnPayDtos;
 using KoiShop.Domain.Entities;
 using System;
@@ -27,5 +28,7 @@ namespace KoiShop.Application.Interfaces
         Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate);
         Task<int> GetPendingOrders(DateTime startDate, DateTime endDate);
         Task<PaymentDto> PayByVnpay(VnPaymentResponseFromFe request);
+        Task<bool> UpdateOrder(UpdateOrderDtos order);
+        Task<bool> UpdateOrderStatus(int orderId, string status);
     }
 }

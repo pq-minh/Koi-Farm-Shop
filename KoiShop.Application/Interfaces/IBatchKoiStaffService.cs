@@ -11,16 +11,12 @@ namespace KoiShop.Application.Interfaces
 {
     public interface IBatchKoiStaffService
     {
-
-        // Staff ================
         // BatchKoi Methods ===========================================================================================
         Task<IEnumerable<BatchKoi>> GetAllBatchKoiStaff();
         Task<BatchKoi> GetBatchKoiById(int id);
         Task<bool> AddBatchKoi(AddBatchKoiDto batchKoiDto);
-        Task<bool> UpdateBatchKoi(BatchKoi batchKoi);
-        Task<bool> ValidateBatchTypeIdInBatchKoi(int batchTypeId);
-        Task<BatchKoi> ValidateUpdateBatchKoiInfo(int batchKoiId, UpdateBatchKoiDto batchKoiDto);
-        Task<string> ValidateImage(IFormFile image, string oldImagePath, string path);
+        Task<bool> UpdateBatchKoi(UpdateBatchKoiDto batchKoiDto);
+        Task<string> UpdateImage(IFormFile imageFile, string oldImagePath, string direction);
         Task<bool> UpdateBatchKoiStatus(int batchkoiId, string status);
         // BatchKoiCategory Methods ====================================================================================
         Task<IEnumerable<BatchKoiCategory>> GetAllBatchKoiCategory();

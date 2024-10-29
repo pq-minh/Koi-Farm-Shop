@@ -44,6 +44,8 @@ namespace KoiShop.Application.Service
             var allBatchKoiDto = _mapper.Map<IEnumerable<BatchKoiDto>>(allBatchKoi);
             return allBatchKoiDto;
         }
+
     }
+    
 }
 

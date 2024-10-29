@@ -16,8 +16,5 @@ namespace KoiShop.Application.Interfaces
         Task<KoiDto> GetKoi(int id);
         Task<IEnumerable<KoiDto>> GetAllKoiWithCondition(KoiFilterDto koiFilterDto);
 
-
-  
-
     }
 }

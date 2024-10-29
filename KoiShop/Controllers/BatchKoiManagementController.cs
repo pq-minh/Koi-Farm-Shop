@@ -12,95 +12,69 @@ namespace KoiShop.Controllers
     public class BatchKoiManagementController : ControllerBase
     {
         private readonly IBatchKoiStaffService _batchKoiService;
-        private readonly FirebaseService _firebaseService;
 
-        public BatchKoiManagementController(IBatchKoiStaffService batchKoiStaffService, FirebaseService firebaseService)
+        public BatchKoiManagementController(IBatchKoiStaffService batchKoiStaffService)
         {
             _batchKoiService = batchKoiStaffService;
-            _firebaseService = firebaseService;
         }
 
-        // Koi Methods =============================================================================================
-        [HttpGet]
+        [HttpGet("get")]
         public async Task<IActionResult> GetAllBatchKoi()
         {
-            var all = await _batchKoiService.GetAllBatchKoiStaff();
-            if (all == null) return NotFound();
-            return Ok(all);
+            var allBatchKoi = await _batchKoiService.GetAllBatchKoiStaff();
+            if (allBatchKoi == null)
+                return NotFound("No Batch Koi found."); ;
+            return Ok(allBatchKoi);
         }
 
-        [HttpGet("{batchKoiId:int}")]
+        [HttpGet("get/{batchKoiId}")]
         public async Task<IActionResult> GetKoiById(int batchKoiId)
         {
             var koi = await _batchKoiService.GetBatchKoiById(batchKoiId);
+            if (koi == null)
+                return NotFound();
             return Ok(koi);
         }
 
-        [HttpPost]
+        [HttpPost("add")]
         public async Task<IActionResult> AddBatchKoi([FromForm] AddBatchKoiDto batchKoiDto)
         {
             if (batchKoiDto == null)
-                return BadRequest("You have not entered BatchKoi information or the BatchKoi info is invalid.");
-
-            if (!await _batchKoiService.ValidateBatchTypeIdInBatchKoi(batchKoiDto.BatchTypeId))
-                return BadRequest("BatchTypeId isn't exist.");
+                return BadRequest("Invalid Batch Koi information.");
 
             var result = await _batchKoiService.AddBatchKoi(batchKoiDto);
 
-            if (!result)
-                return BadRequest("You have not entered BatchKoi information or the BatchKoi info is invalid.");
-
-            return Ok("BatchKoi added successfully.");
+            return result ? Ok("Batch Koi added successfully.") : BadRequest("Failed to add Batch Koi.");
         }
 
-
-        [HttpPut("{batchKoiId:int}")]
-        public async Task<IActionResult> UpdateBatchKoi(int batchKoiId, [FromForm] UpdateBatchKoiDto batchKoiDto)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateBatchKoi([FromForm] UpdateBatchKoiDto batchKoiDto)
         {
-            BatchKoi batchKoi = await _batchKoiService.ValidateUpdateBatchKoiInfo(batchKoiId, batchKoiDto);
+            if (batchKoiDto == null)
+                return BadRequest("Invalid Batch Koi information.");
 
-            if(batchKoi != null)
-            {
-                var result = await _batchKoiService.UpdateBatchKoi(batchKoi);
-                if (!result)
-                    return BadRequest("Failed to update Batch Koi.");
-            }
-            else
-            {
-                return BadRequest("You have not entered Batch Koi information or the Batch Koi info is invalid.");
-            }
-            
-            return Ok("Update Batch Koi successfully..");
+            var result = await _batchKoiService.UpdateBatchKoi(batchKoiDto);
+
+            return result ? Ok("Batch Koi updated successfully.") : BadRequest("Failed to update Batch Koi.");
         }
 
-        [HttpPut("{batchKoiId:int}-{status}")]
+        [HttpPut("update/{batchKoiId}-{status}")]
         public async Task<IActionResult> UpdateBatchKoiStatus(int batchKoiId, string status)
         {
             if (string.IsNullOrWhiteSpace(status))
-                return BadRequest("You have not entered Koi information or the Koi info is invalid.");
-
-            if (status.Length > 50)
-                return BadRequest("Status cannot exceed 50 characters.");
+                return BadRequest("Status cannot be empty or exceed 50 characters.");
 
             var result = await _batchKoiService.UpdateBatchKoiStatus(batchKoiId, status);
-
-            if (result)
-            {
-                return Ok("Koi status updated successfully.");
-            }
-            else
-            {
-                return BadRequest("Failed to update Koi.");
-            }
+            return result ? Ok("Batch Koi status updated successfully.") : BadRequest("Failed to update Batch Koi status.");
         }
 
-        // KoiCategory Methods ======================================================================================
         [HttpGet("category")]
         public async Task<IActionResult> GetAllBatchKoiCategory()
         {
-            var all = await _batchKoiService.GetAllBatchKoiCategory();
-            return Ok(all);
+            var categories = await _batchKoiService.GetAllBatchKoiCategory();
+            if (categories == null)
+                return NotFound();
+            return Ok(categories);
         }
     }
-
 }

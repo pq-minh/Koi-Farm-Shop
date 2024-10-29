@@ -16,7 +16,7 @@ namespace KoiShop.Controllers
             _blogService = blogService;
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateBlogPost([FromBody] AddBlogDto blogPost)
         {
             if (blogPost == null)
@@ -34,11 +34,11 @@ namespace KoiShop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while creating the blog post: {ex.Message}");
+                return StatusCode(500, ex.Message);
             }
         }
 
-        [HttpPut]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdateBlog([FromBody] UpdateBlogDto blogPost)
         {
             if (blogPost == null)
@@ -57,11 +57,11 @@ namespace KoiShop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while updating the blog post: {ex.Message}");
+                return StatusCode(500, ex.Message);
             }
         }
 
-        [HttpGet]
+        [HttpGet("get")]
         public async Task<IActionResult> GetAllBlogs()
         {
             try
@@ -71,11 +71,11 @@ namespace KoiShop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while retrieving blogs: {ex.Message}");
+                return StatusCode(500, ex.Message);
             }
         }
 
-        [HttpGet("{blogId}")]
+        [HttpGet("get/{blogId}")]
         public async Task<IActionResult> GetBlogById(string blogId)
         {
             try
@@ -92,7 +92,7 @@ namespace KoiShop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while retrieving the blog post: {ex.Message}");
+                return StatusCode(500, ex.Message);
             }
         }
     }

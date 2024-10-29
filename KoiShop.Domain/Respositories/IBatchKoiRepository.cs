@@ -13,17 +13,16 @@ namespace KoiShop.Domain.Respositories
         Task<BatchKoi> GetBatchKoi(int id);
         Task<IEnumerable<BatchKoi>> GetBatchKoiWithCondition(string koiName, string typeFish, double? from, double? to, string sortBy, int pageNumber, int pageSize);
 
-        // Staff =================================================================================
 
         // BatchKoi Method ============================================================================================
-        Task<IEnumerable<BatchKoi>> GetAllBatchKoiAsync();
-        Task<bool> AddBatchKoiAsync(BatchKoi batchKoi);
-        Task<bool> UpdateBatchKoiAsync(BatchKoi batchKoi);
-        Task<BatchKoi> GetBatchKoiByIdAsync(int id);
+        Task<IEnumerable<BatchKoi>> GetBatchKois();
+        Task<bool> AddBatchKoi(BatchKoi batchKoi);
+        Task<bool> UpdateBatchKoi(BatchKoi batchKoi);
+        Task<BatchKoi> GetBatchKoiById(int id);
         // BatchKoiCategory Method =====================================================================================
-        Task<IEnumerable<BatchKoiCategory>> GetAllBatchKoiCategoryAsync();
-        Task<BatchKoiCategory> GetBatchKoiCategoryByIdAsync(int id);
-        Task<List<BatchKoi>> GetBatchKoiInBatchKoiCategoryAsync(int fishTypeId);
+        Task<IEnumerable<BatchKoiCategory>> GetBatchKoiCategories();
+        Task<BatchKoiCategory> GetBatchKoiCategoryById(int id);
+        Task<List<BatchKoi>> GetBatchKoiInBatchKoiCategory(int fishTypeId);
 
     }
 }

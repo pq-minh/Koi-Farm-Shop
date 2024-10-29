@@ -5,12 +5,7 @@ using KoiShop.Application.Interfaces;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace KoiShop.Application.Service
 {
@@ -18,7 +13,6 @@ namespace KoiShop.Application.Service
     {
         private readonly IMapper _mapper;
         private readonly IKoiRepository _koiRepository;
-        private readonly FirebaseService _firebaseService;
 
         public KoiService(IKoiRepository koiRepository, IMapper mapper)
         {
@@ -46,4 +40,5 @@ namespace KoiShop.Application.Service
             return allKoiDto;
         }
     }
+
 }
