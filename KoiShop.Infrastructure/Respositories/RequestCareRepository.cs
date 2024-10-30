@@ -36,23 +36,47 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return Enumerable.Empty<OrderDetail>();
             }
-            var orderdetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.OrderId == order.OrderId).Include(od => od.Koi).
-                Include(od => od.BatchKoi).ToListAsync();
-            if (orderdetail == null)
+            var request = await _koiShopV1DbContext.Requests.Where(r => r.UserId == user.Id).Include(r => r.Package).ToListAsync();
+            if (request == null || !request.Any())
+            {
+                var orderdetails = await _koiShopV1DbContext.OrderDetails.Where(od => od.OrderId == order.OrderId)
+                    .Include(od => od.Koi).Include(od => od.BatchKoi).ToListAsync();
+                if (orderdetails == null)
+                {
+                    return Enumerable.Empty<OrderDetail>();
+                }
+                return orderdetails;
+            }
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.OrderId == order.OrderId && !request.Any(r => r.Package.KoiId == od.KoiId || r.Package.BatchKoiId == od.BatchKoiId)).
+               Include(od => od.Koi).Include(od => od.BatchKoi).ToListAsync();
+            if (orderDetail == null)
             {
                 return Enumerable.Empty<OrderDetail>();
             }
-            return orderdetail;
+            return orderDetail;
         }
         public async Task<IEnumerable<OrderDetail>> GetAllOrderDetail()
         {
             var userId = _userContext.GetCurrentUser().Id;
+
+            var request = await _koiShopV1DbContext.Requests.Where(r => r.UserId == userId).Include(r => r.Package).ToListAsync();
             var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId && o.OrderStatus != "Delivered").Select(o => o.OrderId).ToListAsync();
             if (order == null)
             {
                 return Enumerable.Empty<OrderDetail>();
             }
-            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId)).ToListAsync();
+            if (request == null || !request.Any())
+            {
+                var orderDetails = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId))
+                    .Include(od => od.Koi).Include(od => od.BatchKoi).ToListAsync();
+                if (orderDetails == null)
+                {
+                    return Enumerable.Empty<OrderDetail>();
+                }
+                return orderDetails;
+            }
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId) && !request.Any(r => r.Package.KoiId == od.KoiId || r.Package.BatchKoiId == od.BatchKoiId)).
+                Include(od => od.Koi).Include(od => od.BatchKoi).ToListAsync();
             if (orderDetail == null)
             {
                 return Enumerable.Empty<OrderDetail>();
@@ -154,14 +178,14 @@ namespace KoiShop.Infrastructure.Respositories
                     TypeRequest = "Care",
                     EndDate = endDate,
                     UserId = user.Id,
-                    Status = "accepted"
+                    Status = "Pending"
                 };
                 _koiShopV1DbContext.Requests.Add(request);
             }
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> UpdateKoiOrBatchToCare(int? id)
+        public async Task<bool> UpdateKoiOrBatchToCare(int? id, string? status)
         {
             var user = _userContext.GetCurrentUser();
             if (user.Id == null || id == null || id <= 0)
@@ -173,7 +197,12 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
-            request.Status = "Delivery";
+            var reviewStatus = request.Status;
+            if (!string.IsNullOrEmpty(status))
+            {
+                reviewStatus = status;
+            }
+            request.Status = reviewStatus;
             _koiShopV1DbContext.Update(request);
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;

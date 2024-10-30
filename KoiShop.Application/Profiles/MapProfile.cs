@@ -30,8 +30,6 @@ namespace KoiShop.Application.Profiles
                  .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Name : string.Empty))
                  .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
                  .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty))
-                 .ForMember(dest => dest.KoiPrice, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Price : 0.0))
-                 .ForMember(dest => dest.BatchPrice, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Price : 0.0))
                  .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Certificate : string.Empty));
 
             CreateMap<Order, OrderDtos>();

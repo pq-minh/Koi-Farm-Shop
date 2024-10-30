@@ -5,5 +5,6 @@ namespace KoiShop.Domain.Respositories
     {
         Task<int> Create(AddressDetail entity);
         Task<IEnumerable<AddressDetail>> GetAll(string userId);
+        Task<bool> UpdateAddress(int id, string city, string distric, string ward, string streetname);
     }
 }

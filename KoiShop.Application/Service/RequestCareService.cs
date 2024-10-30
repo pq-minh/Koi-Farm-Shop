@@ -143,18 +143,55 @@ namespace KoiShop.Application.Service
             }
             return false;
         }
-        public async Task<bool> UpdateKoiOrBatchToCare(int? id)
+        public async Task< RequestCareEnum> AddFullKoiOrBatchToRequest(List<OrderDetailDtoV1> orderDetails, DateTime endDate)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                return RequestCareEnum.UserNotAuthenticated;
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null || orderDetails == null)
+            {
+                return RequestCareEnum.UserNotAuthenticated;
+            }
+            var orderDetail = _mapper.Map<List<OrderDetail>>(orderDetails);
+            var result = await _requestCareRepository.AddKoiOrBatchToPackage(orderDetail);
+            if (result)
+            {
+                var request = await _requestCareRepository.AddKoiOrBatchToRequest(orderDetail, endDate);
+                if (request)
+                {
+                    return RequestCareEnum.Success;
+                }
+                return RequestCareEnum.FailAddRequest;
+            }
+            return RequestCareEnum.Fail;
+        }
+        public async Task<bool> UpdateKoiOrBatchToCare(int? id, int? status)
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)
             {
                 throw new ArgumentException("User context or user store is not valid.");
             }
             var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null || !id.HasValue && id < 0)
+            if (userId == null || !id.HasValue || id < 0 || status < 0 || status == null || status > 3 )
             {
                 return false;
             }
-            var result = await _requestCareRepository.UpdateKoiOrBatchToCare(id);
+            string? reviewStatus = null;
+            if (status == 1)
+            {
+                reviewStatus = "UnderCare";
+            }
+            else if (status == 2)
+            {
+                reviewStatus = "CompletedCare";
+            }
+            else if (status == 3)
+            {
+                reviewStatus = "RefusedCare";
+            }
+            var result = await _requestCareRepository.UpdateKoiOrBatchToCare(id, reviewStatus);
             if (result)
             {
                 return true;

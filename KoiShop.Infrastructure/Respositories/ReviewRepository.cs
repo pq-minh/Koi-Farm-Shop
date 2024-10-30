@@ -26,7 +26,7 @@ namespace KoiShop.Infrastructure.Respositories
         }
         public async Task<IEnumerable<Review>> GetReview()
         {
-            var post = await _koiShopV1DbContext.Reviews.Include(r => r.Koi).Include(r => r.BatchKoi).ToListAsync();
+            var post = await _koiShopV1DbContext.Reviews.Where(r => r.Status == "Posted").Include(r => r.Koi).Include(r => r.BatchKoi).ToListAsync();
             if (post == null)
             {
                 return Enumerable.Empty<Review>();
@@ -68,8 +68,14 @@ namespace KoiShop.Infrastructure.Respositories
                 _koiShopV1DbContext.Reviews.Add(reviewnew);
                 await _koiShopV1DbContext.SaveChangesAsync();
             }
-         
-            review.Comments = reviews.Comments;
+
+
+            string? comment = null;
+            if (reviews.Comments != null)
+                comment = reviews.Comments;
+            else if (review.Comments != null)
+                comment = reviews.Comments;
+            review.Comments = comment;
             review.CreateDate = DateTime.Now;   
             _koiShopV1DbContext.Reviews.Update(review);
             await _koiShopV1DbContext.SaveChangesAsync();
@@ -138,6 +144,7 @@ namespace KoiShop.Infrastructure.Respositories
                     UserId = user.Id,
                     CreateDate = DateTime.Now,
                     Rating = reviews.Rating,
+                    Status = "Posted"
                 };
                 _koiShopV1DbContext.Reviews.Add(reviewnew);
                 await _koiShopV1DbContext.SaveChangesAsync();
@@ -170,7 +177,8 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
-            _koiShopV1DbContext.Reviews.Remove(review);
+            review.Status = "Removed";
+            _koiShopV1DbContext.Reviews.Update(review);
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }

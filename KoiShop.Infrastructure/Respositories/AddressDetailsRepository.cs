@@ -3,6 +3,7 @@ using KoiShop.Domain.Respositories;
 using KoiShop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using KoiShop.Application.AddressDetail.Dtos;
+using System.Runtime.CompilerServices;
 
 namespace KoiShop.Infrastructure.Respositories
 {
@@ -22,6 +23,21 @@ namespace KoiShop.Infrastructure.Respositories
                 .ToListAsync<KoiShop.Domain.Entities.AddressDetail>();
 
             return addresses;
+        }
+        public async Task<bool> UpdateAddress(int id,string city, string distric,string ward,string streetname)
+        {
+            var address = await koiShopV1DbContext.AddressDetails.FirstOrDefaultAsync(ad => ad.AddressId == id);
+            if ( address == null)
+            {
+                return false;
+            } 
+            address.City = city;
+            address.Dictrict= distric;
+            address.Ward = ward;
+            address.StreetName = streetname;
+            koiShopV1DbContext.Update(address);
+            await koiShopV1DbContext.SaveChangesAsync();
+            return true;
         }
             
     }
