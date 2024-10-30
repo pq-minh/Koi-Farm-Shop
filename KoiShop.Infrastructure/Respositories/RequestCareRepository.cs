@@ -75,7 +75,9 @@ namespace KoiShop.Infrastructure.Respositories
                 }
                 return orderDetails;
             }
-            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId) && !request.Any(r => r.Package.KoiId == od.KoiId || r.Package.BatchKoiId == od.BatchKoiId)).
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId) && !request.Any(r =>
+                (r.Package.KoiId.HasValue && r.Package.KoiId.Value == od.KoiId) ||
+                (r.Package.BatchKoiId.HasValue && r.Package.BatchKoiId.Value == od.BatchKoiId))).
                 Include(od => od.Koi).Include(od => od.BatchKoi).ToListAsync();
             if (orderDetail == null)
             {
