@@ -26,7 +26,7 @@ namespace KoiShop.Infrastructure.Respositories
         }
         public async Task<IEnumerable<Review>> GetReview()
         {
-            var post = await _koiShopV1DbContext.Reviews.Where(r => r.Status == "Posted").Include(r => r.Koi).Include(r => r.BatchKoi).ToListAsync();
+            var post = await _koiShopV1DbContext.Reviews.Where(r => r.Status == "Posted").Include(r => r.Koi).Include(r => r.BatchKoi).Include(r => r.User).ToListAsync();
             if (post == null)
             {
                 return Enumerable.Empty<Review>();
