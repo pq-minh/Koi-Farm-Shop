@@ -278,11 +278,15 @@ namespace KoiShop.Infrastructure.Respositories
         {
             var userId = _userContext.GetCurrentUser();
             var order = await _koiShopV1DbContext.Orders.Where(od => od.UserId == userId.Id).OrderByDescending(od => od.CreateDate).FirstOrDefaultAsync();
-            var orderId = order.OrderId;
-            if (orderId <= 0 || orderId == null)
+            int orderId = 0;
+            if (order != null)
             {
-                orderId = 0;
-            } 
+                orderId = order.OrderId;
+                if (orderId <= 0 || orderId == null)
+                {
+                    orderId = 0;
+                }
+            }
             var orderIdNext = orderId += 1;
             return orderIdNext;
         }
