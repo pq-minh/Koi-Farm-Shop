@@ -180,6 +180,8 @@ namespace KoiShop.Infrastructure.Respositories
                 if (pricePercentDiscount != null && pricePercentDiscount > 0 && pricePercentDiscount <= 100)
                 {
                     totalAmount = totalAmount - (totalAmount * (float)(pricePercentDiscount/100));
+                    var discountUpdate = await _discountRepository.UpdateDiscountStatus((int)discountId);
+                    order.DiscountId = discountId;
                 }
             }
             order.TotalAmount = totalAmount;

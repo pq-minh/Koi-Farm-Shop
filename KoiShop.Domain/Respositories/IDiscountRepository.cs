@@ -15,5 +15,6 @@ namespace KoiShop.Domain.Respositories
         Task<IEnumerable<Discount>> GetDiscountForUser();
         Task<Discount?> GetDiscountForUser(string? name);
         Task<double> CheckDiscount(int? disountId);
+        Task<bool> UpdateDiscountStatus(int discountId);
     }
 }
