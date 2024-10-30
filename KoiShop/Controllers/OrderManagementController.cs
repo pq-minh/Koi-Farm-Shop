@@ -59,7 +59,7 @@ namespace KoiShop.Controllers
         [HttpGet("total")]
         public async Task<IActionResult> GetTotalOrders([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var total = await _orderService.GetTotalOrders(startDate, endDate);
+            var total = await _orderService.CountTotalOrders(startDate, endDate);
             if (total == 0)
                 return BadRequest("No order exists.");
 
@@ -69,7 +69,7 @@ namespace KoiShop.Controllers
         [HttpGet("completed")]
         public async Task<IActionResult> GetCompletedOrders([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var total = await _orderService.GetCompletedOrders(startDate, endDate);
+            var total = await _orderService.CountOrders("Complete" ,startDate, endDate);
             if (total == 0)
                 return BadRequest("No order exists.");
 
@@ -79,7 +79,7 @@ namespace KoiShop.Controllers
         [HttpGet("pending")]
         public async Task<IActionResult> GetPendingOrders([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var total = await _orderService.GetPendingOrders(startDate, endDate);
+            var total = await _orderService.CountOrders("Pending" ,startDate, endDate);
             if (total == 0)
                 return BadRequest("No order exists.");
 
@@ -104,6 +104,16 @@ namespace KoiShop.Controllers
                 return Ok("Order status updated successfully.");
 
             return BadRequest("Order status updated unsuccessfully.");
+        }
+
+        [HttpPut("update-payment/status")]
+        public async Task<IActionResult> UpdatePaymentStatus(int paymentId, string status)
+        {
+            var result = await _orderService.UpdatePaymentStatus(paymentId, status);
+            if (result)
+                return Ok("Payment status updated successfully.");
+
+            return BadRequest("Payment status updated unsuccessfully.");
         }
 
 

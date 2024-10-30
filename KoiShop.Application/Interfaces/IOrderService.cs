@@ -24,11 +24,13 @@ namespace KoiShop.Application.Interfaces
         Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate);
         Task<int> GetBestSalesKoi(DateTime startDate, DateTime endDate);
         Task<int> GetBestSalesBatchKoi(DateTime startDate, DateTime endDate);
-        Task<int> GetTotalOrders(DateTime startDate, DateTime endDate);
-        Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate);
-        Task<int> GetPendingOrders(DateTime startDate, DateTime endDate);
+        Task<int> CountTotalOrders(DateTime startDate, DateTime endDate);
+        //Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate);
+        //Task<int> GetPendingOrders(DateTime startDate, DateTime endDate);
+        Task<int> CountOrders(string status, DateTime startDate, DateTime endDate);
         Task<PaymentDto> PayByVnpay(VnPaymentResponseFromFe request);
         Task<bool> UpdateOrder(UpdateOrderDtos order);
         Task<bool> UpdateOrderStatus(int orderId, string status);
+        Task<bool> UpdatePaymentStatus(int paymentId, string status);
     }
 }
