@@ -66,7 +66,7 @@ namespace KoiShop.Controllers
             return Ok(total);
         }
 
-        [HttpGet("completed")]
+        [HttpGet("complete")]
         public async Task<IActionResult> GetCompletedOrders([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             var total = await _orderService.CountOrders("Complete" ,startDate, endDate);
@@ -85,6 +85,27 @@ namespace KoiShop.Controllers
 
             return Ok(total);
         }
+
+        [HttpGet("shipped")]
+        public async Task<IActionResult> GetShippedOrders([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            var total = await _orderService.CountOrders("Shipped", startDate, endDate);
+            if (total == 0)
+                return BadRequest("No order exists.");
+
+            return Ok(total);
+        }
+
+        [HttpGet("intransit")]
+        public async Task<IActionResult> GetInTransitOrders([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            var total = await _orderService.CountOrders("InTransit", startDate, endDate);
+            if (total == 0)
+                return BadRequest("No order exists.");
+
+            return Ok(total);
+        }
+
 
         //[HttpPut("update")]
         //public async Task<IActionResult> UpdateOder(UpdateOrderDtos order)
