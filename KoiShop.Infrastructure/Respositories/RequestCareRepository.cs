@@ -60,14 +60,15 @@ namespace KoiShop.Infrastructure.Respositories
             var userId = _userContext.GetCurrentUser().Id;
 
             var request = await _koiShopV1DbContext.Requests.Where(r => r.UserId == userId).Include(r => r.Package).ToListAsync();
-            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId && o.OrderStatus != "Delivered").Select(o => o.OrderId).ToListAsync();
-            if (order == null)
+            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId).Select(o => o.OrderId).ToListAsync();
+            var payment = await _koiShopV1DbContext.Payments.Where(p => order.Contains((int)p.OrderId) && p.Status == "Complete").Select(p => p.OrderId).ToListAsync();
+            if (order == null || payment == null)
             {
                 return Enumerable.Empty<OrderDetail>();
             }
             if (request == null || !request.Any())
             {
-                var orderDetails = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId))
+                var orderDetails = await _koiShopV1DbContext.OrderDetails.Where(od => payment.Contains((int)od.OrderId))
                     .Include(od => od.Koi).Include(od => od.BatchKoi).ToListAsync();
                 if (orderDetails == null)
                 {
@@ -75,8 +76,22 @@ namespace KoiShop.Infrastructure.Respositories
                 }
                 return orderDetails;
             }
-            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId) && !request.Any(r => r.Package.KoiId == od.KoiId || r.Package.BatchKoiId == od.BatchKoiId)).
-                Include(od => od.Koi).Include(od => od.BatchKoi).ToListAsync();
+            var koiIdsFromRequests = await _koiShopV1DbContext.Requests
+                .Where(r => r.UserId == userId && r.Package.KoiId.HasValue && !r.Package.BatchKoiId.HasValue)
+                .Select(r => r.Package.KoiId.Value)
+                .ToListAsync();
+
+            var batchKoiIdsFromRequests = await _koiShopV1DbContext.Requests
+                .Where(r => r.UserId == userId && r.Package.BatchKoiId.HasValue && !r.Package.KoiId.HasValue)
+                .Select(r => r.Package.BatchKoiId.Value)
+                .ToListAsync();
+
+            var orderDetail = await _koiShopV1DbContext.OrderDetails
+                .Where(od => payment.Contains((int)od.OrderId) &&
+                             !(koiIdsFromRequests.Contains((int)od.KoiId) || batchKoiIdsFromRequests.Contains((int)od.BatchKoiId)))
+                .Include(od => od.Koi)
+                .Include(od => od.BatchKoi)
+                .ToListAsync();
             if (orderDetail == null)
             {
                 return Enumerable.Empty<OrderDetail>();

@@ -140,7 +140,7 @@ namespace KoiShop.Application.Service
                         var koiandBatchStatus = await _orderRepository.UpdateKoiAndBatchStatus(cartItems);
                         if (koiandBatchStatus)
                         {
-                            var payment = await _orderRepository.AddPayment("offline");
+                            var payment = await _orderRepository.AddPayment(method);
                             if (payment && method == "offline")
                             {
                                 return OrderEnum.Success;

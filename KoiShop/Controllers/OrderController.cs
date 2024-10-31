@@ -61,7 +61,7 @@ namespace KoiShop.Controllers
                 case OrderEnum.FailUpdateFish:
                     return BadRequest("Fail update fish");
                 case OrderEnum.FailAddPayment:
-                    return BadRequest("Add payment have bug");
+                    return BadRequest("Payment verification failed !");
                 case OrderEnum.FailPaid:
                     var response = _vnPayService.ExecutePayment(request);
                     if (response == null || !response.Success)

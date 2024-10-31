@@ -33,6 +33,15 @@ namespace KoiShop.Infrastructure.Respositories
             }
             return post;
         }
+        public async Task<IEnumerable<Review>> GetReviewByStaff()
+        {
+            var post = await _koiShopV1DbContext.Reviews.Include(r => r.Koi).Include(r => r.BatchKoi).Include(r => r.User).ToListAsync();
+            if (post == null)
+            {
+                return Enumerable.Empty<Review>();
+            }
+            return post;
+        }
         public async Task<bool> AddReview(Review reviews)
         {
             var user = _userContext.GetCurrentUser();
