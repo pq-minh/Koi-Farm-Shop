@@ -401,5 +401,28 @@ namespace KoiShop.Infrastructure.Respositories
             return result > 0;
         }
 
+        public async Task<Payment> GetPaymentByOrderId(int orderId)
+        {
+            return await _koiShopV1DbContext.Payments.FirstOrDefaultAsync(p => p.OrderId == orderId);
+        }
+
+        public async Task<Payment> GetPaymentById(int paymentId)
+        {
+            return await _koiShopV1DbContext.Payments.FindAsync(paymentId);
+
+        }
+
+        public async Task<bool> UpdatePayment(Payment payment)
+        {
+            _koiShopV1DbContext.Payments.Update(payment);
+            var result = await _koiShopV1DbContext.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetailsInOrder(int orderId)
+        {
+            return await _koiShopV1DbContext.OrderDetails.
+                Where(o => o.OrderId == orderId).ToListAsync();
+        }
     }
 }

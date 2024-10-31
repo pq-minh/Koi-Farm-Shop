@@ -29,5 +29,9 @@ namespace KoiShop.Domain.Respositories
         Task<IEnumerable<OrderDetail>> GetOrderDetails(DateTime startDate, DateTime endDate);
         Task<bool> UpdateOrder(Order order);
         Task<Order> GetOrderById(int orderId);
+        Task<Payment> GetPaymentByOrderId(int orderId);
+        Task<Payment> GetPaymentById(int paymentId);
+        Task<bool> UpdatePayment(Payment payment);
+        Task<IEnumerable<OrderDetail>> GetOrderDetailsInOrder(int orderId);
     }
 }
