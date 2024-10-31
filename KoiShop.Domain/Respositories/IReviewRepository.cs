@@ -10,6 +10,7 @@ namespace KoiShop.Domain.Respositories
     public interface IReviewRepository
     {
         Task<IEnumerable<Review>> GetReview();
+        Task<IEnumerable<Review>> GetReviewByStaff();
         Task<bool> AddReview(Review reviews);
         Task<bool> DeleteReview(int id);
         Task<IEnumerable<T>> GetKoiOrBatch<T>();

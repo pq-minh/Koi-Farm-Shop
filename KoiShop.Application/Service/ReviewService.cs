@@ -33,7 +33,21 @@ namespace KoiShop.Application.Service
             var reviewDto = _mapper.Map<IEnumerable<ReviewDtos>>(review);
             return reviewDto;
         }
-
+        public async Task<IEnumerable<ReviewDtos>> GetReviewByStaff()
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return Enumerable.Empty<ReviewDtos>();
+            }
+            var review = await _reviewRepository.GetReviewByStaff();
+            var reviewDto = _mapper.Map<IEnumerable<ReviewDtos>>(review);
+            return reviewDto;
+        }
         public async Task<IEnumerable<OrderDetailDtos>> GetAllOrderDetail()
         {
             if (_userContext.GetCurrentUser() == null || _userStore == null)

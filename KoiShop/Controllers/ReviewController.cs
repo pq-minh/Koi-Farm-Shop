@@ -55,6 +55,16 @@ namespace KoiShop.Controllers
             }
             return BadRequest("Can not add review");
         }
+        [HttpGet("staff")]
+        public async Task<IActionResult> GetReviewByStaff()
+        {
+            var review = await _reviewService.GetReviewByStaff();
+            if (review != null)
+            {
+                return Ok(review);
+            }
+            return BadRequest("Not found any reviews");
+        }
         [HttpDelete]
         public async Task<IActionResult> DeleteReview([FromBody] ReviewDtoV1 reviewDtoV1)
         {
