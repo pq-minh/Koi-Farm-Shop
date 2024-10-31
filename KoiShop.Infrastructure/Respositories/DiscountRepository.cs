@@ -71,7 +71,7 @@ namespace KoiShop.Infrastructure.Respositories
             var discounts = await _koiShopV1DbContext.Discounts.ToListAsync();
             foreach (var discount in discounts)
             {
-                if (discount.EndDate == DateTime.Now || discount.Used == discount.TotalQuantity || discount.StartDate >= discount.EndDate)
+                if (discount.EndDate <= DateTime.Now || discount.Used == discount.TotalQuantity || discount.StartDate >= discount.EndDate)
                 {
                     discount.Status = "InActive";
                 }
