@@ -99,6 +99,19 @@ namespace KoiShop.Controllers
             var paymentUrl = await _vnPayService.CreatePatmentUrl(HttpContext, vnPayModel);
             return Ok(new { PaymentUrl = paymentUrl });
         }
-
+        [HttpGet("orderdetail/staff")]
+        public async Task<IActionResult> GetOrderDetailsByStaff()
+        {
+            var orderDetail = await _orderService.GetOrderDetailsByStaff();
+            return Ok(orderDetail);
+        }
+        [HttpPost("orderdetail/staff/modify")]
+        public async Task<IActionResult> UpdateOrderDetailsByStaff([FromBody] OrderDetailInput orderDetailInput)
+        {
+            var orderDetail = await _orderService.UpdateOrderDetailsByStaff(orderDetailInput.OrderDetailId, orderDetailInput.Status);
+            if (orderDetail)
+                return Created();
+            return BadRequest("There was an error during processing");
+        }
     }
 }

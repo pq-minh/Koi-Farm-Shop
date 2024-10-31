@@ -70,7 +70,7 @@ namespace KoiShop.Controllers
         [HttpGet("complete")]
         public async Task<IActionResult> GetCompletedOrders([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var total = await _orderService.CountOrders("Complete", startDate, endDate);
+            var total = await _orderService.CountOrders("Completed", startDate, endDate);
             if (total == 0)
                 return BadRequest("No order exists.");
 

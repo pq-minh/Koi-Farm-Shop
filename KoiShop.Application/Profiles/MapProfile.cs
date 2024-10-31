@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VNPayPackage.Enums;
 
 namespace KoiShop.Application.Profiles
 {
@@ -15,8 +16,12 @@ namespace KoiShop.Application.Profiles
     {
         public MapProfile()
         {
-            CreateMap<Koi, KoiDto>().ForMember(dest => dest.TypeFish, opt => opt.MapFrom(src => src.FishType.TypeFish));
-            CreateMap<BatchKoi, BatchKoiDto>().ForMember(d => d.TypeBatch, o => o.MapFrom(s => s.BatchType.TypeBatch));
+            CreateMap<Koi, KoiDto>()
+                .ForMember(dest => dest.TypeFish, opt => opt
+                .MapFrom(src => src.FishType != null && src.FishType.TypeFish != null ? src.FishType.TypeFish : string.Empty));
+            CreateMap<BatchKoi, BatchKoiDto>()
+                .ForMember(d => d.TypeBatch, o => o
+                .MapFrom(src => src.BatchType != null && src.BatchType.TypeBatch != null ? src.BatchType.TypeBatch : string.Empty));
             CreateMap<CartItem, CartDtos>();
             CreateMap<CartDtoV1, CartItem>();
             CreateMap<CartDtoV2, CartItem>();
@@ -31,7 +36,12 @@ namespace KoiShop.Application.Profiles
                  .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
                  .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty))
                  .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Certificate : string.Empty));
-
+            CreateMap<OrderDetail, OrderDetailDtoV3>()
+                 .ForMember(dest => dest.KoiName, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Name : string.Empty))
+                 .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Name : string.Empty))
+                 .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
+                 .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty))
+                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Order != null && src.Order.User != null ? src.Order.User.LastName + " " + src.Order.User.FirstName : string.Empty));
             CreateMap<Order, OrderDtos>();
             CreateMap<AddKoiDto, Koi>();
             CreateMap<AddBatchKoiDto, BatchKoi>();
@@ -49,10 +59,10 @@ namespace KoiShop.Application.Profiles
             CreateMap<ReviewDtos, Review>();
             CreateMap<OrderDetailDtoV1, OrderDetail>();
             CreateMap<Request, RequestCareDtos>()
-                .ForMember(dest => dest.KoiName, opt => opt.MapFrom(src => src.Package.Koi != null ? src.Package.Koi.Name : string.Empty))
-                .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.Package.BatchKoi != null ? src.Package.BatchKoi.Name : string.Empty))
-                .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Package.Koi != null ? src.Package.Koi.Image : string.Empty))
-                .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.Package.BatchKoi != null ? src.Package.BatchKoi.Image : string.Empty));
+                .ForMember(dest => dest.KoiName, opt => opt.MapFrom(src => src.Package != null && src.Package.Koi != null ? src.Package.Koi.Name : string.Empty))
+                .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.Package != null && src.Package.BatchKoi != null ? src.Package.BatchKoi.Name : string.Empty))
+                .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Package != null && src.Package.Koi != null ? src.Package.Koi.Image : string.Empty))
+                .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.Package != null && src.Package.BatchKoi != null ? src.Package.BatchKoi.Image : string.Empty));
         }
     }
 }

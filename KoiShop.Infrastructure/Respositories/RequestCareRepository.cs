@@ -61,7 +61,7 @@ namespace KoiShop.Infrastructure.Respositories
 
             var request = await _koiShopV1DbContext.Requests.Where(r => r.UserId == userId).Include(r => r.Package).ToListAsync();
             var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId).Select(o => o.OrderId).ToListAsync();
-            var payment = await _koiShopV1DbContext.Payments.Where(p => order.Contains((int)p.OrderId) && p.Status == "Complete").Select(p => p.OrderId).ToListAsync();
+            var payment = await _koiShopV1DbContext.Payments.Where(p => order.Contains((int)p.OrderId) && p.Status == "Completed").Select(p => p.OrderId).ToListAsync();
             if (order == null || payment == null)
             {
                 return Enumerable.Empty<OrderDetail>();

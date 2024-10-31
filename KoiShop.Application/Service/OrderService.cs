@@ -27,8 +27,8 @@ namespace KoiShop.Application.Service
         private readonly IUserStore<User> _userStore;
         private readonly IUserContext _userContext;
         private readonly IVnPayService _vnPayService;
-        List<string> orderStatus = new() { "Pending", "Complete", "Shipped", "InTransit" };
-        List<string> paymentStatus = new() { "Pending", "Complete" };
+        List<string> orderStatus = new() { "Pending", "Completed", "Shipped", "InTransit" };
+        List<string> paymentStatus = new() { "Pending", "Completed" };
 
         public OrderService(IMapper mapper, IOrderRepository orderRepository, IUserContext userContext, IUserStore<User> userStore, IVnPayService vpnPayService)
         {
@@ -259,6 +259,55 @@ namespace KoiShop.Application.Service
                 return false;
             }
         }
+        public async Task<IEnumerable<OrderDetailDtoV3>> GetOrderDetailsByStaff()
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return Enumerable.Empty<OrderDetailDtoV3>();
+            }
+            var orderdetail = await _orderRepository.GetOrderDetailsByStaff();
+            var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtoV3>>(orderdetail);
+            return orderDetailDto;
+        }
+        public async Task<bool> UpdateOrderDetailsByStaff(int? orderDetailId, string? status)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return false;
+            }
+            if (status == null || !orderDetailId.HasValue)
+            {
+                return false;
+            }
+            string[] statusArr = { "Delivered", "Shipped", "In Transit", "Pending", "Packing" };
+            string? statusAccepted = null;
+            foreach (var x in statusArr)
+            {
+                if (status == x)
+                {
+                    statusAccepted = x;
+                }
+                break;
+            }
+            if (string.IsNullOrEmpty(statusAccepted))
+            {
+                return false;
+            }
+            var result = await _orderRepository.UpdateOrderDetailsByStaff((int)orderDetailId, statusAccepted);
+            if (result)
+                return true;
+            return false;
+        }
 
 
         // ====================================================================================================
@@ -271,7 +320,7 @@ namespace KoiShop.Application.Service
         {
             Dictionary<int, int> koiDic = new Dictionary<int, int>();
 
-            var od = await _orderRepository.GetOrderDetails("Complete", startDate, endDate);
+            var od = await _orderRepository.GetOrderDetails("Completed", startDate, endDate);
             foreach (var item in od)
             {
                 if (item.KoiId.HasValue)
@@ -299,7 +348,7 @@ namespace KoiShop.Application.Service
         {
             Dictionary<int, int> batchKoiDic = new Dictionary<int, int>();
 
-            var od = await _orderRepository.GetOrderDetails("Complete", startDate, endDate);
+            var od = await _orderRepository.GetOrderDetails("Completed", startDate, endDate);
             foreach (var item in od)
             {
                 if (item.KoiId.HasValue)
@@ -399,8 +448,8 @@ namespace KoiShop.Application.Service
             if (payment == null) return false;
 
             // payment complete thì order ms dc complete
-            if (status == "Complete")
-                if(payment.Status != "Complete")
+            if (status == "Completed")
+                if (payment.Status != "Completed")
                     return false;
 
             var orders = await _orderRepository.GetOrderById(orderId);
@@ -433,7 +482,7 @@ namespace KoiShop.Application.Service
         public async Task<IEnumerable<OrderDetail>> GetOrderDetailsInOrder(int orderId)
         {
             return await _orderRepository.GetOrderDetailsInOrder(orderId);
-        } 
+        }
 
     }
 }

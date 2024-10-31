@@ -269,7 +269,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
-            payment.Status = "Complete";
+            payment.Status = "Completed";
             _koiShopV1DbContext.Orders.Update(order);
             _koiShopV1DbContext.Payments.Update(payment);
             await _koiShopV1DbContext.SaveChangesAsync();
@@ -328,21 +328,46 @@ namespace KoiShop.Infrastructure.Respositories
 
         public async Task<IEnumerable<OrderDetail>> GetOrderDetailsByStaff()
         {
-            var orderDetail = await _koiShopV1DbContext.OrderDetails.Include(o => o.Koi).Include(o => o.BatchKoi)
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.Status != "UnderCare").Include(o => o.Koi).Include(o => o.BatchKoi)
                 .Include(o => o.Order.User).ToListAsync(); 
             return orderDetail;
         }
 
-        public async Task<bool> UpdateOrderDetailsByStaff(int orderDetailId)
+        public async Task<bool> UpdateOrderDetailsByStaff(int orderDetailId, string status)
         {
             var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.OrderDetailsId == orderDetailId).FirstOrDefaultAsync();
             if (orderDetail == null)
             {
                 return false;
             }
-            string[] status = { "", ""};
-            orderDetail.Status = "";
+            orderDetail.Status = status;
             _koiShopV1DbContext.OrderDetails.Update(orderDetail);
+            var orderDetailGroup = await _koiShopV1DbContext.OrderDetails.GroupBy(od => od.OrderId).ToListAsync();
+            if (orderDetailGroup != null)
+            {
+                foreach (var group in orderDetailGroup)
+                {
+                    bool allDeliverd = group.All(item => item.Status == "Delivered");
+                    if (allDeliverd)
+                    {
+                        var order = await _koiShopV1DbContext.Orders.FirstOrDefaultAsync(o => o.OrderId == group.Key);
+                        if (order != null)
+                        {
+                            var payment = await _koiShopV1DbContext.Payments.FirstOrDefaultAsync(p => p.OrderId == order.OrderId
+                            && p.Status == "Completed");
+                            if (payment == null)
+                            {
+                                order.OrderStatus = "AwaitingPayment";  
+                            }
+                            else if(payment != null)
+                            {
+                                order.OrderStatus = "Completed";
+                            }
+                            _koiShopV1DbContext.OrderDetails.Update(orderDetail);
+                        }
+                    }
+                }
+            }
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }

@@ -18,6 +18,8 @@ namespace KoiShop.Application.Interfaces
         Task<IEnumerable<OrderDetailDtoV2>> GetOrderDetailById(int? id);
         Task<IEnumerable<KoiDto>> GetKoiFromOrderDetail(int? orderId);
         Task<IEnumerable<BatchKoiDto>> GetBatchFromOrderDetail(int? orderId);
+        Task<IEnumerable<OrderDetailDtoV3>> GetOrderDetailsByStaff();
+        Task<bool> UpdateOrderDetailsByStaff(int? orderDetailId, string? status);
 
         // ===============================================================================================
         Task<IEnumerable<Order>> GetOrders(string status, DateTime startDate, DateTime endDate);
