@@ -26,7 +26,7 @@ namespace KoiShop.Infrastructure.Respositories
         }
         public async Task<IEnumerable<Review>> GetReview()
         {
-            var post = await _koiShopV1DbContext.Reviews.Include(r => r.Koi).Include(r => r.BatchKoi).ToListAsync();
+            var post = await _koiShopV1DbContext.Reviews.Where(r => r.Status == "Posted").Include(r => r.Koi).Include(r => r.BatchKoi).Include(r => r.User).ToListAsync();
             if (post == null)
             {
                 return Enumerable.Empty<Review>();
@@ -40,44 +40,28 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
-            int? batchKoiId = null;
-            int? koiId = null;
-            if (reviews.KoiId == null)
-            {
-                batchKoiId = reviews.BatchKoiId;
-            }
-            else if (reviews.BatchKoiId == null || reviews.BatchKoiId == 0)
-            {
-                koiId = reviews.KoiId;
-            }
-            else if (batchKoiId == null && koiId == null)
-            {
-                return false;
-            }
-            var review = await _koiShopV1DbContext.Reviews.Where(r => (r.KoiId == reviews.KoiId || r.BatchKoiId == reviews.BatchKoiId) && r.UserId == user.Id).FirstOrDefaultAsync();
+            var review = await _koiShopV1DbContext.Reviews.Where(r => (r.KoiId == reviews.KoiId && r.BatchKoiId == null)
+            || (r.BatchKoiId == reviews.BatchKoiId && r.KoiId == null) && r.UserId == user.Id)
+                .FirstOrDefaultAsync();
             if (review == null)
             {
                 var reviewnew = new Review
                 {
-                    BatchKoiId = batchKoiId,
-                    KoiId = koiId,
+                    BatchKoiId = reviews.BatchKoiId,
+                    KoiId = reviews.KoiId,
                     Comments = reviews.Comments,
                     UserId = user.Id,
                     CreateDate = DateTime.Now,
+                    Status = "Posted"
                 };
                 _koiShopV1DbContext.Reviews.Add(reviewnew);
-                await _koiShopV1DbContext.SaveChangesAsync();
             }
-
-
-            string? comment = null;
-            if (reviews.Comments != null)
-                comment = reviews.Comments;
-            else if (review.Comments != null)
-                comment = reviews.Comments;
-            review.Comments = comment;
-            review.CreateDate = DateTime.Now;   
-            _koiShopV1DbContext.Reviews.Update(review);
+            else
+            {
+                review.Comments = reviews.Comments ?? review.Comments;
+                review.CreateDate = DateTime.Now;
+                _koiShopV1DbContext.Reviews.Update(review);
+            }
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
@@ -88,7 +72,9 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
-            var review = await _koiShopV1DbContext.Reviews.Where(r => (r.KoiId == reviews.KoiId || r.BatchKoiId == reviews.BatchKoiId) && r.UserId == user.Id).FirstOrDefaultAsync();
+            var review = await _koiShopV1DbContext.Reviews.Where(r => (r.KoiId == reviews.KoiId && r.BatchKoiId == null)
+            || (r.BatchKoiId == reviews.BatchKoiId && r.KoiId == null) && r.UserId == user.Id)
+                .FirstOrDefaultAsync();
             if (review == null)
             {
                 var reviewnew = new Review
@@ -101,7 +87,7 @@ namespace KoiShop.Infrastructure.Respositories
                 _koiShopV1DbContext.Reviews.Add(reviewnew);
                 await _koiShopV1DbContext.SaveChangesAsync();
             }
-  
+
             if (reviews.Rating < 1 || reviews.Rating > 5)
             {
                 return false;
@@ -119,48 +105,34 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
-            int? batchKoiId = null;
-            int? koiId = null;
-            if (reviews.KoiId == null)
-            {
-                batchKoiId = reviews.BatchKoiId;
-            }
-            else if (reviews.BatchKoiId == null || reviews.BatchKoiId == 0)
-            {
-                koiId = reviews.KoiId;
-            }
-            else if (batchKoiId == null && koiId == null)
-            {
-                return false;
-            }
-            var review = await _koiShopV1DbContext.Reviews.Where(r => (r.KoiId == reviews.KoiId || r.BatchKoiId == reviews.BatchKoiId) && r.UserId == user.Id).FirstOrDefaultAsync();
+
+            var review = await _koiShopV1DbContext.Reviews.Where(r => (r.KoiId == reviews.KoiId && r.BatchKoiId == null)
+            || (r.BatchKoiId == reviews.BatchKoiId && r.KoiId == null) && r.UserId == user.Id)
+                .FirstOrDefaultAsync();
             if (review == null)
             {
                 var reviewnew = new Review
                 {
-                    BatchKoiId = batchKoiId,
-                    KoiId = koiId,
+                    BatchKoiId = reviews.BatchKoiId,
+                    KoiId = reviews.KoiId,
                     Comments = reviews.Comments,
                     UserId = user.Id,
                     CreateDate = DateTime.Now,
                     Rating = reviews.Rating,
+                    Status = "Posted"
                 };
                 _koiShopV1DbContext.Reviews.Add(reviewnew);
-                await _koiShopV1DbContext.SaveChangesAsync();
             }
-
-            string? comment = null;
-            if (reviews.Comments != null)
-                comment = reviews.Comments;
-            else if (review.Comments  != null)
-                comment = reviews.Comments;
-            review.Comments = comment;
-            review.CreateDate = DateTime.Now;
-            int? rating = review.Rating;
-            if (reviews.Rating != null && reviews.Rating >= 0 && reviews.Rating <= 5 && reviews.Rating != review.Rating)
-                rating = reviews.Rating;
-            review.Rating = rating;
-            _koiShopV1DbContext.Reviews.Update(review);
+            else
+            {
+                review.Comments = reviews.Comments ?? review.Comments;
+                review.CreateDate = DateTime.Now;
+                int? rating = review.Rating;
+                if (reviews.Rating != null && reviews.Rating >= 0 && reviews.Rating <= 5 && reviews.Rating != review.Rating)
+                    rating = reviews.Rating;
+                review.Rating = rating;
+                _koiShopV1DbContext.Reviews.Update(review);
+            }
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
@@ -176,7 +148,8 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
-            _koiShopV1DbContext.Reviews.Remove(review);
+            review.Status = "Removed";
+            _koiShopV1DbContext.Reviews.Update(review);
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
@@ -188,7 +161,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return Enumerable.Empty<OrderDetail>();
             }
-            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId)).ToListAsync();
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => order.Contains((int)od.OrderId)).Include(od => od.Koi).Include(od => od.BatchKoi).ToListAsync();
             if (orderDetail == null)
             {
                 return Enumerable.Empty<OrderDetail>();

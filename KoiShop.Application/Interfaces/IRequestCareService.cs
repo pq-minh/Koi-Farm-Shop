@@ -17,6 +17,6 @@ namespace KoiShop.Application.Interfaces
         Task<bool> AddKoiOrBatchToPackage(List<OrderDetailDtoV1> orderDetails);
         Task<bool> AddKoiOrBatchToRequest(List<OrderDetailDtoV1> orderDetails, DateTime endDate);
         Task<RequestCareEnum> AddFullKoiOrBatchToRequest(List<OrderDetailDtoV1> orderDetails, DateTime endDate);
-        Task<bool> UpdateKoiOrBatchToCare(int? id);
+        Task<bool> UpdateKoiOrBatchToCare(int? id, int? status);
     }
 }

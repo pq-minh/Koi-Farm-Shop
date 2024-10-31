@@ -116,7 +116,8 @@ namespace KoiShop.Infrastructure.Respositories
                         KoiId = cart.KoiId,
                         BatchKoiId = cart.BatchKoiId,
                         ToTalQuantity = cart.Quantity,
-                        OrderId = order.OrderId
+                        OrderId = order.OrderId,
+                        Price = cart.UnitPrice
                     };
                     _koiShopV1DbContext.OrderDetails.Add(orderDetail);
                 }
@@ -178,7 +179,9 @@ namespace KoiShop.Infrastructure.Respositories
                 var pricePercentDiscount = await _discountRepository.CheckDiscount(discountId);
                 if (pricePercentDiscount != null && pricePercentDiscount > 0 && pricePercentDiscount <= 100)
                 {
-                    totalAmount = totalAmount - (totalAmount * (float)(pricePercentDiscount/100));
+                    totalAmount = totalAmount - (totalAmount * (float)(pricePercentDiscount / 100));
+                    var discountUpdate = await _discountRepository.UpdateDiscountStatus((int)discountId);
+                    order.DiscountId = discountId;
                 }
             }
             order.TotalAmount = totalAmount;
@@ -234,20 +237,18 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return false;
             }
-            string status;
-            if (string.Equals(method, "offline", StringComparison.OrdinalIgnoreCase))
-            {
-                status = "Pending";
-            }
-            else
+
+            if (!string.Equals(method, "offline", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(method, "online", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
+
             }
             var payment = new Payment
             {
                 CreateDate = DateTime.Now,
                 PaymenMethod = method,
-                Status = status,
+                Status = "Pending",
                 OrderId = order.OrderId
             };
             _koiShopV1DbContext.Payments.Add(payment);
@@ -277,11 +278,15 @@ namespace KoiShop.Infrastructure.Respositories
         {
             var userId = _userContext.GetCurrentUser();
             var order = await _koiShopV1DbContext.Orders.Where(od => od.UserId == userId.Id).OrderByDescending(od => od.CreateDate).FirstOrDefaultAsync();
-            var orderId = order.OrderId;
-            if (orderId <= 0 || orderId == null)
+            int orderId = 0;
+            if (order != null)
             {
-                orderId = 0;
-            } 
+                orderId = order.OrderId;
+                if (orderId <= 0 || orderId == null)
+                {
+                    orderId = 0;
+                }
+            }
             var orderIdNext = orderId += 1;
             return orderIdNext;
         }
@@ -303,7 +308,7 @@ namespace KoiShop.Infrastructure.Respositories
                         koi.Status = "Sold";
                         _koiShopV1DbContext.Kois.Update(koi);
                         await _koiShopV1DbContext.SaveChangesAsync();
-                        
+
                     }
                     else
                     {
@@ -311,7 +316,7 @@ namespace KoiShop.Infrastructure.Respositories
                         batchKoi.Status = "Sold";
                         _koiShopV1DbContext.BatchKois.Update(batchKoi);
                         await _koiShopV1DbContext.SaveChangesAsync();
-                        
+
                     }
                 }
                 else
