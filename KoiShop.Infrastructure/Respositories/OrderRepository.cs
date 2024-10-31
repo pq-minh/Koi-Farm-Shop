@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -322,6 +323,27 @@ namespace KoiShop.Infrastructure.Respositories
                 else
                     return false;
             }
+            return true;
+        }
+
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetailsByStaff()
+        {
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Include(o => o.Koi).Include(o => o.BatchKoi)
+                .Include(o => o.Order.User).ToListAsync(); 
+            return orderDetail;
+        }
+
+        public async Task<bool> UpdateOrderDetailsByStaff(int orderDetailId)
+        {
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.OrderDetailsId == orderDetailId).FirstOrDefaultAsync();
+            if (orderDetail == null)
+            {
+                return false;
+            }
+            string[] status = { "", ""};
+            orderDetail.Status = "";
+            _koiShopV1DbContext.OrderDetails.Update(orderDetail);
+            await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
 
