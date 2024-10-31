@@ -29,6 +29,7 @@ namespace KoiShop.Application.Interfaces
         //Task<int> GetPendingOrders(DateTime startDate, DateTime endDate);
         Task<int> CountOrders(string status, DateTime startDate, DateTime endDate);
         Task<PaymentDto> PayByVnpay(VnPaymentResponseFromFe request);
+        Task<IEnumerable<OrderDetail>> GetOrderDetailsInOrder(int orderId);
         Task<bool> UpdateOrder(UpdateOrderDtos order);
         Task<bool> UpdateOrderStatus(int orderId, string status);
         Task<bool> UpdatePaymentStatus(int paymentId, string status);

@@ -266,10 +266,6 @@ namespace KoiShop.Application.Service
         {
             return await _orderRepository.GetOrders(status, startDate, endDate);
         }
-        public async Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate)
-        {
-            return await _orderRepository.GetOrderDetails(status, startDate, endDate);
-        }
 
         public async Task<int> GetBestSalesKoi(DateTime startDate, DateTime endDate)
         {
@@ -427,6 +423,17 @@ namespace KoiShop.Application.Service
 
             return await _orderRepository.UpdatePayment(payment);
         }
+
+
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate)
+        {
+            return await _orderRepository.GetOrderDetails(status, startDate, endDate);
+        }
+
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetailsInOrder(int orderId)
+        {
+            return await _orderRepository.GetOrderDetailsInOrder(orderId);
+        } 
 
     }
 }

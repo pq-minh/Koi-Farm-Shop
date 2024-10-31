@@ -2,6 +2,7 @@
 using KoiShop.Application.Interfaces;
 using KoiShop.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace KoiShop.Controllers
 {
@@ -25,14 +26,14 @@ namespace KoiShop.Controllers
             return Ok(orders);
         }
 
-        [HttpGet("get-details")]
-        public async Task<IActionResult> GetOrderDetails([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
-        {
-            var orderDetails = await _orderService.GetOrderDetails(status, startDate, endDate);
-            if (orderDetails == null)
-                return BadRequest("OrderDetails not found.");
-            return Ok(orderDetails);
-        }
+        //[HttpGet("get-details")]
+        //public async Task<IActionResult> GetOrderDetails([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        //{
+        //    var orderDetails = await _orderService.GetOrderDetails(status, startDate, endDate);
+        //    if (orderDetails == null)
+        //        return BadRequest("OrderDetails not found.");
+        //    return Ok(orderDetails);
+        //}
 
 
         [HttpGet("best-sales/koi")]
@@ -69,7 +70,7 @@ namespace KoiShop.Controllers
         [HttpGet("complete")]
         public async Task<IActionResult> GetCompletedOrders([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var total = await _orderService.CountOrders("Complete" ,startDate, endDate);
+            var total = await _orderService.CountOrders("Complete", startDate, endDate);
             if (total == 0)
                 return BadRequest("No order exists.");
 
@@ -79,7 +80,7 @@ namespace KoiShop.Controllers
         [HttpGet("pending")]
         public async Task<IActionResult> GetPendingOrders([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var total = await _orderService.CountOrders("Pending" ,startDate, endDate);
+            var total = await _orderService.CountOrders("Pending", startDate, endDate);
             if (total == 0)
                 return BadRequest("No order exists.");
 
@@ -137,6 +138,15 @@ namespace KoiShop.Controllers
             return BadRequest("Payment status updated unsuccessfully.");
         }
 
+        [HttpGet("get-details")]
+        public async Task<IActionResult> GetOrderDetailsInOrder(int orderId)
+        {
+            var orderDetails = await _orderService.GetOrderDetailsInOrder(orderId);
 
+            if (orderDetails.IsNullOrEmpty())
+                return BadRequest("No order detail found.");
+
+            return Ok(orderDetails);
+        }
     }
 }
