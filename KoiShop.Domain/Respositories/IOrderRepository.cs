@@ -33,5 +33,7 @@ namespace KoiShop.Domain.Respositories
         Task<Payment> GetPaymentById(int paymentId);
         Task<bool> UpdatePayment(Payment payment);
         Task<IEnumerable<OrderDetail>> GetOrderDetailsInOrder(int orderId);
+        Task<IEnumerable<Order>> GetAllOrders();
+        Task<IEnumerable<Order>> GetOrdersByStatus(string status);
     }
 }

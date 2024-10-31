@@ -424,5 +424,18 @@ namespace KoiShop.Infrastructure.Respositories
             return await _koiShopV1DbContext.OrderDetails.
                 Where(o => o.OrderId == orderId).ToListAsync();
         }
+
+        public async Task<IEnumerable<Order>> GetAllOrders()
+        {
+            return await _koiShopV1DbContext.Orders.ToListAsync();
+        }
+
+
+        public async Task<IEnumerable<Order>> GetOrdersByStatus(string status)
+        {
+            return await _koiShopV1DbContext.Orders
+                .Where(o => o.OrderStatus == status).ToListAsync();
+        }
+
     }
 }
