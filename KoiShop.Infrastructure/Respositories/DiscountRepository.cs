@@ -1,4 +1,5 @@
-﻿using KoiShop.Domain.Entities;
+﻿using KoiShop.Application.Dtos;
+using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using KoiShop.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
@@ -54,8 +55,19 @@ namespace KoiShop.Infrastructure.Respositories
 
         public async Task<IEnumerable<Discount>> GetDiscount()
         {
-            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate).ToListAsync();
-            return discount;
+            var discounts = await _koiShopV1DbContext.Discounts.ToListAsync();
+            foreach (var discount in discounts)
+            {
+                if (discount.EndDate < DateTime.Now)
+                {
+                    discount.Status = "Inactive"; 
+                } else
+                {
+                    discount.Status = "Active";
+                }
+            }
+            await _koiShopV1DbContext.SaveChangesAsync();
+            return discounts;
         }
         public async Task<IEnumerable<Discount>> GetDiscountForUser()
         {
