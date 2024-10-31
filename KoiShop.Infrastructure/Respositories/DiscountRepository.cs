@@ -40,13 +40,11 @@ namespace KoiShop.Infrastructure.Respositories
         }
         public async Task<bool> UpdateDiscountStatus(int discountId)
         {
-            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.DiscountId == discountId 
-            && d.Used <= d.TotalQuantity).FirstOrDefaultAsync();
+            var discount = await _koiShopV1DbContext.Discounts.Where(d => d.DiscountId == discountId).FirstOrDefaultAsync();
             if (discount == null)
             {
                 return false;
             }
-            discount.Used++;
             if (discount.Used >= discount.TotalQuantity)
             {
                 discount.Status = "InActive";
@@ -130,6 +128,9 @@ namespace KoiShop.Infrastructure.Respositories
                     if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now && !order.Contains(discount.DiscountId) && discount.TotalQuantity > 0 && discount.Used < discount.TotalQuantity)
                     {
                         var pricePercent = (double)discount.DiscountRate;
+                        discount.Used++;
+                        _koiShopV1DbContext.Discounts.Update(discount);
+                        await _koiShopV1DbContext.SaveChangesAsync();
                         return pricePercent;
                     }
                 }
