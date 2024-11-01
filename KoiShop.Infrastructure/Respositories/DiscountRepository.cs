@@ -89,7 +89,7 @@ namespace KoiShop.Infrastructure.Respositories
             }
             var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
             var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate 
-            && d.Used < d.TotalQuantity).ToListAsync();
+            && d.Used < d.TotalQuantity && d.Status == "Active").ToListAsync();
             if (order != null)
             {
                 var availableDiscount = validDiscounts.Where(d => !order.Contains(d.DiscountId)).ToList();
@@ -108,7 +108,7 @@ namespace KoiShop.Infrastructure.Respositories
                 return null;
             }
             var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
-            var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate && d.Name == name).ToListAsync();
+            var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate && d.Name == name && d.Used < d.TotalQuantity && d.Status == "Active").ToListAsync();
             if (order != null)
             {
                 var availableDiscount = validDiscounts.FirstOrDefault(d => !order.Contains(d.DiscountId));
@@ -133,7 +133,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 if (discount != null)
                 {
-                    if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now && !order.Contains(discount.DiscountId) && discount.TotalQuantity > 0 && discount.Used < discount.TotalQuantity)
+                    if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now && !order.Contains(discount.DiscountId) && discount.TotalQuantity > 0 && discount.Used < discount.TotalQuantity && discount.Status == "Active")
                     {
                         var pricePercent = (double)discount.DiscountRate;
                         discount.Used++;
