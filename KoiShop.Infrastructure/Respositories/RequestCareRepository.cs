@@ -68,7 +68,7 @@ namespace KoiShop.Infrastructure.Respositories
             }
             if (request == null || request.Count == 0)
             {
-                var orderDetails = await _koiShopV1DbContext.OrderDetails.Where(od => completedPaymentIds.Contains((int)od.OrderId) 
+                var orderDetails = await _koiShopV1DbContext.OrderDetails.Where(od => completedPaymentIds.Contains((int)od.OrderId)
                 && od.Status == "Pending")
                     .Include(od => od.Koi).Include(od => od.BatchKoi).ToListAsync();
                 if (orderDetails == null)
@@ -206,23 +206,20 @@ namespace KoiShop.Infrastructure.Respositories
                 if ((isKoiIdValid && orderdetailKoiId.Contains(orderDetail.KoiId.Value)) ||
                     (isBatchKoiIdValid && orderdetailBatchKoiId.Contains(orderDetail.BatchKoiId.Value)))
                 {
-                    orderDetail.Status = "AwaitingCareApproval"; 
-                    _koiShopV1DbContext.OrderDetails.Update(orderDetail); 
+                    orderDetail.Status = "AwaitingCareApproval";
+                    _koiShopV1DbContext.OrderDetails.Update(orderDetail);
                 }
             }
             await _koiShopV1DbContext.SaveChangesAsync();
             return true;
         }
-        public async Task<Request> CheckRequest(int? id, string? status)
+        public async Task<bool> CheckRequest(int? id, string? status)
         {
-            var request = await _koiShopV1DbContext.Requests.Where(r => r.RequestId == id).FirstOrDefaultAsync();
+            var request = await _koiShopV1DbContext.Requests.Where(r => r.RequestId == id 
+            && r.Status == "UnderCare").FirstOrDefaultAsync();
             if (request == null)
-            {
-                return null;
-            }
-            if (request.Status == "CompletedCare" || request.Status == "RefusedCare")
-                return request;
-            return null;
+                return false;
+            return true;
         }
         public async Task<bool> UpdateKoiOrBatchToCare(int? id, string? status)
         {

@@ -191,8 +191,17 @@ namespace KoiShop.Application.Service
             {
                 reviewStatus = "RefusedCare";
             }
+            if (reviewStatus == "UnderCare")
+            {
+                var result = await _requestCareRepository.UpdateKoiOrBatchToCare(id, reviewStatus);
+                if (result)
+                {
+                    return true;
+                }
+                return false;
+            }
             var validation = await _requestCareRepository.CheckRequest(id, reviewStatus);
-            if (validation != null)
+            if (validation)
             {
                 var result = await _requestCareRepository.UpdateKoiOrBatchToCare(id, reviewStatus);
                 if (result)
