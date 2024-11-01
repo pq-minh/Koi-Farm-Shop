@@ -484,5 +484,16 @@ namespace KoiShop.Application.Service
             return await _orderRepository.GetOrderDetailsInOrder(orderId);
         }
 
+        public async Task<IEnumerable<Order>> GetAllOrders()
+        {
+            return await _orderRepository.GetAllOrders();
+        }
+
+
+        public async Task<IEnumerable<Order>> GetOrdersByStatus(string status)
+        {
+            if (!orderStatus.Contains(status)) return null;
+            return await _orderRepository.GetOrdersByStatus(status);
+        }
     }
 }

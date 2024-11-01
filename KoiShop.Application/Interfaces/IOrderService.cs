@@ -35,5 +35,8 @@ namespace KoiShop.Application.Interfaces
         Task<bool> UpdateOrder(UpdateOrderDtos order);
         Task<bool> UpdateOrderStatus(int orderId, string status);
         Task<bool> UpdatePaymentStatus(int paymentId, string status);
+
+        Task<IEnumerable<Order>> GetAllOrders();
+        Task<IEnumerable<Order>> GetOrdersByStatus(string status);
     }
 }
