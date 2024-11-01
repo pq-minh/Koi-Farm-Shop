@@ -22,8 +22,12 @@
             public async Task<string> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
             {
                 var user = await identityUser.FindByEmailAsync(request.email);
+                if (user == null)
+            {
+                return "Email does not exits";
+            }
                 var token = await identityUser.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = $"https://localhost:5173/Account/ResetPassword?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(user.Email)}";
+                var callbackUrl = $"http://localhost:5173/confirmpassword?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(user.Email)}";
                 var subject = "Reset Password";
                 var plainTextContent = "Please reset your password.";
                var htmlContent = $"<strong>Please reset your password by clicking here: <a href='{callbackUrl}'>link</a></strong>";

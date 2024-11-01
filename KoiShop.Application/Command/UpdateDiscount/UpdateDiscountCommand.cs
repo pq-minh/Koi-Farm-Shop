@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using KoiShop.Domain.Entities;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.Command.UpdateDiscount
 {
-    public class UpdateDiscountCommand : IRequest<string>
+    public class UpdateDiscountCommand : IRequest<Discount>
     {
             public int DiscountId { get; set; }
             public double? DiscountRate { get; set; }

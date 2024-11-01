@@ -28,7 +28,7 @@ namespace KoiShop.Application.Command.CreateDiscount
             var result = discountRepository.CreateDiscount(discountCreate);
             if(result == null)
             {
-                throw new Exception("Tên mã giảm giá bị trùng");
+                throw new Exception("Name of discount is duplicated");
             }
             return result;
         }

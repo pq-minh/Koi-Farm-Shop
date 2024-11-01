@@ -1,6 +1,7 @@
 ﻿using KoiShop.Application.Dtos;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
+using KoiShop.Infrastructure.Migrations;
 using KoiShop.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ namespace KoiShop.Infrastructure.Respositories
             _userContext = userContext;
         }
 
-        public async Task<string> UpdateDiscount(Discount discount)
+        public async Task<Discount> UpdateDiscount(Discount discount)
         {
             var discountResult = _koiShopV1DbContext.Discounts.FirstOrDefault(dc => dc.DiscountId == discount.DiscountId);
             if (discountResult != null)
@@ -34,10 +35,18 @@ namespace KoiShop.Infrastructure.Respositories
                 discountResult.EndDate = discount.EndDate;
                 discountResult.StartDate = discount.StartDate;
                 discountResult.DiscountRate = discount.DiscountRate;
+                if (discount.EndDate >= DateTime.UtcNow && discountResult.Used < discountResult.TotalQuantity)
+                {
+                    discountResult.Status = "Active";
+                }
+                else if (discount.EndDate < DateTime.UtcNow || discountResult.Used >= discountResult.TotalQuantity)
+                {
+                    discountResult.Status = "InActive";
+                }
                 await _koiShopV1DbContext.SaveChangesAsync();
-                return "Cập nhật thành công";
+                return discountResult;
             }
-            return "Không tìm thấy mã giảm giá";
+            return discountResult;
         }
         public async Task<bool> UpdateDiscountStatus(int discountId)
         {

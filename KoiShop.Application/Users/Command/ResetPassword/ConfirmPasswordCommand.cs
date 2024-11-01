@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Application.Users.Command.ResetPassword
 {
-    public class ConfirmPasswordCommand: IRequest<string>
+    public class ConfirmPasswordCommand: IRequest<Result>
     {
         public string? Email {  get; set; }
 
