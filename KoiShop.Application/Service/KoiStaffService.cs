@@ -17,6 +17,7 @@ namespace KoiShop.Application.Service
         private readonly IMapper _mapper;
         private readonly IKoiRepository _koiRepository;
         private readonly FirebaseService _firebaseService;
+        List<string> koiStatus = new() { "OnSale", "Sold", "Pending", "Cancel" };
 
         public KoiStaffService(IKoiRepository koiRepository, FirebaseService firebaseService, IMapper mapper)
         {
@@ -41,6 +42,8 @@ namespace KoiShop.Application.Service
         {
 
             if (koiDto == null) return false;
+
+            if (!koiStatus.Contains(koiDto.Status)) return false;
 
             var allCates = await _koiRepository.GetAllKoiCategories();
 
@@ -112,7 +115,7 @@ namespace KoiShop.Application.Service
             if (koiDto.Weight.HasValue) currentKoi.Weight = koiDto.Weight;
             if (koiDto.Size.HasValue) currentKoi.Size = koiDto.Size;
             if (!string.IsNullOrEmpty(koiDto.Personality)) currentKoi.Personality = koiDto.Personality;
-            if (!string.IsNullOrEmpty(koiDto.Status)) currentKoi.Status = koiDto.Status;
+            if (!string.IsNullOrEmpty(koiDto.Status) && koiStatus.Contains(koiDto.Status)) currentKoi.Status = koiDto.Status;
             if (koiDto.Price.HasValue) currentKoi.Price = koiDto.Price;
 
             if (koiDto.KoiImage != null)
@@ -165,6 +168,8 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateKoiStatus(int koiId, string status)
         {
+            if (!koiStatus.Contains(status)) return false;
+
             var koi = await _koiRepository.GetKoiById(koiId);
             if (koi == null) return false;
 

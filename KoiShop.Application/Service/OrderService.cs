@@ -16,6 +16,7 @@ using static Google.Rpc.Context.AttributeContext.Types;
 using KoiShop.Application.Dtos.VnPayDtos;
 using System.Runtime.CompilerServices;
 using KoiShop.Application.Dtos.OrderDtos;
+using System.Numerics;
 
 namespace KoiShop.Application.Service
 {
@@ -26,6 +27,9 @@ namespace KoiShop.Application.Service
         private readonly IUserStore<User> _userStore;
         private readonly IUserContext _userContext;
         private readonly IVnPayService _vnPayService;
+        List<string> orderStatus = new() { "Pending", "Completed", "Shipped", "InTransit", "PartiallyCompleted", "AwaitingPayment" };
+        List<string> paymentStatus = new() { "Pending", "Completed" };
+        List<string> orderDetailStatus = new() { "Pending", "Delivered" };
 
         public OrderService(IMapper mapper, IOrderRepository orderRepository, IUserContext userContext, IUserStore<User> userStore, IVnPayService vpnPayService)
         {
@@ -256,6 +260,55 @@ namespace KoiShop.Application.Service
                 return false;
             }
         }
+        public async Task<IEnumerable<OrderDetailDtoV3>> GetOrderDetailsByStaff()
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return Enumerable.Empty<OrderDetailDtoV3>();
+            }
+            var orderdetail = await _orderRepository.GetOrderDetailsByStaff();
+            var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtoV3>>(orderdetail);
+            return orderDetailDto;
+        }
+        public async Task<bool> UpdateOrderDetailsByStaff(int? orderDetailId, string? status)
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+            {
+                throw new ArgumentException("User context or user store is not valid.");
+            }
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+            {
+                return false;
+            }
+            if (status == null || !orderDetailId.HasValue)
+            {
+                return false;
+            }
+            string[] statusArr = { "Delivered", "Shipped", "In Transit", "Pending", "Packing" };
+            string? statusAccepted = null;
+            foreach (var x in statusArr)
+            {
+                if (status == x)
+                {
+                    statusAccepted = x;
+                }
+                break;
+            }
+            if (string.IsNullOrEmpty(statusAccepted))
+            {
+                return false;
+            }
+            var result = await _orderRepository.UpdateOrderDetailsByStaff((int)orderDetailId, statusAccepted);
+            if (result)
+                return true;
+            return false;
+        }
 
 
         // ====================================================================================================
@@ -263,13 +316,10 @@ namespace KoiShop.Application.Service
         {
             return await _orderRepository.GetOrders(status, startDate, endDate);
         }
-        public async Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate)
-        {
-            return await _orderRepository.GetOrderDetails(status, startDate, endDate);
-        }
 
         public async Task<int> GetBestSalesKoi(DateTime startDate, DateTime endDate)
         {
+
             Dictionary<int, int> koiDic = new Dictionary<int, int>();
 
             var od = await _orderRepository.GetOrderDetails("Completed", startDate, endDate);
@@ -298,6 +348,7 @@ namespace KoiShop.Application.Service
         }
         public async Task<int> GetBestSalesBatchKoi(DateTime startDate, DateTime endDate)
         {
+
             Dictionary<int, int> batchKoiDic = new Dictionary<int, int>();
 
             var od = await _orderRepository.GetOrderDetails("Completed", startDate, endDate);
@@ -327,7 +378,7 @@ namespace KoiShop.Application.Service
 
 
 
-        public async Task<int> GetTotalOrders(DateTime startDate, DateTime endDate)
+        public async Task<int> CountTotalOrders(DateTime startDate, DateTime endDate)
         {
             var orders = await _orderRepository.GetOrders(startDate, endDate);
             int count = 0;
@@ -338,20 +389,34 @@ namespace KoiShop.Application.Service
             return count;
         }
 
-        public async Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate)
-        {
-            var orders = await _orderRepository.GetOrders("Complete", startDate, endDate);
-            int count = 0;
-            foreach (var item in orders)
-            {
-                count++;
-            }
-            return count;
-        }
+        //public async Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate)
+        //{
+        //    var orders = await _orderRepository.GetOrders("Complete", startDate, endDate);
+        //    int count = 0;
+        //    foreach (var item in orders)
+        //    {
+        //        count++;
+        //    }
+        //    return count;
+        //}
 
-        public async Task<int> GetPendingOrders(DateTime startDate, DateTime endDate)
+        //public async Task<int> GetPendingOrders(DateTime startDate, DateTime endDate)
+        //{
+        //    var orders = await _orderRepository.GetOrders("Pending", startDate, endDate);
+        //    int count = 0;
+        //    foreach (var item in orders)
+        //    {
+        //        count++;
+        //    }
+        //    return count;
+        //}
+
+        public async Task<int> CountOrders(string status, DateTime startDate, DateTime endDate)
         {
-            var orders = await _orderRepository.GetOrders("Pending", startDate, endDate);
+
+            if (!orderStatus.Contains(status)) return -1;
+
+            var orders = await _orderRepository.GetOrders(status, startDate, endDate);
             int count = 0;
             foreach (var item in orders)
             {
@@ -363,17 +428,23 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateOrder(UpdateOrderDtos order)
         {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+                throw new ArgumentException("User context or user store is not valid.");
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+                return false;
+
             var currentOrder = await _orderRepository.GetOrderById(order.OrderId);
-            if(currentOrder == null)
+            if (currentOrder == null)
             {
                 return false;
             }
 
-            if(order.TotalAmount.HasValue)  currentOrder.TotalAmount = order.TotalAmount.Value;
-            if(order.CreateDate.HasValue)    currentOrder.CreateDate = order.CreateDate.Value;
-            if(!string.IsNullOrEmpty(order.OrderStatus)) currentOrder.OrderStatus = order.OrderStatus;
-            if(order.DiscountId.HasValue) currentOrder.DiscountId = order.DiscountId.Value;
-            if(!string.IsNullOrEmpty(order.PhoneNumber)) currentOrder.PhoneNumber = order.PhoneNumber;
+            if (order.TotalAmount.HasValue) currentOrder.TotalAmount = order.TotalAmount.Value;
+            if (order.CreateDate.HasValue) currentOrder.CreateDate = order.CreateDate.Value;
+            if (!string.IsNullOrEmpty(order.OrderStatus)) currentOrder.OrderStatus = order.OrderStatus;
+            if (order.DiscountId.HasValue) currentOrder.DiscountId = order.DiscountId.Value;
+            if (!string.IsNullOrEmpty(order.PhoneNumber)) currentOrder.PhoneNumber = order.PhoneNumber;
             if (!string.IsNullOrEmpty(order.ShippingAddress)) currentOrder.ShippingAddress = order.ShippingAddress;
 
             return await _orderRepository.UpdateOrder(currentOrder);
@@ -381,13 +452,73 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateOrderStatus(int orderId, string status)
         {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+                throw new ArgumentException("User context or user store is not valid.");
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+                return false;
+
+            if (!orderStatus.Contains(status)) return false;
+
+            var payment = await _orderRepository.GetPaymentByOrderId(orderId);
+            if (payment == null) return false;
+
+            // payment complete thì order ms dc complete
+            if (status == "Completed")
+                if (payment.Status != "Completed")
+                    return false;
+
             var orders = await _orderRepository.GetOrderById(orderId);
-            if(orders == null) return false;
-            
+            if (orders == null) return false;
+
             orders.OrderStatus = status;
 
             return await _orderRepository.UpdateOrder(orders);
         }
+
+
+        public async Task<bool> UpdatePaymentStatus(int paymentId, string status)
+        {
+            if (!paymentStatus.Contains(status)) return false;
+            
+            var payment = await _orderRepository.GetPaymentById(paymentId);
+            if (payment == null) return false;
+
+            if (payment.Status == "Completed")
+                if (status == "Pending")
+                    return false;
+
+            if (status == "Completed")
+                UpdateOrderStatus((int)payment.OrderId, "Completed");
+
+            payment.Status = status;
+
+            return await _orderRepository.UpdatePayment(payment);
+        }
+
+
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate)
+        {
+            return await _orderRepository.GetOrderDetails(status, startDate, endDate);
+        }
+
+        public async Task<IEnumerable<OrderDetail>> GetOrderDetailsInOrder(int orderId)
+        {
+            return await _orderRepository.GetOrderDetailsInOrder(orderId);
+        }
+
+        public async Task<IEnumerable<Order>> GetAllOrders()
+        {
+            return await _orderRepository.GetAllOrders();
+        }
+
+
+        public async Task<IEnumerable<Order>> GetOrdersByStatus(string status)
+        {
+            if (!orderStatus.Contains(status)) return null;
+            return await _orderRepository.GetOrdersByStatus(status);
+        }
+
 
     }
 }

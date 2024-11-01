@@ -18,17 +18,25 @@ namespace KoiShop.Application.Interfaces
         Task<IEnumerable<OrderDetailDtoV2>> GetOrderDetailById(int? id);
         Task<IEnumerable<KoiDto>> GetKoiFromOrderDetail(int? orderId);
         Task<IEnumerable<BatchKoiDto>> GetBatchFromOrderDetail(int? orderId);
+        Task<IEnumerable<OrderDetailDtoV3>> GetOrderDetailsByStaff();
+        Task<bool> UpdateOrderDetailsByStaff(int? orderDetailId, string? status);
 
         // ===============================================================================================
         Task<IEnumerable<Order>> GetOrders(string status, DateTime startDate, DateTime endDate);
         Task<IEnumerable<OrderDetail>> GetOrderDetails(string status, DateTime startDate, DateTime endDate);
         Task<int> GetBestSalesKoi(DateTime startDate, DateTime endDate);
         Task<int> GetBestSalesBatchKoi(DateTime startDate, DateTime endDate);
-        Task<int> GetTotalOrders(DateTime startDate, DateTime endDate);
-        Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate);
-        Task<int> GetPendingOrders(DateTime startDate, DateTime endDate);
+        Task<int> CountTotalOrders(DateTime startDate, DateTime endDate);
+        //Task<int> GetCompletedOrders(DateTime startDate, DateTime endDate);
+        //Task<int> GetPendingOrders(DateTime startDate, DateTime endDate);
+        Task<int> CountOrders(string status, DateTime startDate, DateTime endDate);
         Task<PaymentDto> PayByVnpay(VnPaymentResponseFromFe request);
+        Task<IEnumerable<OrderDetail>> GetOrderDetailsInOrder(int orderId);
         Task<bool> UpdateOrder(UpdateOrderDtos order);
         Task<bool> UpdateOrderStatus(int orderId, string status);
+        Task<bool> UpdatePaymentStatus(int paymentId, string status);
+
+        Task<IEnumerable<Order>> GetAllOrders();
+        Task<IEnumerable<Order>> GetOrdersByStatus(string status);
     }
 }

@@ -17,6 +17,7 @@ namespace KoiShop.Application.Service
         private readonly IMapper _mapper;
         private readonly IBatchKoiRepository _batchKoiRepository;
         private readonly FirebaseService _firebaseService;
+        List<string> koiStatus = new() { "OnSale", "Sold", "Pending", "Cancel" };
         public BatchKoiStaffService(IBatchKoiRepository batchKoiRepository , FirebaseService firebaseService, IMapper mapper)
         {
             _batchKoiRepository = batchKoiRepository;
@@ -38,6 +39,8 @@ namespace KoiShop.Application.Service
         public async Task<bool> AddBatchKoi(AddBatchKoiDto batchKoiDto)
         {
             if (batchKoiDto == null) return false;
+
+            if (!koiStatus.Contains(batchKoiDto.Status)) return false;
 
             var allCates = await _batchKoiRepository.GetBatchKoiCategories();
             bool exist = allCates.Any(cate => cate.BatchTypeId == batchKoiDto.BatchTypeId);
@@ -95,7 +98,7 @@ namespace KoiShop.Application.Service
             if (!string.IsNullOrEmpty(batchKoiDto.Gender)) currentKoi.Gender = batchKoiDto.Gender;
             if (!string.IsNullOrEmpty(batchKoiDto.Age)) currentKoi.Age = batchKoiDto.Age;
             if (batchKoiDto.Price.HasValue) currentKoi.Price = batchKoiDto.Price.Value;
-            if (!string.IsNullOrEmpty(batchKoiDto.Status)) currentKoi.Status = batchKoiDto.Status;
+            if (!string.IsNullOrEmpty(batchKoiDto.Status) && koiStatus.Contains(batchKoiDto.Status)) currentKoi.Status = batchKoiDto.Status;
 
             if (batchKoiDto.KoiImage != null)
             {
@@ -142,6 +145,8 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateBatchKoiStatus(int batchKoiId, string status)
         {
+            if (!koiStatus.Contains(status)) return false;
+
             var batchKoi = await _batchKoiRepository.GetBatchKoiById(batchKoiId);
             if (batchKoi == null) return false;
 
