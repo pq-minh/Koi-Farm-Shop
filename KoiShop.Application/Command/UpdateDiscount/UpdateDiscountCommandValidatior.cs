@@ -13,8 +13,8 @@ namespace KoiShop.Application.Command.UpdateDiscount
         public UpdateDiscountCommandValidatior()
         {
             RuleFor(dto => dto.DiscountRate).NotEmpty().LessThan(100).GreaterThan(5);
-
-           RuleFor(dto => dto.TotalQuantity).NotEmpty().GreaterThanOrEqualTo(5).LessThanOrEqualTo(300);
+            RuleFor(dto => dto.StartDate).NotEmpty().LessThan(dto => dto.EndDate);
+            RuleFor(dto => dto.TotalQuantity).NotEmpty().GreaterThanOrEqualTo(5).LessThanOrEqualTo(300);
         }
     }
 }
