@@ -48,7 +48,7 @@ namespace KoiShop.Application.Service
             if (!koiStatus.Contains(status)) return false;
 
             var currentKoi = await _koiRepository.GetKoiById(koiId);
-            if(currentKoi == null) return false;
+            if (currentKoi == null) return false;
 
             currentKoi.Status = status;
             var result = await _koiRepository.UpdateKoi(currentKoi);

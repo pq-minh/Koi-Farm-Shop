@@ -27,8 +27,9 @@ namespace KoiShop.Application.Service
         private readonly IUserStore<User> _userStore;
         private readonly IUserContext _userContext;
         private readonly IVnPayService _vnPayService;
-        List<string> orderStatus = new() { "Pending", "Completed", "Shipped", "InTransit" };
+        List<string> orderStatus = new() { "Pending", "Completed", "Shipped", "InTransit", "PartiallyCompleted", "AwaitingPayment" };
         List<string> paymentStatus = new() { "Pending", "Completed" };
+        List<string> orderDetailStatus = new() { "Pending", "Delivered" };
 
         public OrderService(IMapper mapper, IOrderRepository orderRepository, IUserContext userContext, IUserStore<User> userStore, IVnPayService vpnPayService)
         {
@@ -318,6 +319,7 @@ namespace KoiShop.Application.Service
 
         public async Task<int> GetBestSalesKoi(DateTime startDate, DateTime endDate)
         {
+
             Dictionary<int, int> koiDic = new Dictionary<int, int>();
 
             var od = await _orderRepository.GetOrderDetails("Completed", startDate, endDate);
@@ -346,6 +348,7 @@ namespace KoiShop.Application.Service
         }
         public async Task<int> GetBestSalesBatchKoi(DateTime startDate, DateTime endDate)
         {
+
             Dictionary<int, int> batchKoiDic = new Dictionary<int, int>();
 
             var od = await _orderRepository.GetOrderDetails("Completed", startDate, endDate);
@@ -410,6 +413,7 @@ namespace KoiShop.Application.Service
 
         public async Task<int> CountOrders(string status, DateTime startDate, DateTime endDate)
         {
+
             if (!orderStatus.Contains(status)) return -1;
 
             var orders = await _orderRepository.GetOrders(status, startDate, endDate);
@@ -424,6 +428,12 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateOrder(UpdateOrderDtos order)
         {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+                throw new ArgumentException("User context or user store is not valid.");
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+                return false;
+
             var currentOrder = await _orderRepository.GetOrderById(order.OrderId);
             if (currentOrder == null)
             {
@@ -442,6 +452,12 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateOrderStatus(int orderId, string status)
         {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+                throw new ArgumentException("User context or user store is not valid.");
+            var userId = _userContext.GetCurrentUser().Id;
+            if (userId == null)
+                return false;
+
             if (!orderStatus.Contains(status)) return false;
 
             var payment = await _orderRepository.GetPaymentByOrderId(orderId);
@@ -464,9 +480,16 @@ namespace KoiShop.Application.Service
         public async Task<bool> UpdatePaymentStatus(int paymentId, string status)
         {
             if (!paymentStatus.Contains(status)) return false;
-
+            
             var payment = await _orderRepository.GetPaymentById(paymentId);
             if (payment == null) return false;
+
+            if (payment.Status == "Completed")
+                if (status == "Pending")
+                    return false;
+
+            if (status == "Completed")
+                UpdateOrderStatus((int)payment.OrderId, "Completed");
 
             payment.Status = status;
 
@@ -495,5 +518,7 @@ namespace KoiShop.Application.Service
             if (!orderStatus.Contains(status)) return null;
             return await _orderRepository.GetOrdersByStatus(status);
         }
+
+
     }
 }
