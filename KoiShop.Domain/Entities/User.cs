@@ -13,6 +13,7 @@ namespace KoiShop.Domain.Entities
         public string? LastName { get; set; }
         public string? Gender { get; set; }
         public int? Point { get; set; }
+        public string? Note { get; set; }
         public string? Status { get; set; }
         public virtual ICollection<AddressDetail> AddressDetails { get; set; } = new List<AddressDetail>();
         public virtual ICollection<Quotation> Quotations{ get; set; } = new List<Quotation>();

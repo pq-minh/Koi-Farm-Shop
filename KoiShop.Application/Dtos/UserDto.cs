@@ -14,5 +14,6 @@ namespace KoiShop.Application.Dtos
         public string? Email { get; set; }
         public int? Point { get; set; }
         public string? Status { get; set; }
+        public string? Note { get; set; }
     }
 }

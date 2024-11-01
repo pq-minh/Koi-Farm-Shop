@@ -72,16 +72,23 @@ namespace KoiShop.Controllers
         }
 
         [HttpPost("resetpassword")]
-        public async Task<IActionResult> ResetPassword(string email)
+        public async Task<IActionResult> ResetPassword(ResetPasswordCommand resetPasswordCommand)
         {
-            var result = await mediator.Send(new ResetPasswordCommand(email));
+            var result = await mediator.Send(resetPasswordCommand);
             return Ok(result);
         }
         [HttpPost("confirmpassword")]
         public async Task<IActionResult> ConfirmPasswordRest([FromBody] ConfirmPasswordCommand confirmPasswordCommand)
         {
             var result = await mediator.Send(confirmPasswordCommand);
-            return Ok(result);
+
+            if (result.IsSuccess)
+            {
+                return Ok(new { Message = result.Message });
+            }
+
+            return BadRequest(new { Errors = result.Errors });
         }
+
     }
 }

@@ -9,7 +9,7 @@ namespace KoiShop.Domain.Respositories
 {
     public interface IDiscountRepository
     {
-        Task<string> UpdateDiscount(Discount discount);
+        Task<Discount> UpdateDiscount(Discount discount);
         Task<Discount> CreateDiscount(Discount discount);
         Task<IEnumerable<Discount>> GetDiscount();
         Task<IEnumerable<Discount>> GetDiscountForUser();

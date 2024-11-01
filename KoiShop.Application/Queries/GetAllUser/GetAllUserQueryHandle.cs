@@ -25,7 +25,7 @@ namespace KoiShop.Application.Queries.GetAllUser
                 Email = user.Email,
                 Point   = user.Point,
                 Status = user.Status,
-
+                Note = user.Note,
             }).ToList();
             return new PaginatedResult<UserDtoV1>(userDtos, userResult.TotalCount,request.PageNumber,request.PageSize);
         }

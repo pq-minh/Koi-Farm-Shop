@@ -27,4 +27,9 @@ namespace KoiShop.Application.Dtos.OrderDtos
         [RegularExpression(@"^\d{10}$", ErrorMessage = "PhoneNumber must be exactly 10 digits.")]
         public string? PhoneNumber { get; set; }  
     }
+    public class OrderDtoUpdateStatus
+    {
+       public int  OrderID { get; set; }
+       public string? Status { get; set; }
+    }
 }

@@ -38,7 +38,7 @@ namespace KoiShop.Application.Command.CreateRequest
                 Weight =  request.Weight,
                 Size = request.Size,
                 Personality = request.Personality,
-                Status = request.Status,
+                Status = request.Status,               
                 FishTypeId = request.FishTypeId,
                 Packages = request.Packages.Select(pkg => new Package
                 {

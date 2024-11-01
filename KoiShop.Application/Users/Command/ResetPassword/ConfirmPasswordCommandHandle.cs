@@ -15,20 +15,47 @@ namespace KoiShop.Application.Users.Command.ResetPassword
             IUserStore<User> userStore,
             IJwtTokenService jwtTokenService,
             UserManager<User> identityUser,
-            IEmailSender emailSender) : IRequestHandler<ConfirmPasswordCommand, string>
+            IEmailSender emailSender) : IRequestHandler<ConfirmPasswordCommand, Result>
     {
-        public async Task<string> Handle(ConfirmPasswordCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(ConfirmPasswordCommand request, CancellationToken cancellationToken)
         {
             var user = await identityUser.FindByEmailAsync(request.Email);
-            if (user == null) {
-                return "Nguoi dung khong ton tai";
+
+            if (request.Newpassword != request.Confirmpassword)
+            {
+                return Result.Failure("Confirm password does not match.");
             }
+
             var result = await identityUser.ResetPasswordAsync(user, request.Token, request.Newpassword);
             if (result.Succeeded)
             {
-                return "Mật khẩu đã được cập nhật thành công!";
+                return Result.Success("Reset password success");
             }
-            return "Ok";
+
+            var errors = result.Errors.Select(e => e.Description).ToList();
+            return Result.Failure(errors);
         }
+
+    }
+}
+public class Result
+{
+    public bool IsSuccess { get; private set; }
+    public string Message { get; private set; }
+    public IEnumerable<string> Errors { get; private set; }
+
+    public static Result Success(string message)
+    {
+        return new Result { IsSuccess = true, Message = message };
+    }
+
+    public static Result Failure(string message)
+    {
+        return new Result { IsSuccess = false, Message = message, Errors = new[] { message } };
+    }
+
+    public static Result Failure(IEnumerable<string> errors)
+    {
+        return new Result { IsSuccess = false, Errors = errors };
     }
 }
