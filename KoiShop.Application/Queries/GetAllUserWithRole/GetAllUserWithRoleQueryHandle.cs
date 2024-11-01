@@ -19,16 +19,21 @@ namespace KoiShop.Application.Queries.GetAllUserWithRole
         {
             var userResult = await userRepository.GetAllUserWithRole(request.PageNumber,request.PageSize);
             var userDtoWithRole = new List<UserDtoWithRole>();
+            var rolesToCheck = new List<string> { "Customer", "Staff" };
+
             foreach ( var user in  userResult.Items ) {
                 var roles = await userRepository.GetRoleAsync(user.Id);
-                userDtoWithRole.Add(new UserDtoWithRole
+                if (roles.Intersect(rolesToCheck).Any())
                 {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email,
-                    Roles = roles.ToList()
-                });
+                    userDtoWithRole.Add(new UserDtoWithRole
+                    {
+                        Id = user.Id,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Email = user.Email,
+                        Roles = roles.ToList() 
+                    });
+                }
             }
             return new PaginatedResult<UserDtoWithRole>(
                  userDtoWithRole,
