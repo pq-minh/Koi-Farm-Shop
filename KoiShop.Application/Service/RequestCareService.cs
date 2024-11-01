@@ -191,10 +191,15 @@ namespace KoiShop.Application.Service
             {
                 reviewStatus = "RefusedCare";
             }
-            var result = await _requestCareRepository.UpdateKoiOrBatchToCare(id, reviewStatus);
-            if (result)
+            var validation = await _requestCareRepository.CheckRequest(id, reviewStatus);
+            if (validation != null)
             {
-                return true;
+                var result = await _requestCareRepository.UpdateKoiOrBatchToCare(id, reviewStatus);
+                if (result)
+                {
+                    return true;
+                }
+                return false;
             }
             return false;
         }
