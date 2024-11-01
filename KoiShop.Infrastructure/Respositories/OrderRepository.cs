@@ -478,6 +478,5 @@ namespace KoiShop.Infrastructure.Respositories
             return await _koiShopV1DbContext.Orders
                 .Where(o => o.OrderStatus == status).ToListAsync();
         }
-
     }
 }
