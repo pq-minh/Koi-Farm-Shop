@@ -359,7 +359,7 @@ namespace KoiShop.Infrastructure.Respositories
             }
             orderDetail.Status = status;
             _koiShopV1DbContext.OrderDetails.Update(orderDetail);
-            var orderDetailGroup = await _koiShopV1DbContext.OrderDetails.GroupBy(od => od.OrderId).ToListAsync();
+            var orderDetailGroup = await _koiShopV1DbContext.OrderDetails.Where(od => od.Status != "UnderCare").GroupBy(od => od.OrderId).ToListAsync();
             if (orderDetailGroup != null)
             {
                 foreach (var group in orderDetailGroup)
