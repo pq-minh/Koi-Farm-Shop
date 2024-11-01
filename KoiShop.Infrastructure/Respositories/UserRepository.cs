@@ -1,4 +1,5 @@
-﻿using KoiShop.Application.Dtos;
+﻿using Datadog.Trace.Ci;
+using KoiShop.Application.Dtos;
 using KoiShop.Application.Dtos.Pagination;
 using KoiShop.Domain.Constant;
 using KoiShop.Domain.Entities;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace KoiShop.Infrastructure.Respositories
 {
-    public class UserRepository(KoiShopV1DbContext koiShopV1DbContext) : IUserRepository
+    public class UserRepository(KoiShopV1DbContext koiShopV1DbContext, UserManager<User> identityUser) : IUserRepository
     {
             public async Task<PaginatedResult<User>> GetAllUser(int pageNumber, int pageSize)
             {
@@ -71,6 +72,25 @@ namespace KoiShop.Infrastructure.Respositories
             user.Note = null;
             await koiShopV1DbContext.SaveChangesAsync();
             return "Unban user succesffully";
+        }
+
+        public async Task<PaginatedResult<User>> GetAllUserWithRole(int pageNumber, int pageSize)
+        {
+            var userQuery = koiShopV1DbContext.Users.AsQueryable();
+            var totalCount = await userQuery.CountAsync();
+            var items = await userQuery.Skip((pageNumber -1)*pageSize).Take(pageSize).ToListAsync();
+            return new PaginatedResult<User>(items, totalCount, pageNumber, pageSize);
+        }
+
+        public async Task<List<string>> GetRoleAsync(string userId)
+        {
+            var result = await koiShopV1DbContext.Users.FindAsync(userId);
+            if ( result == null)
+            {
+               return new List<string>();
+            }
+            var roles = await identityUser.GetRolesAsync(result);
+            return roles.ToList();
         }
     }
 }
