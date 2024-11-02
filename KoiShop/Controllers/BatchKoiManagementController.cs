@@ -2,8 +2,13 @@
 using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Application.Interfaces;
 using KoiShop.Application.Service;
+using KoiShop.Application.Users;
 using KoiShop.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using static KoiShop.Application.Users.UserContext;
 
 namespace KoiShop.Controllers
 {
@@ -12,15 +17,25 @@ namespace KoiShop.Controllers
     public class BatchKoiManagementController : ControllerBase
     {
         private readonly IBatchKoiStaffService _batchKoiService;
+        //private readonly IUserContext _userContext;
+        //private readonly IUserStore<User> _userStore;
 
-        public BatchKoiManagementController(IBatchKoiStaffService batchKoiStaffService)
+        public BatchKoiManagementController(IBatchKoiStaffService batchKoiStaffService/*, IUserContext userContext, IUserStore<User> userStore*/)
         {
+            //_userContext = userContext;
+            //_userStore = userStore;
             _batchKoiService = batchKoiStaffService;
         }
 
         [HttpGet("get")]
         public async Task<IActionResult> GetAllBatchKoi()
         {
+            //if (_userContext.GetCurrentUser() == null || _userStore == null)
+            //    throw new ArgumentException("User context or user store is not valid.");
+            //var userId = _userContext.GetCurrentUser().Id;
+            //if (userId == null)
+            //    return BadRequest();
+
             var allBatchKoi = await _batchKoiService.GetAllBatchKoiStaff();
             if (allBatchKoi == null)
                 return NotFound("No Batch Koi found."); ;
@@ -37,6 +52,7 @@ namespace KoiShop.Controllers
         }
 
         [HttpPost("add")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> AddBatchKoi([FromForm] AddBatchKoiDto batchKoiDto)
         {
             if (batchKoiDto == null)

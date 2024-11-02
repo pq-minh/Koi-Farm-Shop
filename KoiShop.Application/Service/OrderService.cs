@@ -428,11 +428,6 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateOrder(UpdateOrderDtos order)
         {
-            if (_userContext.GetCurrentUser() == null || _userStore == null)
-                throw new ArgumentException("User context or user store is not valid.");
-            var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null)
-                return false;
 
             var currentOrder = await _orderRepository.GetOrderById(order.OrderId);
             if (currentOrder == null)
@@ -442,7 +437,7 @@ namespace KoiShop.Application.Service
 
             if (order.TotalAmount.HasValue) currentOrder.TotalAmount = order.TotalAmount.Value;
             if (order.CreateDate.HasValue) currentOrder.CreateDate = order.CreateDate.Value;
-            if (!string.IsNullOrEmpty(order.OrderStatus)) currentOrder.OrderStatus = order.OrderStatus;
+            if (!string.IsNullOrEmpty(order.OrderStatus) && orderStatus.Contains(order.OrderStatus)) currentOrder.OrderStatus = order.OrderStatus;
             if (order.DiscountId.HasValue) currentOrder.DiscountId = order.DiscountId.Value;
             if (!string.IsNullOrEmpty(order.PhoneNumber)) currentOrder.PhoneNumber = order.PhoneNumber;
             if (!string.IsNullOrEmpty(order.ShippingAddress)) currentOrder.ShippingAddress = order.ShippingAddress;
@@ -452,11 +447,6 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateOrderStatus(int orderId, string status)
         {
-            if (_userContext.GetCurrentUser() == null || _userStore == null)
-                throw new ArgumentException("User context or user store is not valid.");
-            var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null)
-                return false;
 
             if (!orderStatus.Contains(status)) return false;
 
@@ -479,6 +469,7 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdatePaymentStatus(int paymentId, string status)
         {
+
             if (!paymentStatus.Contains(status)) return false;
             
             var payment = await _orderRepository.GetPaymentById(paymentId);
@@ -488,7 +479,7 @@ namespace KoiShop.Application.Service
                 if (status == "Pending")
                     return false;
 
-            if (status == "Completed")
+            if (status == "Completed") 
                 UpdateOrderStatus((int)payment.OrderId, "Completed");
 
             payment.Status = status;
