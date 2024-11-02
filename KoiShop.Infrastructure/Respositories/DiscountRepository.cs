@@ -1,5 +1,7 @@
-﻿using KoiShop.Domain.Entities;
+﻿using KoiShop.Application.Dtos;
+using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
+using KoiShop.Infrastructure.Migrations;
 using KoiShop.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +26,7 @@ namespace KoiShop.Infrastructure.Respositories
             _userContext = userContext;
         }
 
-        public async Task<string> UpdateDiscount(Discount discount)
+        public async Task<Discount> UpdateDiscount(Discount discount)
         {
             var discountResult = _koiShopV1DbContext.Discounts.FirstOrDefault(dc => dc.DiscountId == discount.DiscountId);
             if (discountResult != null)
@@ -33,10 +35,18 @@ namespace KoiShop.Infrastructure.Respositories
                 discountResult.EndDate = discount.EndDate;
                 discountResult.StartDate = discount.StartDate;
                 discountResult.DiscountRate = discount.DiscountRate;
+                if (discount.EndDate >= DateTime.UtcNow && discountResult.Used < discountResult.TotalQuantity)
+                {
+                    discountResult.Status = "Active";
+                }
+                else if (discount.EndDate < DateTime.UtcNow || discountResult.Used >= discountResult.TotalQuantity)
+                {
+                    discountResult.Status = "InActive";
+                }
                 await _koiShopV1DbContext.SaveChangesAsync();
-                return "Cập nhật thành công";
+                return discountResult;
             }
-            return "Không tìm thấy mã giảm giá";
+            return discountResult;
         }
         public async Task<bool> UpdateDiscountStatus(int discountId)
         {
@@ -89,7 +99,7 @@ namespace KoiShop.Infrastructure.Respositories
             }
             var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
             var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate 
-            && d.Used < d.TotalQuantity).ToListAsync();
+            && d.Used < d.TotalQuantity && d.Status == "Active").ToListAsync();
             if (order != null)
             {
                 var availableDiscount = validDiscounts.Where(d => !order.Contains(d.DiscountId)).ToList();
@@ -108,7 +118,7 @@ namespace KoiShop.Infrastructure.Respositories
                 return null;
             }
             var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId.Id).Select(o => o.DiscountId).ToListAsync();
-            var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate && d.Name == name).ToListAsync();
+            var validDiscounts = await _koiShopV1DbContext.Discounts.Where(d => d.TotalQuantity > 0 && d.StartDate <= DateTime.Now && DateTime.Now <= d.EndDate && d.Name == name && d.Used < d.TotalQuantity && d.Status == "Active").ToListAsync();
             if (order != null)
             {
                 var availableDiscount = validDiscounts.FirstOrDefault(d => !order.Contains(d.DiscountId));
@@ -133,7 +143,7 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 if (discount != null)
                 {
-                    if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now && !order.Contains(discount.DiscountId) && discount.TotalQuantity > 0 && discount.Used < discount.TotalQuantity)
+                    if (discount.StartDate <= DateTime.Now && discount.EndDate >= DateTime.Now && !order.Contains(discount.DiscountId) && discount.TotalQuantity > 0 && discount.Used < discount.TotalQuantity && discount.Status == "Active")
                     {
                         var pricePercent = (double)discount.DiscountRate;
                         discount.Used++;

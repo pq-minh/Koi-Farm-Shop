@@ -110,11 +110,8 @@ namespace KoiShop.Infrastructure.Persistence
                 entity.Property(e => e.PaymenMethod).HasColumnName("PaymentMethod");
                 entity.Property(e => e.Status).HasColumnName("Status").IsUnicode(true);
 
-                entity.HasOne(d => d.Order)
-                .WithOne(o => o.Payment) // Thêm WithOne ở đây
-                .HasForeignKey<Payment>(d => d.OrderId) // Đảm bảo khóa ngoại trong Payment
-                .HasPrincipalKey<Order>(o => o.OrderId) // Khóa chính trong Order
-                .OnDelete(DeleteBehavior.Cascade); // Xóa Payment khi Order bị xóa
+                entity.HasOne(d => d.Order).WithMany(p => p.Payments)
+                    .HasForeignKey(d => d.OrderId);
             });
             modelBuilder.Entity<Post>(entity =>
             {
@@ -277,10 +274,7 @@ namespace KoiShop.Infrastructure.Persistence
                 entity.Property(e => e.OrderStatus).HasColumnName("OrderStatus").IsUnicode(true);
                 entity.Property(e => e.CreateDate)
                     .HasColumnName("CreateDate");
-                entity.HasOne(e => e.Payment)
-                .WithOne(p => p.Order)
-                .HasForeignKey<Payment>(p => p.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
+                
                 entity.HasOne(ad => ad.User)
                       .WithMany(u => u.Orders)
                      .HasForeignKey(ad => ad.UserId);

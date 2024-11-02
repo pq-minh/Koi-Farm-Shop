@@ -26,6 +26,10 @@ namespace KoiShop.Application.Command.CreateDiscount
                 Status ="Active"
             };
             var result = discountRepository.CreateDiscount(discountCreate);
+            if(result == null)
+            {
+                throw new Exception("Name of discount is duplicated");
+            }
             return result;
         }
     }

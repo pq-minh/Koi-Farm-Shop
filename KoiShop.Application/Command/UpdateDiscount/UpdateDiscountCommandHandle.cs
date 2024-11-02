@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace KoiShop.Application.Command.UpdateDiscount
 {
     public class UpdateDiscountCommandHandle(
-        IDiscountRepository discountRepository) : IRequestHandler<UpdateDiscountCommand, string>
+        IDiscountRepository discountRepository) : IRequestHandler<UpdateDiscountCommand, Discount>
     {
-        public async Task<string> Handle(UpdateDiscountCommand request, CancellationToken cancellationToken)
+        public async Task<Discount> Handle(UpdateDiscountCommand request, CancellationToken cancellationToken)
         {
             var discountUpdate = new Discount
             {

@@ -18,9 +18,14 @@ namespace KoiShop.Application.Dtos
 
         public int? ToTalQuantity { get; set; }
 
+        public string? Status { get; set; }
+
         public string KoiName { get; set; }
+
         public string BatchKoiName { get; set; }
+
         public string KoiImage { get; set; }
+
         public string BatchKoiImage { get; set; }
     }
     public class OrderDetailDtoV1
@@ -43,10 +48,16 @@ namespace KoiShop.Application.Dtos
 
         public int? ToTalQuantity { get; set; }
 
+        public string? Status { get; set; }
+
         public string KoiName { get; set; }
+
         public string BatchKoiName { get; set; }
+
         public double? Price { get; set; }
+
         public string KoiImage { get; set; }
+
         public string BatchKoiImage { get; set; }
 
         public string? Certificate { get; set; }
@@ -62,10 +73,17 @@ namespace KoiShop.Application.Dtos
         public int? BatchKoiId { get; set; }
 
         public int? ToTalQuantity { get; set; }
+
         public string? UserName { get; set; }
+
+        public string? Status { get; set; }
+
         public string KoiName { get; set; }
+
         public string BatchKoiName { get; set; }
+
         public string KoiImage { get; set; }
+
         public string BatchKoiImage { get; set; }
     }
     public class OrderDetailInput()

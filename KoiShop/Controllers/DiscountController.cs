@@ -46,14 +46,14 @@ namespace KoiShop.Controllers
 
         }
 
-        [HttpPost("update-discount")]
+        [HttpPost("updatediscount")]
         public async Task<IActionResult> UpdateDiscount([FromBody] UpdateDiscountCommand updateDiscountCommand)
         {
             var result = await _mediator.Send(updateDiscountCommand);
             return Ok(result); 
         }
 
-        [HttpPost("create-discount")]
+        [HttpPost("creatediscount")]
         public async Task<IActionResult> CreateDiscount([FromBody] CreateDiscountCommand createDiscountCommand)
         {
             var result = await _mediator.Send(createDiscountCommand);

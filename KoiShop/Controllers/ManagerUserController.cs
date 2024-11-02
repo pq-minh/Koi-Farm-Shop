@@ -1,4 +1,5 @@
 ﻿using KoiShop.Application.Command.DeleteUser;
+using KoiShop.Application.Command.UnBanUser;
 using KoiShop.Application.Command.UpdatePointUser;
 using KoiShop.Application.Queries.GetAllUser;
 using KoiShop.Application.Queries.GetQuotation;
@@ -32,7 +33,12 @@ namespace KoiShop.Controllers
             var result = await mediator.Send(deleteUserCommand);
             return Ok(result);
         }
-
+        [HttpPost("unbanuser")]
+        public async Task<IActionResult> UnbanUser([FromBody] UnbanUserCommand unbanUserCommand)
+        {
+            var result = await mediator.Send(unbanUserCommand);
+            return Ok(result);
+        }
     }
    
 }
