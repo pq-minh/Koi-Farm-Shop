@@ -1,4 +1,5 @@
-﻿using KoiShop.Domain.Entities;
+﻿using KoiShop.Application.Dtos.Payments;
+using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using KoiShop.Infrastructure.Migrations;
 using KoiShop.Infrastructure.Persistence;
@@ -478,5 +479,46 @@ namespace KoiShop.Infrastructure.Respositories
             return await _koiShopV1DbContext.Orders
                 .Where(o => o.OrderStatus == status).ToListAsync();
         }
+
+        public async Task<IEnumerable<Payment>> GetAllPayments()
+        {
+            return await _koiShopV1DbContext.Payments
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.Koi)
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.BatchKoi)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Payment>> GetPaymentsByStatus(string status)
+        {
+            return await _koiShopV1DbContext.Payments
+                .Where(p => p.Status == status)
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.Koi)
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.BatchKoi)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Payment>> GetPaymentsBetween(DateTime startDate, DateTime endDate)
+        {
+            return await _koiShopV1DbContext.Payments
+                .Where(p => p.CreateDate >= startDate && p.CreateDate <= endDate)
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.Koi)
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.BatchKoi)
+                .ToListAsync();
+        }
+
+
+
     }
 }

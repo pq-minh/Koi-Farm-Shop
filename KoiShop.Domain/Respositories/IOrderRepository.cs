@@ -37,5 +37,9 @@ namespace KoiShop.Domain.Respositories
         Task<IEnumerable<OrderDetail>> GetOrderDetailsInOrder(int orderId);
         Task<IEnumerable<Order>> GetAllOrders();
         Task<IEnumerable<Order>> GetOrdersByStatus(string status);
+
+        Task<IEnumerable<Payment>> GetPaymentsByStatus(string status);
+        Task<IEnumerable<Payment>> GetAllPayments();
+        Task<IEnumerable<Payment>> GetPaymentsBetween(DateTime startDate, DateTime endDate);
     }
 }

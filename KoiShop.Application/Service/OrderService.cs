@@ -17,6 +17,7 @@ using KoiShop.Application.Dtos.VnPayDtos;
 using System.Runtime.CompilerServices;
 using KoiShop.Application.Dtos.OrderDtos;
 using System.Numerics;
+using KoiShop.Application.Dtos.Payments;
 
 namespace KoiShop.Application.Service
 {
@@ -508,6 +509,50 @@ namespace KoiShop.Application.Service
         {
             if (!orderStatus.Contains(status)) return null;
             return await _orderRepository.GetOrdersByStatus(status);
+        }
+
+        public IEnumerable<PaymentDetailsDto> TransferPaymentToPaymentDetailsDto(IEnumerable<Payment> payments)
+        {
+            List<PaymentDetailsDto> paymentDtos = new();
+
+            foreach (var payment in payments)
+            {
+                PaymentDetailsDto paymentDto = new()
+                {
+                    PaymentID = payment.PaymentID ?? 0,
+                    CreateDate = payment.CreateDate ?? DateTime.MinValue,
+                    PaymentMethod = payment.PaymenMethod ?? string.Empty,
+                    Status = payment.Status ?? string.Empty,
+                    OrderID = payment.Order?.OrderId ?? 0,
+                    TotalAmount = payment.Order?.TotalAmount ?? 0,
+                    UserId = payment.Order?.UserId ?? "KoiShop"
+                };
+
+                paymentDtos.Add(paymentDto);
+            }
+
+            return paymentDtos;
+        }
+
+        public async Task<IEnumerable<PaymentDetailsDto>> GetAllPayments()
+        {
+            var payments = await _orderRepository.GetAllPayments();
+
+            return TransferPaymentToPaymentDetailsDto(payments);
+        }
+
+        public async Task<IEnumerable<PaymentDetailsDto>> GetPaymentsByStatus(string status)
+        {
+            var payments = await _orderRepository.GetPaymentsByStatus(status);
+
+            return TransferPaymentToPaymentDetailsDto(payments);
+        }
+
+        public async Task<IEnumerable<PaymentDetailsDto>> GetPaymentsBetween(DateTime startDate, DateTime endDate)
+        {
+            var payments = await _orderRepository.GetPaymentsBetween(startDate, endDate);
+
+            return TransferPaymentToPaymentDetailsDto(payments);
         }
 
 
