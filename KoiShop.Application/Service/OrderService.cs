@@ -291,15 +291,15 @@ namespace KoiShop.Application.Service
             {
                 return false;
             }
-            string[] statusArr = { "Delivered", "Shipped", "In Transit", "Pending", "Packing" };
+            string[] statusArr = { "Delivered", "Shipped", "InTransit", "Pending", "Packing" };
             string? statusAccepted = null;
             foreach (var x in statusArr)
             {
                 if (status == x)
                 {
                     statusAccepted = x;
+                    break;
                 }
-                break;
             }
             if (string.IsNullOrEmpty(statusAccepted))
             {

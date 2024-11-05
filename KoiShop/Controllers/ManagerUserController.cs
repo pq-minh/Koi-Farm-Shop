@@ -2,6 +2,7 @@
 using KoiShop.Application.Command.UnBanUser;
 using KoiShop.Application.Command.UpdatePointUser;
 using KoiShop.Application.Queries.GetAllUser;
+using KoiShop.Application.Queries.GetAllUserWithRole;
 using KoiShop.Application.Queries.GetQuotation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,13 @@ namespace KoiShop.Controllers
         public async Task<IActionResult> UnbanUser([FromBody] UnbanUserCommand unbanUserCommand)
         {
             var result = await mediator.Send(unbanUserCommand);
+            return Ok(result);
+        }
+        [HttpGet("userwithrole")]
+        public async Task<IActionResult> GetUserWithRole(int pageNumber = 1, int pageSize = 10)
+        {
+            var query = new GetAllUserWithRoleQuery(pageNumber, pageSize);
+            var result = await mediator.Send(query);
             return Ok(result);
         }
     }

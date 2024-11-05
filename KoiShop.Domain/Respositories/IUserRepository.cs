@@ -15,5 +15,8 @@ namespace KoiShop.Domain.Respositories
         Task<string> DeleteUser(string userID,string reason);
 
         Task<string> UnbanUser(string userID);
+        Task<PaginatedResult<User>> GetAllUserWithRole(int pageNumber, int pageSize);
+
+        Task<List<string>> GetRoleAsync(string userId);
     }
 }

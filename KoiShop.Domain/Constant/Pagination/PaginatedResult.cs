@@ -17,7 +17,7 @@ namespace KoiShop.Application.Dtos.Pagination
 
         public PaginatedResult(List<T> items, int totalCount, int pageNumber, int pageSize)
         {
-            Items = items;
+            Items = items ?? new List<T>();
             TotalCount = totalCount;
             PageNumber = pageNumber;
             PageSize = pageSize;
