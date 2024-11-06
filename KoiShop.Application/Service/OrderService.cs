@@ -556,5 +556,27 @@ namespace KoiShop.Application.Service
         }
 
 
+        public async Task<IEnumerable<OrderDetail>> GetAllOrderDetails()
+        {
+            var orderDetails = await _orderRepository.GetAllOrderDetailsV2();
+
+            foreach (var item in orderDetails)
+            {
+                if (item.Price.HasValue) 
+                {
+                    if(item.CustomerFunds == null || item.ShopRevenue == null)
+                    {
+                        item.ShopRevenue = item.Price.Value * 0.1;
+                        item.CustomerFunds = item.Price.Value - item.ShopRevenue;
+                        await _orderRepository.UpdateOrderDetails(item);
+                    }
+                }
+            }
+
+            return await _orderRepository.GetAllOrderDetailsV1();
+        }
+
+
+
     }
 }

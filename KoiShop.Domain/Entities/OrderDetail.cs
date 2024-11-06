@@ -17,7 +17,8 @@ public partial class OrderDetail
 
     public double? Price { get; set; }
     public string? Status { get; set; }
-
+    public double? CustomerFunds {  get; set; }
+	public double? ShopRevenue { get; set; }
     public virtual BatchKoi? BatchKoi { get; set; }
 
     public virtual Koi? Koi { get; set; }

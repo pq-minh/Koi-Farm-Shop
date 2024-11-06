@@ -43,5 +43,6 @@ namespace KoiShop.Application.Interfaces
         Task<IEnumerable<PaymentDetailsDto>> GetAllPayments();
         Task<IEnumerable<PaymentDetailsDto>> GetPaymentsByStatus(string status);
         Task<IEnumerable<PaymentDetailsDto>> GetPaymentsBetween(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<OrderDetail>> GetAllOrderDetails();
     }
 }

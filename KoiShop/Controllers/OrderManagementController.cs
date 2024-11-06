@@ -206,5 +206,16 @@ namespace KoiShop.Controllers
             return Ok(payments);
         }
 
+        [HttpGet("get-order-details")]
+        public async Task<ActionResult> GetAllOrderDetails()
+        {
+            var orderDetails = await _orderService.GetAllOrderDetails();
+
+            if (orderDetails == null || orderDetails.Count() == 0)
+                return BadRequest("No Order Details found.");
+
+            return Ok(orderDetails);
+        }
+
     }
 }

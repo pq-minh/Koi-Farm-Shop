@@ -519,6 +519,38 @@ namespace KoiShop.Infrastructure.Respositories
         }
 
 
+        public async Task<IEnumerable<OrderDetail>> GetAllOrderDetailsV2()
+        {
+            var orderDetails = await _koiShopV1DbContext.OrderDetails
+                .Include(od => od.Koi)
+                .Include(od => od.BatchKoi)
+                .Include(od => od.Order)
+                    .ThenInclude(o => o.Payments)
+                .Where(od => od.Order.Payments.Any(p => p.Status == "Completed"))
+                .ToListAsync();
+
+            return orderDetails;
+        }
+
+        public async Task<IEnumerable<OrderDetail>> GetAllOrderDetailsV1()
+        {
+            var orderDetails = await _koiShopV1DbContext.OrderDetails
+                .Include(od => od.Koi)
+                .Include(od => od.BatchKoi)
+                .Include(od => od.Order)
+                    .ThenInclude(o => o.Payments)
+                .ToListAsync();
+
+            return orderDetails;
+        }
+
+        public async Task<bool> UpdateOrderDetails(OrderDetail orderDetail)
+        {
+            _koiShopV1DbContext.OrderDetails.Update(orderDetail);
+            var result = await _koiShopV1DbContext.SaveChangesAsync();
+            return result > 0;
+        }
+
 
     }
 }
