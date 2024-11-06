@@ -117,6 +117,10 @@ namespace KoiShop.Application.Service
                 throw new ArgumentException("User context or user store is not valid.");
             }
             var userId = _userContext.GetCurrentUser().Id;
+            if ((reviewdto.Rating == null || reviewdto.Rating <= 0) && string.IsNullOrWhiteSpace(reviewdto.Comments))
+            {
+                return false ;
+            }
             if (userId == null || (reviewdto.KoiId == null && reviewdto.BatchKoiId == null) || (reviewdto.KoiId.HasValue  && reviewdto.BatchKoiId.HasValue))
             {
                 return false;
