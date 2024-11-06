@@ -31,6 +31,7 @@ namespace KoiShop.Infrastructure.Extensions
             services.AddScoped<IRequestCareRepository, RequestCareRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddDbContext<KoiShopV1DbContext>(options => options.UseSqlServer(connectionString));
+            services.AddScoped<IPostRepository, PostRepository>();
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = true;

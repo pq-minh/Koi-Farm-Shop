@@ -121,7 +121,7 @@ namespace KoiShop.Infrastructure.Persistence
                         .HasColumnName("PostID");
                 entity.Property(e => e.Title).HasColumnName("Title");
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnName("Content").IsUnicode(true);
 
                 entity.Property(e => e.CreateDate).HasColumnName("CreateDate");
                 entity.Property(e => e.UpdateDate).HasColumnName("UpdateDate");
