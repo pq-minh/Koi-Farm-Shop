@@ -4,6 +4,7 @@ using KoiShop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KoiShop.Infrastructure.Migrations
 {
     [DbContext(typeof(KoiShopV1DbContext))]
-    partial class KoiShopV1DbContextModelSnapshot : ModelSnapshot
+    [Migration("20241104155618_updatePost")]
+    partial class updatePost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -416,10 +419,6 @@ namespace KoiShop.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("BatchKoiID");
 
-                    b.Property<double?>("CustomerFunds")
-                        .HasColumnType("float")
-                        .HasColumnName("CustomerFunds");
-
                     b.Property<int?>("KoiId")
                         .HasColumnType("int")
                         .HasColumnName("KoiID");
@@ -431,10 +430,6 @@ namespace KoiShop.Infrastructure.Migrations
                     b.Property<double?>("Price")
                         .HasColumnType("float")
                         .HasColumnName("Price");
-
-                    b.Property<double?>("ShopRevenue")
-                        .HasColumnType("float")
-                        .HasColumnName("ShopRevenue");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");

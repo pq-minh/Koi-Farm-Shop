@@ -23,6 +23,16 @@ namespace KoiShop.Domain.Constant
         public int? KoiAge { get; set; }
         public double? KoiWeight { get; set; }
         public double? KoiSize { get; set; }
+        //Thông tin về request 
+        public string? TypeRequest {  get; set; }
+        public DateTime? ConsignmentDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+        //Thông tin người gửi 
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+
+        public string? PhoneNumber {  get; set; }
 
         // Thông tin loại cá
         public virtual KoiCategory? FishType { get; set; }

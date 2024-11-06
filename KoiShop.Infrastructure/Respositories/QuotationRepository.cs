@@ -47,6 +47,9 @@ namespace KoiShop.Infrastructure.Respositories
          .Include(k => k.Packages)
              .ThenInclude(pk => pk.Requests)
                  .ThenInclude(rq => rq.Quotations)
+        .Include(r => r.Packages)
+            .ThenInclude(p => p.Requests)
+            .ThenInclude(r => r.User)
          .SelectMany(k => k.Packages
              .SelectMany(p => p.Requests
                  .SelectMany(r => r.Quotations
@@ -65,7 +68,13 @@ namespace KoiShop.Infrastructure.Respositories
                          KoiAge = k.Age,
                          KoiWeight = k.Weight,
                          KoiSize = k.Size,
-                         FishType = k.FishType
+                         FishType = k.FishType,
+                         TypeRequest = r.TypeRequest,
+                         ConsignmentDate = r.ConsignmentDate,
+                         EndDate = r.EndDate,
+                         FirstName = r.User.FirstName, 
+                         LastName = r.User.LastName, 
+                         PhoneNumber = r.User.PhoneNumber
                      }))));
             var totalItems = await quotationsQuery.CountAsync();
 

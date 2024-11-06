@@ -24,7 +24,7 @@ namespace KoiShop.Infrastructure.Respositories
 
             return addresses;
         }
-        public async Task<bool> UpdateAddress(int id,string city, string distric,string ward,string streetname)
+        public async Task<bool> UpdateAddress(int id,string city, string distric,string ward,string streetname) 
         {
             var address = await koiShopV1DbContext.AddressDetails.FirstOrDefaultAsync(ad => ad.AddressId == id);
             if ( address == null)
