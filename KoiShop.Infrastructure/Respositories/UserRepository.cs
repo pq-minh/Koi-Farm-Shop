@@ -19,18 +19,21 @@ namespace KoiShop.Infrastructure.Respositories
     {
             public async Task<PaginatedResult<User>> GetAllUser(int pageNumber, int pageSize)
             {
-            var userAll = koiShopV1DbContext.Users.AsQueryable(); 
+            var query = from user in koiShopV1DbContext.Users
+                        join userRole in koiShopV1DbContext.UserRoles on user.Id equals userRole.UserId
+                        join role in koiShopV1DbContext.Roles on userRole.RoleId equals role.Id
+                        where role.Name == "Customer"
+                        select user;
+
+            var total = await query.CountAsync();
 
 
-            var items = await userAll
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            var items = await query
+                     .Skip((pageNumber - 1) * pageSize)
+                     .Take(pageSize)
+                     .ToListAsync();
 
 
-            var total = await userAll.CountAsync();
-
-       
             return new PaginatedResult<User>(items, total, pageNumber, pageSize);
 
         }
