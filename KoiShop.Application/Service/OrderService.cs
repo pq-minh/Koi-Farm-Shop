@@ -572,7 +572,7 @@ namespace KoiShop.Application.Service
                 }
             }
 
-            return await _orderRepository.GetAllOrderDetailsV1();
+            return await _orderRepository.GetAllOrderDetailsV2();
         }
 
 
