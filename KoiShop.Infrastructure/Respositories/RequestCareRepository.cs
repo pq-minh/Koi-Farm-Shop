@@ -107,7 +107,8 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return Enumerable.Empty<Request>();
             }
-            var request = await _koiShopV1DbContext.Requests.Where(r => r.UserId == user.Id).Include(r => r.Package).Include(r => r.Package.Koi).Include(r => r.Package.BatchKoi).ToListAsync();
+            string[] status = { "CompletedCare", "UnderCare", "RefusedCare", "Pending" };
+            var request = await _koiShopV1DbContext.Requests.Where(r => r.UserId == user.Id && status.Contains(r.Status) && r.TypeRequest == "Care").Include(r => r.Package).Include(r => r.Package.Koi).Include(r => r.Package.BatchKoi).ToListAsync();
             if (request == null)
             {
                 return Enumerable.Empty<Request>();
@@ -121,7 +122,8 @@ namespace KoiShop.Infrastructure.Respositories
             {
                 return Enumerable.Empty<Request>();
             }
-            var request = await _koiShopV1DbContext.Requests.Include(r => r.Package).Include(r => r.Package.Koi).
+            string[] status = { "CompletedCare", "UnderCare", "RefusedCare", "Pending" };
+            var request = await _koiShopV1DbContext.Requests.Where(r => status.Contains(r.Status) && r.TypeRequest == "Care").Include(r => r.Package).Include(r => r.Package.Koi).
                 Include(r => r.Package.BatchKoi).ToListAsync();
             if (request == null)
             {

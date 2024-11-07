@@ -21,5 +21,11 @@ namespace KoiShop.Controllers
             var allKoiAndBatch = await _koiAndBatchKoiService.GetAllKoiAndBatch(koiFilterDto);
             return Ok(allKoiAndBatch);
         }
+        [HttpGet("id")]
+        public async Task<IActionResult> GetAllKoiAndBatchId([FromQuery] KoiAndBathKoiId koiAndBatchKoiIdDto)
+        {
+            var allKoiAndBatch = await _koiAndBatchKoiService.GetKoiOrBatchSold(koiAndBatchKoiIdDto.KoiId, koiAndBatchKoiIdDto.BatchKoiId);
+            return Ok(allKoiAndBatch);
+        }
     }
 }
