@@ -12,6 +12,7 @@ namespace KoiShop.Domain.Respositories
         Task<IEnumerable<Koi>> GetAllKoi();
         Task<IEnumerable<Koi>> GetAllKois();
         Task<Koi> GetKoi(int id);
+        Task<Koi> GetKoiSold(int id);
         Task<IEnumerable<Koi>> GetKoiWithCondition(string koiName, string typeFish, double? from, double? to, string sortBy, int pageNumber, int pageSize);
 
         // Koi Methods ============================================================================================

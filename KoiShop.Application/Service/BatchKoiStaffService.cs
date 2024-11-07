@@ -1,14 +1,18 @@
 ﻿using AutoMapper;
 using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Application.Interfaces;
+using KoiShop.Application.Users;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static KoiShop.Application.Users.UserContext;
 
 namespace KoiShop.Application.Service
 {
@@ -38,6 +42,7 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> AddBatchKoi(AddBatchKoiDto batchKoiDto)
         {
+
             if (batchKoiDto == null) return false;
 
             if (!koiStatus.Contains(batchKoiDto.Status)) return false;
@@ -73,6 +78,7 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateBatchKoi(UpdateBatchKoiDto batchKoiDto)
         {
+
             if (batchKoiDto == null) return false;
 
             var currentKoi = await _batchKoiRepository.GetBatchKoiById(batchKoiDto.BatchKoiId);
@@ -141,7 +147,6 @@ namespace KoiShop.Application.Service
 
             return newImageUrl;
         }
-
 
         public async Task<bool> UpdateBatchKoiStatus(int batchKoiId, string status)
         {

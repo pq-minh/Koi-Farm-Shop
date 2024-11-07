@@ -11,4 +11,9 @@ namespace KoiShop.Application.Dtos
         public IEnumerable<KoiDto>? Koi { get; set; }
         public IEnumerable<BatchKoiDto>? BatchKoi { get; set; }
     }
+    public class KoiAndBatchKoiIdDto
+    {
+        public KoiDto? Koi { get; set; }
+        public BatchKoiDto? BatchKoi { get; set; }
+    }
 }

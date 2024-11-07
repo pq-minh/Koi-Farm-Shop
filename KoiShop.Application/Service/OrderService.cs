@@ -17,6 +17,7 @@ using KoiShop.Application.Dtos.VnPayDtos;
 using System.Runtime.CompilerServices;
 using KoiShop.Application.Dtos.OrderDtos;
 using System.Numerics;
+using KoiShop.Application.Dtos.Payments;
 
 namespace KoiShop.Application.Service
 {
@@ -290,15 +291,15 @@ namespace KoiShop.Application.Service
             {
                 return false;
             }
-            string[] statusArr = { "Delivered", "Shipped", "In Transit", "Pending", "Packing" };
+            string[] statusArr = { "Delivered", "Shipped", "InTransit", "Pending", "Packing" };
             string? statusAccepted = null;
             foreach (var x in statusArr)
             {
                 if (status == x)
                 {
                     statusAccepted = x;
+                    break;
                 }
-                break;
             }
             if (string.IsNullOrEmpty(statusAccepted))
             {
@@ -428,11 +429,6 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateOrder(UpdateOrderDtos order)
         {
-            if (_userContext.GetCurrentUser() == null || _userStore == null)
-                throw new ArgumentException("User context or user store is not valid.");
-            var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null)
-                return false;
 
             var currentOrder = await _orderRepository.GetOrderById(order.OrderId);
             if (currentOrder == null)
@@ -442,7 +438,7 @@ namespace KoiShop.Application.Service
 
             if (order.TotalAmount.HasValue) currentOrder.TotalAmount = order.TotalAmount.Value;
             if (order.CreateDate.HasValue) currentOrder.CreateDate = order.CreateDate.Value;
-            if (!string.IsNullOrEmpty(order.OrderStatus)) currentOrder.OrderStatus = order.OrderStatus;
+            if (!string.IsNullOrEmpty(order.OrderStatus) && orderStatus.Contains(order.OrderStatus)) currentOrder.OrderStatus = order.OrderStatus;
             if (order.DiscountId.HasValue) currentOrder.DiscountId = order.DiscountId.Value;
             if (!string.IsNullOrEmpty(order.PhoneNumber)) currentOrder.PhoneNumber = order.PhoneNumber;
             if (!string.IsNullOrEmpty(order.ShippingAddress)) currentOrder.ShippingAddress = order.ShippingAddress;
@@ -452,11 +448,6 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdateOrderStatus(int orderId, string status)
         {
-            if (_userContext.GetCurrentUser() == null || _userStore == null)
-                throw new ArgumentException("User context or user store is not valid.");
-            var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null)
-                return false;
 
             if (!orderStatus.Contains(status)) return false;
 
@@ -488,8 +479,8 @@ namespace KoiShop.Application.Service
                 if (status == "Pending")
                     return false;
 
-            if (status == "Completed")
-                UpdateOrderStatus((int)payment.OrderId, "Completed");
+            if (status == "Completed") 
+                await UpdateOrderStatus((int)payment.OrderId, "Completed");
 
             payment.Status = status;
 
@@ -518,6 +509,72 @@ namespace KoiShop.Application.Service
             if (!orderStatus.Contains(status)) return null;
             return await _orderRepository.GetOrdersByStatus(status);
         }
+
+        public IEnumerable<PaymentDetailsDto> TransferPaymentToPaymentDetailsDto(IEnumerable<Payment> payments)
+        {
+            List<PaymentDetailsDto> paymentDtos = new();
+
+            foreach (var payment in payments)
+            {
+                PaymentDetailsDto paymentDto = new()
+                {
+                    PaymentID = payment.PaymentID ?? 0,
+                    CreateDate = payment.CreateDate ?? DateTime.MinValue,
+                    PaymentMethod = payment.PaymenMethod ?? string.Empty,
+                    Status = payment.Status ?? string.Empty,
+                    OrderID = payment.Order?.OrderId ?? 0,
+                    TotalAmount = payment.Order?.TotalAmount ?? 0,
+                    UserId = payment.Order?.UserId ?? "KoiShop"
+                };
+
+                paymentDtos.Add(paymentDto);
+            }
+
+            return paymentDtos;
+        }
+
+        public async Task<IEnumerable<PaymentDetailsDto>> GetAllPayments()
+        {
+            var payments = await _orderRepository.GetAllPayments();
+
+            return TransferPaymentToPaymentDetailsDto(payments);
+        }
+
+        public async Task<IEnumerable<PaymentDetailsDto>> GetPaymentsByStatus(string status)
+        {
+            var payments = await _orderRepository.GetPaymentsByStatus(status);
+
+            return TransferPaymentToPaymentDetailsDto(payments);
+        }
+
+        public async Task<IEnumerable<PaymentDetailsDto>> GetPaymentsBetween(DateTime startDate, DateTime endDate)
+        {
+            var payments = await _orderRepository.GetPaymentsBetween(startDate, endDate);
+
+            return TransferPaymentToPaymentDetailsDto(payments);
+        }
+
+
+        public async Task<IEnumerable<OrderDetail>> GetAllOrderDetails()
+        {
+            var orderDetails = await _orderRepository.GetAllOrderDetailsV2();
+
+            foreach (var item in orderDetails)
+            {
+                if (item.Price.HasValue) 
+                {
+                    if(item.CustomerFunds == null || item.ShopRevenue == null)
+                    {
+                        item.ShopRevenue = item.Price.Value * 0.1;
+                        item.CustomerFunds = item.Price.Value - item.ShopRevenue;
+                        await _orderRepository.UpdateOrderDetails(item);
+                    }
+                }
+            }
+
+            return await _orderRepository.GetAllOrderDetailsV2();
+        }
+
 
 
     }

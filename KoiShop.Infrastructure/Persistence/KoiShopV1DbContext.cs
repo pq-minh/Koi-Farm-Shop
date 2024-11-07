@@ -291,8 +291,8 @@ namespace KoiShop.Infrastructure.Persistence
                 entity.Property(e => e.KoiId).HasColumnName("KoiID");
                 entity.Property(e => e.OrderId).HasColumnName("OrderID");
                 entity.Property(e => e.Price).HasColumnName("Price");
-                entity.Property(e => e.ShopRevenue).HasColumnName("ShopRevenue");
                 entity.Property(e => e.CustomerFunds).HasColumnName("CustomerFunds");
+                entity.Property(e => e.ShopRevenue).HasColumnName("ShopRevenue");
                 entity.HasOne(d => d.BatchKoi).WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.BatchKoiId)
                     .HasConstraintName("FK__OrderDeta__Batch__4E88ABD4");

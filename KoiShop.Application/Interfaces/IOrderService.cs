@@ -1,5 +1,6 @@
 ﻿using KoiShop.Application.Dtos;
 using KoiShop.Application.Dtos.OrderDtos;
+using KoiShop.Application.Dtos.Payments;
 using KoiShop.Application.Dtos.VnPayDtos;
 using KoiShop.Domain.Entities;
 using System;
@@ -38,5 +39,10 @@ namespace KoiShop.Application.Interfaces
 
         Task<IEnumerable<Order>> GetAllOrders();
         Task<IEnumerable<Order>> GetOrdersByStatus(string status);
+
+        Task<IEnumerable<PaymentDetailsDto>> GetAllPayments();
+        Task<IEnumerable<PaymentDetailsDto>> GetPaymentsByStatus(string status);
+        Task<IEnumerable<PaymentDetailsDto>> GetPaymentsBetween(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<OrderDetail>> GetAllOrderDetails();
     }
 }

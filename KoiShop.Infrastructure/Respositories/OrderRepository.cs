@@ -1,4 +1,5 @@
-﻿using KoiShop.Domain.Entities;
+﻿using KoiShop.Application.Dtos.Payments;
+using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
 using KoiShop.Infrastructure.Migrations;
 using KoiShop.Infrastructure.Persistence;
@@ -478,5 +479,80 @@ namespace KoiShop.Infrastructure.Respositories
             return await _koiShopV1DbContext.Orders
                 .Where(o => o.OrderStatus == status).ToListAsync();
         }
+
+        public async Task<IEnumerable<Payment>> GetAllPayments()
+        {
+            return await _koiShopV1DbContext.Payments
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.Koi)
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.BatchKoi)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Payment>> GetPaymentsByStatus(string status)
+        {
+            return await _koiShopV1DbContext.Payments
+                .Where(p => p.Status == status)
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.Koi)
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.BatchKoi)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Payment>> GetPaymentsBetween(DateTime startDate, DateTime endDate)
+        {
+            return await _koiShopV1DbContext.Payments
+                .Where(p => p.CreateDate >= startDate && p.CreateDate <= endDate)
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.Koi)
+                .Include(p => p.Order)
+                .ThenInclude(o => o.OrderDetails)
+                .ThenInclude(od => od.BatchKoi)
+                .ToListAsync();
+        }
+
+
+        public async Task<IEnumerable<OrderDetail>> GetAllOrderDetailsV2()
+        {
+            var orderDetails = await _koiShopV1DbContext.OrderDetails
+                .Include(od => od.Koi)
+                .Include(od => od.BatchKoi)
+                .Include(od => od.Order)
+                    .ThenInclude(o => o.Payments)
+                    .Include(od => od.Order)
+                    .ThenInclude(o => o.User)
+                .Where(od => od.Order.Payments.Any(p => p.Status == "Completed"))
+                .ToListAsync();
+
+            return orderDetails;
+        }
+
+        public async Task<IEnumerable<OrderDetail>> GetAllOrderDetailsV1()
+        {
+            var orderDetails = await _koiShopV1DbContext.OrderDetails
+                .Include(od => od.Koi)
+                .Include(od => od.BatchKoi)
+                .Include(od => od.Order)
+                    .ThenInclude(o => o.Payments)
+                .ToListAsync();
+
+            return orderDetails;
+        }
+
+        public async Task<bool> UpdateOrderDetails(OrderDetail orderDetail)
+        {
+            _koiShopV1DbContext.OrderDetails.Update(orderDetail);
+            var result = await _koiShopV1DbContext.SaveChangesAsync();
+            return result > 0;
+        }
+
+
     }
 }

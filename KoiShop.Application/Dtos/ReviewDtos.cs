@@ -14,12 +14,12 @@ namespace KoiShop.Application.Dtos
         public string? Comments { get; set; }
         public int? KoiId { get; set; }
         public int? BatchKoiId { get; set; }
-        public string? UserId { get; set; }
-        public string UserName { get; set; }
-        public string KoiName { get; set; }
-        public string BatchKoiName { get; set; }
-        public string KoiImage { get; set; }
-        public string BatchKoiImage { get; set; }
+        public string? UserName { get; set; }
+        public string? Status { get; set; }
+        public string? KoiName { get; set; }
+        public string? BatchKoiName { get; set; }
+        public string? KoiImage { get; set; }
+        public string? BatchKoiImage { get; set; }
     }
     public class ReviewDtoV1
     {

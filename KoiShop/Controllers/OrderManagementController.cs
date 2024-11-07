@@ -1,4 +1,5 @@
 ﻿using KoiShop.Application.Dtos.OrderDtos;
+using KoiShop.Application.Dtos.Payments;
 using KoiShop.Application.Interfaces;
 using KoiShop.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -17,35 +18,35 @@ namespace KoiShop.Controllers
         }
 
 
-        [HttpGet("get")]
-        public async Task<IActionResult> GetOrders([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
-        {
-            var orders = await _orderService.GetOrders(status, startDate, endDate);
-            if (orders == null)
-                return BadRequest("Order not found.");
-            return Ok(orders);
-        }
+        //[HttpGet("get")]
+        //public async Task<IActionResult> GetOrders([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        //{
+        //    var orders = await _orderService.GetOrders(status, startDate, endDate);
+        //    if (orders == null)
+        //        return BadRequest("Order not found.");
+        //    return Ok(orders);
+        //}
 
 
 
-        [HttpGet("get-all")]
-        public async Task<IActionResult> GetAllOrders()
-        {
-            var orders = await _orderService.GetAllOrders();
-            if (orders == null)
-                return BadRequest("Order not found.");
-            return Ok(orders);
-        }
+        //[HttpGet("get-all")]
+        //public async Task<IActionResult> GetAllOrders()
+        //{
+        //    var orders = await _orderService.GetAllOrders();
+        //    if (orders == null)
+        //        return BadRequest("Order not found.");
+        //    return Ok(orders);
+        //}
 
 
-        [HttpGet("get-by-status")]
-        public async Task<IActionResult> GetOrdersByStatus(string status)
-        {
-            var orders = await _orderService.GetOrdersByStatus(status);
-            if (orders == null)
-                return BadRequest("Order not found.");
-            return Ok(orders);
-        }
+        //[HttpGet("get-by-status")]
+        //public async Task<IActionResult> GetOrdersByStatus(string status)
+        //{
+        //    var orders = await _orderService.GetOrdersByStatus(status);
+        //    if (orders == null)
+        //        return BadRequest("Order not found.");
+        //    return Ok(orders);
+        //}
 
         //[HttpGet("get-details")]
         //public async Task<IActionResult> GetOrderDetails([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
@@ -140,7 +141,7 @@ namespace KoiShop.Controllers
         //}
 
         [HttpPut("update/status")]
-        public async Task<IActionResult> UpdateOderStatus(OrderDtoUpdateStatus orderDtoUpdateStatus)
+        public async Task<IActionResult> UpdateOderStatus([FromBody] OrderDtoUpdateStatus orderDtoUpdateStatus)
         {
             var result = await _orderService.UpdateOrderStatus(orderDtoUpdateStatus.OrderID, orderDtoUpdateStatus.Status);
             if (result)
@@ -150,26 +151,71 @@ namespace KoiShop.Controllers
         }
 
         [HttpPut("update-payment/status")]
-        public async Task<IActionResult> UpdatePaymentStatus(int paymentId, string status)
+        public async Task<IActionResult> UpdatePaymentStatus([FromBody] UpdatePaymentStatusDto paymentDto)
         {
-            var result = await _orderService.UpdatePaymentStatus(paymentId, status);
+            var result = await _orderService.UpdatePaymentStatus(paymentDto.PaymentId, paymentDto.PaymentStatus);
             if (result)
                 return Ok("Payment status updated successfully.");
 
             return BadRequest("Payment status updated unsuccessfully.");
         }
 
-        [HttpGet("get-details")]
-        public async Task<IActionResult> GetOrderDetailsInOrder(int orderId)
-        {
-            var orderDetails = await _orderService.GetOrderDetailsInOrder(orderId);
+        //[HttpGet("get-details")]
+        //public async Task<IActionResult> GetOrderDetailsInOrder(int orderId)
+        //{
+        //    var orderDetails = await _orderService.GetOrderDetailsInOrder(orderId);
 
-            if (orderDetails.IsNullOrEmpty())
-                return BadRequest("No order detail found.");
+        //    if (orderDetails.IsNullOrEmpty())
+        //        return BadRequest("No order detail found.");
+
+        //    return Ok(orderDetails);
+        //}
+
+        [HttpGet("get-payments")]
+        public async Task<ActionResult> GetAllPayments()
+        {
+            var payments = await _orderService.GetAllPayments();
+
+            if (payments == null || payments.Count() == 0)
+                return BadRequest("No payment found.");
+
+            return Ok(payments);
+        }
+
+
+        [HttpGet("get-payments/status")]
+        public async Task<ActionResult> GetPaymentsByStatus(string status)
+        {
+            var payments = await _orderService.GetPaymentsByStatus(status);
+
+            if (payments == null || payments.Count() == 0)
+                return BadRequest("No payment found.");
+
+            return Ok(payments);
+        }
+
+
+        [HttpGet("get-payments/between")]
+        public async Task<ActionResult> GetAllPayments(DateTime startDate, DateTime endDate)
+        {
+            var payments = await _orderService.GetPaymentsBetween(startDate, endDate);
+
+            if (payments == null || payments.Count() == 0)
+                return BadRequest("No payment found.");
+
+            return Ok(payments);
+        }
+
+        [HttpGet("get-order-details")]
+        public async Task<ActionResult> GetAllOrderDetails()
+        {
+            var orderDetails = await _orderService.GetAllOrderDetails();
+
+            if (orderDetails == null || orderDetails.Count() == 0)
+                return BadRequest("No Order Details found.");
 
             return Ok(orderDetails);
         }
-
 
     }
 }
