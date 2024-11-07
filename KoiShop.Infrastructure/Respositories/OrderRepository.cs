@@ -526,6 +526,8 @@ namespace KoiShop.Infrastructure.Respositories
                 .Include(od => od.BatchKoi)
                 .Include(od => od.Order)
                     .ThenInclude(o => o.Payments)
+                    .Include(od => od.Order)
+                    .ThenInclude(o => o.User)
                 .Where(od => od.Order.Payments.Any(p => p.Status == "Completed"))
                 .ToListAsync();
 
