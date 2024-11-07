@@ -141,7 +141,7 @@ namespace KoiShop.Controllers
         //}
 
         [HttpPut("update/status")]
-        public async Task<IActionResult> UpdateOderStatus(OrderDtoUpdateStatus orderDtoUpdateStatus)
+        public async Task<IActionResult> UpdateOderStatus([FromBody] OrderDtoUpdateStatus orderDtoUpdateStatus)
         {
             var result = await _orderService.UpdateOrderStatus(orderDtoUpdateStatus.OrderID, orderDtoUpdateStatus.Status);
             if (result)
