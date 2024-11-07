@@ -470,7 +470,6 @@ namespace KoiShop.Application.Service
 
         public async Task<bool> UpdatePaymentStatus(int paymentId, string status)
         {
-
             if (!paymentStatus.Contains(status)) return false;
             
             var payment = await _orderRepository.GetPaymentById(paymentId);
@@ -481,7 +480,7 @@ namespace KoiShop.Application.Service
                     return false;
 
             if (status == "Completed") 
-                UpdateOrderStatus((int)payment.OrderId, "Completed");
+                await UpdateOrderStatus((int)payment.OrderId, "Completed");
 
             payment.Status = status;
 
