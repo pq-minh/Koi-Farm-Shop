@@ -151,9 +151,9 @@ namespace KoiShop.Controllers
         }
 
         [HttpPut("update-payment/status")]
-        public async Task<IActionResult> UpdatePaymentStatus([FromForm] int paymentId, [FromForm] string status)
+        public async Task<IActionResult> UpdatePaymentStatus([FromBody] UpdatePaymentStatusDto paymentDto)
         {
-            var result = await _orderService.UpdatePaymentStatus(paymentId, status);
+            var result = await _orderService.UpdatePaymentStatus(paymentDto.PaymentId, paymentDto.PaymentStatus);
             if (result)
                 return Ok("Payment status updated successfully.");
 
