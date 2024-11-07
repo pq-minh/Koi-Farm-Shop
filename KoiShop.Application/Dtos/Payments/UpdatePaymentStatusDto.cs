@@ -10,9 +10,9 @@ namespace KoiShop.Application.Dtos.Payments
     public class UpdatePaymentStatusDto
     {
         [Required(ErrorMessage = "PaymentId is required.")]
-        public required int PaymentId;
+        public int PaymentId { get; set; }
 
         [Required(ErrorMessage = "PaymentStatus is required.")]
-        public required string PaymentStatus;
+        public string PaymentStatus { get; set; }
     }
 }
