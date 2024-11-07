@@ -10,5 +10,6 @@ namespace KoiShop.Application.Interfaces
     public interface IKoiAndBatchKoiService
     {
         Task<KoiAndBatchKoiDto> GetAllKoiAndBatch(KoiFilterDto koiFilterDto);
+        Task<KoiAndBatchKoiIdDto> GetKoiOrBatchSold(int? koiId, int? batchKoiId);
     }
 }

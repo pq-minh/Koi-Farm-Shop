@@ -75,6 +75,10 @@ namespace KoiShop.Infrastructure.Repositories
 
             return await allBatchKoi.ToListAsync();
         }
+        public async Task<BatchKoi> GetBatchKoiSold(int id)
+        {
+            return await _KoiShopV1DbContext.BatchKois.Where(b => b.BatchKoiId == id && b.Status == "Sold").Include(k => k.BatchType).FirstOrDefaultAsync();
+        }
 
         // BatchKoi Methods ===========================================================================================
         public async Task<IEnumerable<BatchKoi>> GetBatchKois()

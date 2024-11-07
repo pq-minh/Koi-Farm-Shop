@@ -17,4 +17,10 @@ namespace KoiShop.Application.Dtos
         public int PageSize { get; set; }
     }
 
+    public class KoiAndBathKoiId
+    {
+        public int? KoiId { get; set; }
+        public int? BathcKoiId { get; set; }
+    }
+
 }
