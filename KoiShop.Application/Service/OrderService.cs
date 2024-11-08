@@ -129,7 +129,8 @@ namespace KoiShop.Application.Service
             {
                 return OrderEnum.InvalidTypeParameters;
             }
-            if (method == "online" && request == null)
+            string[] methodCheck = { "offline", "online"};
+            if ((method == "online" && request == null) || !methodCheck.Contains(method))
             {
                 return OrderEnum.InvalidParameters;
             }
