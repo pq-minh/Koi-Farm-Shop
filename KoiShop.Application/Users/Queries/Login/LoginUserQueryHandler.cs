@@ -7,15 +7,15 @@ namespace KoiShop.Application.Users.Queries.Login
 {
     public class LoginUserQueryHandler(IJwtTokenService jwtTokenService,
         UserManager<User> identityUser,
-        RoleManager<IdentityRole> identityRole) : 
-        IRequestHandler<LoginUserQuery , string>
+        RoleManager<IdentityRole> identityRole) :
+        IRequestHandler<LoginUserQuery, string>
     {
         public async Task<string> Handle(LoginUserQuery request, CancellationToken cancellationToken)
         {
             var user = await identityUser.FindByEmailAsync(request.Login.Email);
             if (user != null && await identityUser.CheckPasswordAsync(user, request.Login.Password) && user.Status != "Banned")
-            {           
-               var token = jwtTokenService.GenerateToken(user);
+            {
+                var token = jwtTokenService.GenerateToken(user);
                 return await token;
             }
             throw new UnauthorizedAccessException("Invalid username or password");
