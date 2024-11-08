@@ -484,11 +484,11 @@ namespace KoiShop.Infrastructure.Respositories
         {
             return await _koiShopV1DbContext.Payments
                 .Include(p => p.Order)
-                .ThenInclude(o => o.OrderDetails)
-                .ThenInclude(od => od.Koi)
+                    .ThenInclude(o => o.OrderDetails)
+                        .ThenInclude(od => od.Koi)
                 .Include(p => p.Order)
-                .ThenInclude(o => o.OrderDetails)
-                .ThenInclude(od => od.BatchKoi)
+                    .ThenInclude(o => o.OrderDetails)
+                        .ThenInclude(od => od.BatchKoi)
                 .ToListAsync();
         }
 
@@ -497,11 +497,11 @@ namespace KoiShop.Infrastructure.Respositories
             return await _koiShopV1DbContext.Payments
                 .Where(p => p.Status == status)
                 .Include(p => p.Order)
-                .ThenInclude(o => o.OrderDetails)
-                .ThenInclude(od => od.Koi)
+                    .ThenInclude(o => o.OrderDetails)
+                        .ThenInclude(od => od.Koi)
                 .Include(p => p.Order)
-                .ThenInclude(o => o.OrderDetails)
-                .ThenInclude(od => od.BatchKoi)
+                    .ThenInclude(o => o.OrderDetails)
+                        .ThenInclude(od => od.BatchKoi)
                 .ToListAsync();
         }
 
@@ -510,11 +510,11 @@ namespace KoiShop.Infrastructure.Respositories
             return await _koiShopV1DbContext.Payments
                 .Where(p => p.CreateDate >= startDate && p.CreateDate <= endDate)
                 .Include(p => p.Order)
-                .ThenInclude(o => o.OrderDetails)
-                .ThenInclude(od => od.Koi)
+                    .ThenInclude(o => o.OrderDetails)
+                        .ThenInclude(od => od.Koi)
                 .Include(p => p.Order)
-                .ThenInclude(o => o.OrderDetails)
-                .ThenInclude(od => od.BatchKoi)
+                    .ThenInclude(o => o.OrderDetails)
+                        .ThenInclude(od => od.BatchKoi)
                 .ToListAsync();
         }
 
@@ -523,12 +523,12 @@ namespace KoiShop.Infrastructure.Respositories
         {
             var orderDetails = await _koiShopV1DbContext.OrderDetails
                 .Include(od => od.Koi)
+                    .ThenInclude(k => k.User)
                 .Include(od => od.BatchKoi)
+                    .ThenInclude(k => k.User)
                 .Include(od => od.Order)
                     .ThenInclude(o => o.Payments)
-                .Include(od => od.Order)
-                    .ThenInclude(o => o.User)
-                .Where(od => od.Order.Payments.Any(p => p.Status == "Completed"))
+                .Where(od => od.Order.Payments.Any(p => p.Status == "Completed") && (od.Koi.User != null || od.BatchKoi.User != null))
                 .ToListAsync();
 
             return orderDetails;
