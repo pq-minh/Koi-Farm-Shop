@@ -346,7 +346,7 @@ namespace KoiShop.Infrastructure.Respositories
 
         public async Task<IEnumerable<OrderDetail>> GetOrderDetailsByStaff()
         {
-            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.Status != "UnderCare").Include(o => o.Koi).Include(o => o.BatchKoi)
+            var orderDetail = await _koiShopV1DbContext.OrderDetails.Where(od => od.Status != "UnderCare").Include(o => o.Koi).Include(o => o.BatchKoi).Include(o => o.Order)
                 .Include(o => o.Order.User).ToListAsync();
             return orderDetail;
         }

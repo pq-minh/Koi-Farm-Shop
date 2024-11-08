@@ -129,6 +129,10 @@ namespace KoiShop.Application.Service
             {
                 return OrderEnum.InvalidTypeParameters;
             }
+            if (method == "online" && request == null)
+            {
+                return OrderEnum.InvalidParameters;
+            }
             var cartItems = _mapper.Map<List<CartItem>>(carts);
             var order = await _orderRepository.AddToOrder(cartItems, discountId, phoneNumber, address);
             if (order)

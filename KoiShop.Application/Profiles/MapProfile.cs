@@ -41,6 +41,7 @@ namespace KoiShop.Application.Profiles
                  .ForMember(dest => dest.BatchKoiName, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Name : string.Empty))
                  .ForMember(dest => dest.KoiImage, opt => opt.MapFrom(src => src.Koi != null ? src.Koi.Image : string.Empty))
                  .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty))
+                 .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.Order != null ? src.Order.CreateDate : (DateTime?)null))
                  .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Order != null && src.Order.User != null ? src.Order.User.LastName + " " + src.Order.User.FirstName : string.Empty));
             CreateMap<Order, OrderDtos>();
             CreateMap<AddKoiDto, Koi>();

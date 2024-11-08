@@ -41,12 +41,17 @@ namespace KoiShop.Controllers
         [HttpPost]
         public async Task<IActionResult> AddOrder([FromBody] OrderDtoV1 orderDto)
         {
+            if (orderDto.Method == "offline")
+            {
+                orderDto.request = null;
+            }
             var carts = orderDto.Carts;
             var method = orderDto.Method;
             var discountId = orderDto.DiscountId;
             var phoneNumber = orderDto.PhoneNumber;
             var address = orderDto.Address;
             var request = orderDto.request;
+
             var result = await _orderService.AddOrders(carts, method, discountId, phoneNumber, address, request);
             switch (result)
             {
