@@ -27,7 +27,7 @@ namespace KoiShop.Application.Users.Queries.GetAllAddress
         {
             var user = userContext.GetCurrentUser();
             var dbUser = await userStore.FindByIdAsync(user!.Id, cancellationToken);
-            if ( dbUser == null )
+            if (dbUser == null)
             {
                 throw new Exception();
             }
