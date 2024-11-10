@@ -52,7 +52,7 @@ namespace KoiShop.Controllers
         }
 
         [HttpPost("add")]
-        [Authorize(Roles = "Staff")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddBatchKoi([FromForm] AddBatchKoiDto batchKoiDto)
         {
             if (batchKoiDto == null)
