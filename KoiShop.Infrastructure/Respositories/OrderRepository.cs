@@ -509,6 +509,7 @@ namespace KoiShop.Infrastructure.Respositories
         }
 
 
+        // doanh thu cá ký gửi khi đã được người khác mua
         public async Task<IEnumerable<OrderDetail>> GetAllOrderDetailsV2()
         {
             var orderDetails = await _koiShopV1DbContext.OrderDetails
@@ -518,7 +519,6 @@ namespace KoiShop.Infrastructure.Respositories
                     .ThenInclude(k => k.User)
                 .Include(od => od.Order)
                     .ThenInclude(o => o.Payments)
-                .Include(od => od.Order.DiscountId)
                 .Where(od => od.Order.Payments.Any(p => p.Status == "Completed") && (od.Koi.User != null || od.BatchKoi.User != null))
                 .ToListAsync();
 

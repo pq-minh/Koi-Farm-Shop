@@ -567,7 +567,7 @@ namespace KoiShop.Application.Service
                     {
                         // price trong detail là gốc 
                         var discount = await _orderRepository.GetDiscountById((int)item.Order.DiscountId);
-                        double discountRate = discount?.DiscountRate ?? 0;
+                        double discountRate = discount?.DiscountRate / 100 ?? 0;
 
                         // áp discount lên price 
                         double? priceWithDiscount = item.Price - (item.Price * discountRate);
@@ -576,7 +576,8 @@ namespace KoiShop.Application.Service
                         item.ShopRevenue = priceWithDiscount * 0.1;
 
                         // tiền đã khấu trừ mà khách hàng nhận
-                        item.CustomerFunds = item.Price.Value - item.ShopRevenue;
+                        item.CustomerFunds = item.Price.Value - (item.Price * 0.1);
+
                         await _orderRepository.UpdateOrderDetails(item);
                     }
                 }
