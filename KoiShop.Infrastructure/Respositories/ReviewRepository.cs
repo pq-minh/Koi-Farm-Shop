@@ -165,7 +165,7 @@ namespace KoiShop.Infrastructure.Respositories
         public async Task<IEnumerable<OrderDetail>> GetAllOrderDetail()
         {
             var userId = _userContext.GetCurrentUser().Id;
-            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId).Select(o => o.OrderId).ToListAsync();
+            var order = await _koiShopV1DbContext.Orders.Where(o => o.UserId == userId && o.OrderStatus == "Completed").Select(o => o.OrderId).ToListAsync();
             if (order == null)
             {
                 return Enumerable.Empty<OrderDetail>();
