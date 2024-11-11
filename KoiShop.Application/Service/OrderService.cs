@@ -566,11 +566,21 @@ namespace KoiShop.Application.Service
 
             foreach (var item in orderDetails)
             {
-                if (item.Price.HasValue) 
+                if (item.Price.HasValue)
                 {
-                    if(item.CustomerFunds == null || item.ShopRevenue == null)
+                    if (item.CustomerFunds == null || item.ShopRevenue == null)
                     {
-                        item.ShopRevenue = item.Price.Value * 0.1;
+                        // price trong detail là gốc 
+                        var discount = await _orderRepository.GetDiscountById((int)item.Order.DiscountId);
+                        double discountRate = discount?.DiscountRate ?? 0;
+
+                        // áp discount lên price 
+                        double? priceWithDiscount = item.Price - (item.Price * discountRate);
+
+                        // tiền hoa hồng shop nhận theo price đã áp discount
+                        item.ShopRevenue = priceWithDiscount * 0.1;
+
+                        // tiền đã khấu trừ mà khách hàng nhận
                         item.CustomerFunds = item.Price.Value - item.ShopRevenue;
                         await _orderRepository.UpdateOrderDetails(item);
                     }

@@ -64,6 +64,7 @@ namespace KoiShop.Controllers
         }
 
         [HttpPut("update")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateBatchKoi([FromForm] UpdateBatchKoiDto batchKoiDto)
         {
             if (batchKoiDto == null)
@@ -75,6 +76,7 @@ namespace KoiShop.Controllers
         }
 
         [HttpPut("update/{batchKoiId}-{status}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateBatchKoiStatus(int batchKoiId, string status)
         {
             if (string.IsNullOrWhiteSpace(status))

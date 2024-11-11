@@ -2,6 +2,7 @@
 using KoiShop.Application.Dtos.Payments;
 using KoiShop.Application.Interfaces;
 using KoiShop.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -140,7 +141,9 @@ namespace KoiShop.Controllers
         //    return BadRequest("Order updated unsuccessfully.");
         //}
 
+
         [HttpPut("update/status")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateOderStatus([FromBody] OrderDtoUpdateStatus orderDtoUpdateStatus)
         {
             var result = await _orderService.UpdateOrderStatus(orderDtoUpdateStatus.OrderID, orderDtoUpdateStatus.Status);
@@ -151,6 +154,7 @@ namespace KoiShop.Controllers
         }
 
         [HttpPut("update-payment/status")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdatePaymentStatus([FromBody] UpdatePaymentStatusDto paymentDto)
         {
             var result = await _orderService.UpdatePaymentStatus(paymentDto.PaymentId, paymentDto.PaymentStatus);
