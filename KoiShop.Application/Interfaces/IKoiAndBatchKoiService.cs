@@ -11,5 +11,6 @@ namespace KoiShop.Application.Interfaces
     {
         Task<KoiAndBatchKoiDto> GetAllKoiAndBatch(KoiFilterDto koiFilterDto);
         Task<KoiAndBatchKoiIdDto> GetKoiOrBatchSold(int? koiId, int? batchKoiId);
+        Task<KoiAndBatchKoiIdDto> GetKoiOrBatchSoldGuest(int? koiId, int? batchKoiId);
     }
 }

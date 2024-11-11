@@ -43,7 +43,15 @@ namespace KoiShop.Application.Profiles
                  .ForMember(dest => dest.BatchKoiImage, opt => opt.MapFrom(src => src.BatchKoi != null ? src.BatchKoi.Image : string.Empty))
                  .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.Order != null ? src.Order.CreateDate : (DateTime?)null))
                  .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Order != null && src.Order.User != null ? src.Order.User.LastName + " " + src.Order.User.FirstName : string.Empty));
-            CreateMap<Order, OrderDtos>();
+            CreateMap<Order, OrderDtos>()
+                  .ForMember(dest => dest.PaymentMethod, 
+                   opt => opt.MapFrom(src => src.Payments.FirstOrDefault(p => p.OrderId == src.OrderId) != null
+                   ? src.Payments.FirstOrDefault(p => p.OrderId == src.OrderId).PaymenMethod
+                   : string.Empty))
+                  .ForMember(dest => dest.PaymentStatus,
+                     opt => opt.MapFrom(src => src.Payments.FirstOrDefault(p => p.OrderId == src.OrderId) != null
+                   ? src.Payments.FirstOrDefault(p => p.OrderId == src.OrderId).Status
+                   : string.Empty));
             CreateMap<AddKoiDto, Koi>();
             CreateMap<AddBatchKoiDto, BatchKoi>();
             CreateMap<Discount, DiscountDto>();
