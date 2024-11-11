@@ -74,5 +74,28 @@ namespace KoiShop.Application.Service
             };
             return result;
         }
+        public async Task<KoiAndBatchKoiIdDto> GetKoiOrBatchSoldGuest(int? koiId, int? batchKoiId)
+        {
+            if (koiId == null && batchKoiId == null)
+            {
+                return null;
+            }
+            if (koiId.HasValue && batchKoiId.HasValue)
+            {
+                return null;
+            }
+            var koi = koiId.HasValue ? await _koiRepository.GetKoiSold(koiId.Value) : null;
+
+            var batchKoi = batchKoiId.HasValue ? await _batchKoiRepository.GetBatchKoiSold(batchKoiId.Value) : null;
+
+            var koiDto = koi != null ? _mapper.Map<KoiDto>(koi) : null;
+            var batchKoiDto = batchKoi != null ? _mapper.Map<BatchKoiDto>(batchKoi) : null;
+            var result = new KoiAndBatchKoiIdDto
+            {
+                Koi = koiDto,
+                BatchKoi = batchKoiDto
+            };
+            return result;
+        }
     }
 }
