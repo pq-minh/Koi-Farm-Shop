@@ -44,5 +44,6 @@ namespace KoiShop.Domain.Respositories
         Task<IEnumerable<OrderDetail>> GetAllOrderDetailsV1();
         Task<IEnumerable<OrderDetail>> GetAllOrderDetailsV2();
         Task<bool> UpdateOrderDetails(OrderDetail orderDetail);
+        Task<Discount> GetDiscountById(int id);
     }
 }

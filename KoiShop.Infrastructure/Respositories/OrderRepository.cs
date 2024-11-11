@@ -1,18 +1,8 @@
-﻿using KoiShop.Application.Dtos.Payments;
-using KoiShop.Domain.Entities;
+﻿using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
-using KoiShop.Infrastructure.Migrations;
 using KoiShop.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Asn1;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static KoiShop.Application.Users.UserContext;
 
 namespace KoiShop.Infrastructure.Respositories
@@ -528,10 +518,16 @@ namespace KoiShop.Infrastructure.Respositories
                     .ThenInclude(k => k.User)
                 .Include(od => od.Order)
                     .ThenInclude(o => o.Payments)
+                .Include(od => od.Order.DiscountId)
                 .Where(od => od.Order.Payments.Any(p => p.Status == "Completed") && (od.Koi.User != null || od.BatchKoi.User != null))
                 .ToListAsync();
 
             return orderDetails;
+        }
+
+        public async Task<Discount> GetDiscountById(int id)
+        {
+            return await _koiShopV1DbContext.Discounts.FirstOrDefaultAsync(d => d.DiscountId == id);
         }
 
         public async Task<IEnumerable<OrderDetail>> GetAllOrderDetailsV1()

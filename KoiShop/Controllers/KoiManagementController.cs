@@ -3,6 +3,7 @@ using KoiShop.Application.Interfaces;
 using KoiShop.Application.Service;
 using KoiShop.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KoiShop.Controllers
@@ -37,6 +38,7 @@ namespace KoiShop.Controllers
         }
 
         [HttpPost("add")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddKoi([FromForm] AddKoiDto koiDto)
         {
             if (koiDto == null)
@@ -48,6 +50,7 @@ namespace KoiShop.Controllers
 
 
         [HttpPut("update")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateKoi([FromForm] UpdateKoiDto koiDto)
         {
             var result = await _koiService.UpdateKoi(koiDto);
@@ -55,6 +58,7 @@ namespace KoiShop.Controllers
         }
 
         [HttpPut("update/{koiId}-{status}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateKoiStatus(int koiId, string status)
         {
             if (string.IsNullOrWhiteSpace(status))
