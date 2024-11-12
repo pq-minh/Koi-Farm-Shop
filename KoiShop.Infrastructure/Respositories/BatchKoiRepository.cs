@@ -15,6 +15,7 @@ namespace KoiShop.Infrastructure.Repositories
         private readonly KoiShopV1DbContext _KoiShopV1DbContext;
         public BatchKoiRepository(KoiShopV1DbContext context)
         {
+            
             _KoiShopV1DbContext = context;
         }
         public async Task<IEnumerable<BatchKoi>> GetAllBatch()

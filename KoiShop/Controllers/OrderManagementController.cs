@@ -19,44 +19,44 @@ namespace KoiShop.Controllers
         }
 
 
-        //[HttpGet("get")]
-        //public async Task<IActionResult> GetOrders([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
-        //{
-        //    var orders = await _orderService.GetOrders(status, startDate, endDate);
-        //    if (orders == null)
-        //        return BadRequest("Order not found.");
-        //    return Ok(orders);
-        //}
+        [HttpGet("get")]
+        public async Task<IActionResult> GetOrders([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            var orders = await _orderService.GetOrders(status, startDate, endDate);
+            if (orders == null)
+                return BadRequest("Order not found.");
+            return Ok(orders);
+        }
 
 
 
-        //[HttpGet("get-all")]
-        //public async Task<IActionResult> GetAllOrders()
-        //{
-        //    var orders = await _orderService.GetAllOrders();
-        //    if (orders == null)
-        //        return BadRequest("Order not found.");
-        //    return Ok(orders);
-        //}
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            var orders = await _orderService.GetAllOrders();
+            if (orders == null)
+                return BadRequest("Order not found.");
+            return Ok(orders);
+        }
 
 
-        //[HttpGet("get-by-status")]
-        //public async Task<IActionResult> GetOrdersByStatus(string status)
-        //{
-        //    var orders = await _orderService.GetOrdersByStatus(status);
-        //    if (orders == null)
-        //        return BadRequest("Order not found.");
-        //    return Ok(orders);
-        //}
+        [HttpGet("get-by-status")]
+        public async Task<IActionResult> GetOrdersByStatus(string status)
+        {
+            var orders = await _orderService.GetOrdersByStatus(status);
+            if (orders == null)
+                return BadRequest("Order not found.");
+            return Ok(orders);
+        }
 
-        //[HttpGet("get-details")]
-        //public async Task<IActionResult> GetOrderDetails([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
-        //{
-        //    var orderDetails = await _orderService.GetOrderDetails(status, startDate, endDate);
-        //    if (orderDetails == null)
-        //        return BadRequest("OrderDetails not found.");
-        //    return Ok(orderDetails);
-        //}
+        [HttpGet("get-details")]
+        public async Task<IActionResult> GetOrderDetails([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            var orderDetails = await _orderService.GetOrderDetails(status, startDate, endDate);
+            if (orderDetails == null)
+                return BadRequest("OrderDetails not found.");
+            return Ok(orderDetails);
+        }
 
 
         [HttpGet("best-sales/koi")]

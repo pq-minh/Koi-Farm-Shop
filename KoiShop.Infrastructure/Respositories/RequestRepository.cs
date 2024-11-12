@@ -28,7 +28,7 @@ namespace KoiShop.Infrastructure.Respositories
        public async Task<PaginatedResult<Request>> GetAllRequest(string userId, int pageNumber, int pageSize)
         {
             var query = koiShopV1DbContext.Requests
-                .Where(us => us.UserId == userId)
+                .Where(us => us.UserId == userId && (us.TypeRequest.Equals("online") || us.TypeRequest.Equals("offline")))
                 .Include(pk => pk.Package)
                     .ThenInclude(k => k.Koi)
                 .Include(r => r.Quotations);
