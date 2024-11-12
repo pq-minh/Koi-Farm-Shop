@@ -19,14 +19,14 @@ namespace KoiShop.Controllers
         }
 
 
-        //[HttpGet("get")]
-        //public async Task<IActionResult> GetOrders([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
-        //{
-        //    var orders = await _orderService.GetOrders(status, startDate, endDate);
-        //    if (orders == null)
-        //        return BadRequest("Order not found.");
-        //    return Ok(orders);
-        //}
+        [HttpGet("get")]
+        public async Task<IActionResult> GetOrders([FromQuery] string status, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            var orders = await _orderService.GetOrders(status, startDate, endDate);
+            if (orders == null)
+                return BadRequest("Order not found.");
+            return Ok(orders);
+        }
 
 
 
