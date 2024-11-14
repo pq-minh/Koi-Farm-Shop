@@ -1,0 +1,22 @@
+@KoiShop_HostAddress = https://localhost:7228
+
+GET {{KoiShop_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{KoiShop_HostAddress}} 
+Accept: application/json
+###
+
+POST {{KoiShop_HostAddress}}/api/orders/createpayment
+Content-Type: application/json
+
+{
+  "userID": 12,
+  "amount": 1000,
+  "createdDate": "2024-10-23T14:13:59.823Z"
+}
+
+
+###

@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Dtos\UserDto\**" />
+    <Compile Remove="Users\Command\UpdateAddress\**" />
+    <Compile Remove="ViewModel\**" />
+    <EmbeddedResource Remove="Dtos\UserDto\**" />
+    <EmbeddedResource Remove="Users\Command\UpdateAddress\**" />
+    <EmbeddedResource Remove="ViewModel\**" />
+    <None Remove="Dtos\UserDto\**" />
+    <None Remove="Users\Command\UpdateAddress\**" />
+    <None Remove="ViewModel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="AutoMapper" Version="13.0.1" />
+	  <PackageReference Include="Datadog.Trace" Version="3.4.0" />
+	  <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
+	  <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
+	  <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+	  <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+	  <PackageReference Include="Google.Cloud.Firestore" Version="3.9.0" />
+	  <PackageReference Include="libphonenumber-csharp" Version="8.13.47" />
+	  <PackageReference Include="MailKit" Version="4.8.0" />
+	  <PackageReference Include="MediatR" Version="12.4.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.10" />
+	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+	  <PackageReference Include="SendGrid" Version="9.29.3" />
+	  <PackageReference Include="VNPayPackage" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KoiShop.Domain\KoiShop.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
