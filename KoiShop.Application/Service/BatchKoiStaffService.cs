@@ -65,7 +65,7 @@ namespace KoiShop.Application.Service
                 Weight = batchKoiDto.Weight,
                 Size = batchKoiDto.Size,
                 Origin = batchKoiDto.Origin,
-                Gender = batchKoiDto.Gender,
+                //Gender = batchKoiDto.Gender,
                 Age = batchKoiDto.Age,
                 Certificate = cerImageUrl,
                 Image = koiImageUrl,

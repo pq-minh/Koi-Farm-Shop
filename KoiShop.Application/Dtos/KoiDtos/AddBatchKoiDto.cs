@@ -42,8 +42,8 @@ namespace KoiShop.Application.Dtos.KoiDtos
         public string Origin { get; set; }
 
 
-        [Required(ErrorMessage = "Gender is required.")]
-        public string Gender { get; set; }
+        //[Required(ErrorMessage = "Gender is required.")]
+        //public string Gender { get; set; }
 
 
         [Required(ErrorMessage = "Price is required.")]

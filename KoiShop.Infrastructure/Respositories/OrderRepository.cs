@@ -386,12 +386,10 @@ namespace KoiShop.Infrastructure.Respositories
         public async Task<IEnumerable<Order>> GetOrders(string status, DateTime startDate, DateTime endDate)
         {
             return await _koiShopV1DbContext.Orders
-                .Include(o => o.Payments)
                 .Where(o => o.OrderStatus == status &&
                             o.CreateDate.HasValue &&
                             o.CreateDate >= startDate &&
-                            o.CreateDate <= endDate
-                            && o.Payments.Any(p => p.Status == "Completed"))
+                            o.CreateDate <= endDate)
                 .ToListAsync();
         }
         public async Task<IEnumerable<Order>> GetOrders(DateTime startDate, DateTime endDate)
