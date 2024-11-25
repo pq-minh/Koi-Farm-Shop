@@ -44,6 +44,7 @@ The Koi Farm Shop platform is proudly built and maintained by a dedicated team o
 2. **[Hoàng](https://github.com/VHoangSE)** –  Backend Developer
 3. **[Duy](https://github.com/ChickenCode-FPT)** – Backend Developer: Login and Consignment service for selling fish on the system, Frontend Developer
 4. **[Danh](https://github.com/danh-pham235)** – Frontend Developer
+
 We thank each contributor for their hard work and dedication to making this project a success!
 
 ## Frontend Repository  
