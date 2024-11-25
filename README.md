@@ -1,15 +1,12 @@
 ﻿# 🌊 Koi Farm Shop
----
 
 ![Koi Farm Shop Screenshot](./images/Homepage.png)
 
 ## Introduction
----
 Welcome to Koi Farm Shop, a comprehensive management platform tailored for koi fish enthusiasts and businesses. 
 Whether you're looking to consign, purchase, sell, or care for koi fish, our platform provides the tools and features to meet your needs seamlessly.
 
 ## Features
----
 Consignment Services: Safely list your koi fish for sale through our platform.
 Fish Care Management: Professional care options for your koi, including health monitoring and maintenance services.
 Buy & Sell Marketplace: A reliable and transparent marketplace for buying and selling koi fish.
@@ -19,7 +16,6 @@ Buy & Sell Marketplace: A reliable and transparent marketplace for buying and se
 Customer-Centric Services: Tailored support for customers, ensuring satisfaction at every step.
 
 ## Tech Stack
----
 Backend: ASP.Net, Swagger
 Database: SQL
 Authentication: JWT for secure user management.
@@ -27,7 +23,6 @@ Payment: VnPay
 Other: Firebase, Gmail
 
 ## Architecture: Dependency Injection (DI)
----
 In Koi Farm Shop, we utilize Dependency Injection (DI) as a core design pattern to improve maintainability, flexibility, and testability of the application. DI allows for the decoupling of components, making the system modular and easier to scale.
 
 ### How DI Works
@@ -39,7 +34,6 @@ Testability: Easy to substitute mock implementations during testing.
 Scalability: New services and components can be added without affecting others.
 
 ## Contribution
----
 The Koi Farm Shop platform is proudly built and maintained by a dedicated team of four contributors:
 
 1. **[Minh](https://github.com/pq-minh)** – Project Manager, Backend Developer
@@ -49,7 +43,6 @@ The Koi Farm Shop platform is proudly built and maintained by a dedicated team o
 We thank each contributor for their hard work and dedication to making this project a success!
 
 ## Frontend Repository  
----
 For the frontend code of the Koi Farm Shop platform, please visit the [Frontend GitHub Repository](https://github.com/pq-minh/KoiFarmShopFE).
 
 This repository contains all the client-side code, including the user interface, components, and interactions with the backend.
