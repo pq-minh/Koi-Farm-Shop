@@ -16,11 +16,15 @@ Buy & Sell Marketplace: A reliable and transparent marketplace for buying and se
 Customer-Centric Services: Tailored support for customers, ensuring satisfaction at every step.
 
 ## Tech Stack
-Backend: ASP.Net, Swagger
-Database: SQL
-Authentication: JWT for secure user management.
-Payment: VnPay
-Other: Firebase, Gmail
+- **Backend**: ASP.Net, Swagger
+
+- **Database**: SQL
+
+- **Authentication**: JWT for secure user management.
+
+- **Payment**: VnPay
+
+- **Other**: Firebase, Gmail
 
 ## Architecture: Dependency Injection (DI)
 In Koi Farm Shop, we utilize Dependency Injection (DI) as a core design pattern to improve maintainability, flexibility, and testability of the application. DI allows for the decoupling of components, making the system modular and easier to scale.
