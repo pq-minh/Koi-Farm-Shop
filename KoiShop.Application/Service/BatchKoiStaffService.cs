@@ -4,6 +4,7 @@ using KoiShop.Application.Interfaces;
 using KoiShop.Application.Users;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
+using KoiShop.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -20,10 +21,12 @@ namespace KoiShop.Application.Service
     {
         private readonly IMapper _mapper;
         private readonly IBatchKoiRepository _batchKoiRepository;
+        private readonly IFishRepository _koiRepository;
         private readonly FirebaseService _firebaseService;
         List<string> koiStatus = new() { "OnSale", "Sold", "Pending", "Cancel" };
-        public BatchKoiStaffService(IBatchKoiRepository batchKoiRepository , FirebaseService firebaseService, IMapper mapper)
+        public BatchKoiStaffService(IBatchKoiRepository batchKoiRepository , FirebaseService firebaseService, IMapper mapper, IFishRepository koiRepository)
         {
+            _koiRepository = koiRepository;
             _batchKoiRepository = batchKoiRepository;
             _firebaseService = firebaseService;
             _mapper = mapper;
@@ -32,12 +35,12 @@ namespace KoiShop.Application.Service
         // BatchKoi Methods ===========================================================================================
         public async Task<IEnumerable<BatchKoi>> GetAllBatchKoiStaff()
         {
-            return await _batchKoiRepository.GetBatchKois();
+            return await _koiRepository.GetAllFish<BatchKoi>();
         }
 
-        public async Task<BatchKoi> GetBatchKoiById(int batchKoiId)
+        public async Task<BatchKoi?> GetBatchKoiById(int batchKoiId)
         {
-            return await _batchKoiRepository.GetBatchKoiById(batchKoiId);
+            return await _koiRepository.GetFishByIdFromType<BatchKoi>(batchKoiId,Variables.STATUS_FISH_ALL);
         }
 
         public async Task<bool> AddBatchKoi(AddBatchKoiDto batchKoiDto)
@@ -47,8 +50,8 @@ namespace KoiShop.Application.Service
 
             if (!koiStatus.Contains(batchKoiDto.Status)) return false;
 
-            var allCates = await _batchKoiRepository.GetBatchKoiCategories();
-            bool exist = allCates.Any(cate => cate.BatchTypeId == batchKoiDto.BatchTypeId);
+            var allCates = await _koiRepository.GetAllFishCategories();
+            bool exist = allCates.Any(cate => cate.FishTypeId == batchKoiDto.BatchTypeId);
 
             if (!exist)
                 return false;
@@ -58,7 +61,7 @@ namespace KoiShop.Application.Service
 
             var batchKoi = new BatchKoi
             {
-                BatchTypeId = batchKoiDto.BatchTypeId,
+                FishTypeId = batchKoiDto.BatchTypeId,
                 Name = batchKoiDto.Name,
                 Description = batchKoiDto.Description,
                 Quantity = batchKoiDto.Quantity,
@@ -73,7 +76,7 @@ namespace KoiShop.Application.Service
                 Status = batchKoiDto.Status
             };
 
-            return await _batchKoiRepository.AddBatchKoi(batchKoi);
+            return await _koiRepository.AddFish<BatchKoi>(batchKoi);
         }
 
         public async Task<bool> UpdateBatchKoi(UpdateBatchKoiDto batchKoiDto)
@@ -81,16 +84,16 @@ namespace KoiShop.Application.Service
 
             if (batchKoiDto == null) return false;
 
-            var currentKoi = await _batchKoiRepository.GetBatchKoiById(batchKoiDto.BatchKoiId);
+            var currentKoi = await _koiRepository.GetFishByIdFromType<BatchKoi>(batchKoiDto.BatchKoiId,Variables.STATUS_FISH_ALL);
             if (currentKoi == null) return false;
 
             if (batchKoiDto.BatchTypeId.HasValue)
             {
-                var allCates = await _batchKoiRepository.GetBatchKoiCategories();
-                bool exist = allCates.Any(cate => cate.BatchTypeId == batchKoiDto.BatchTypeId.Value);
+                var allCates = await _koiRepository.GetAllFishCategories();
+                bool exist = allCates.Any(cate => cate.FishTypeId == batchKoiDto.BatchTypeId.Value);
 
                 if (exist)
-                    currentKoi.BatchTypeId = batchKoiDto.BatchTypeId.Value;
+                    currentKoi.FishTypeId = batchKoiDto.BatchTypeId.Value;
                 else
                     return false;
             }
@@ -120,7 +123,7 @@ namespace KoiShop.Application.Service
                     currentKoi.Certificate = koiCer;
             }
 
-            return await _batchKoiRepository.UpdateBatchKoi(currentKoi);
+            return await _koiRepository.UpdateFish<BatchKoi>(currentKoi);
         }
 
 
@@ -152,23 +155,25 @@ namespace KoiShop.Application.Service
         {
             if (!koiStatus.Contains(status)) return false;
 
-            var batchKoi = await _batchKoiRepository.GetBatchKoiById(batchKoiId);
+            var batchKoi = await _koiRepository.GetFishByIdFromType<BatchKoi>(batchKoiId,Variables.STATUS_FISH_ALL);
             if (batchKoi == null) return false;
 
             batchKoi.Status = status;
 
-            return await _batchKoiRepository.UpdateBatchKoi(batchKoi);
+            return await _koiRepository.UpdateFish<BatchKoi>(batchKoi);
         }
 
-        // KoiCategory Methods ======================================================================================
-        public async Task<IEnumerable<BatchKoiCategory>> GetAllBatchKoiCategory()
+        // FishCategory Methods ======================================================================================
+        public async Task<IEnumerable<FishCategory>> GetAllBatchFishCategory()
         {
-            return await _batchKoiRepository.GetBatchKoiCategories();
+            return await _koiRepository.GetAllFishCategories();
         }
 
-        public async Task<List<BatchKoi>> GetBatchKoiInBatchKoiCategory(int batchTypeId)
+        /*
+        public async Task<List<BatchKoi>> GetBatchKoiInBatchFishCategory(int FishTypeId)
         {
-            return await _batchKoiRepository.GetBatchKoiInBatchKoiCategory(batchTypeId);
+            return await _batchKoiRepository.GetBatchKoiInBatchFishCategory(FishTypeId);
         }
+        */
     }
 }

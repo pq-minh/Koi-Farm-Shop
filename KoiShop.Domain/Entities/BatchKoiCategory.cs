@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace KoiShop.Domain.Entities;
 
-public partial class BatchKoiCategory
+public partial class BatchFishCategory
 {
-    public int BatchTypeId { get; set; }
+    public int FishTypeId { get; set; }
 
     public string? TypeBatch { get; set; }
 

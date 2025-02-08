@@ -27,13 +27,13 @@ public partial class BatchKoi
 
     public string? Image { get; set; }
 
-    public int? BatchTypeId { get; set; }
+    public int? FishTypeId { get; set; }
 
     public double? Price { get; set; }
 
     public string? Status { get; set; }
 
-    public virtual BatchKoiCategory? BatchType { get; set; }
+    public virtual FishCategory? FishType { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 

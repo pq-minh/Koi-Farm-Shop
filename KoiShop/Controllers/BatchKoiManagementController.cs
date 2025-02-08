@@ -86,6 +86,7 @@ namespace KoiShop.Controllers
             return result ? Ok("Batch Koi status updated successfully.") : BadRequest("Failed to update Batch Koi status.");
         }
 
+        /*
         [HttpGet("category")]
         public async Task<IActionResult> GetAllBatchKoiCategory()
         {
@@ -94,5 +95,6 @@ namespace KoiShop.Controllers
                 return NotFound();
             return Ok(categories);
         }
+        */
     }
 }

@@ -19,7 +19,7 @@ namespace KoiShop.Infrastructure.Extensions
         {
             var connectionString = configuration.GetConnectionString("KoiShopDB");
             services.AddScoped<IBatchKoiRepository, BatchKoiRepository>();
-            services.AddScoped<IKoiRepository, KoiRepository>();
+            services.AddScoped<IFishRepository, FishRepository>();
             services.AddScoped<ICartsRepository, CartsRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IAddressDetailRepository, AddressDetailsRepository>();
@@ -30,7 +30,7 @@ namespace KoiShop.Infrastructure.Extensions
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IRequestCareRepository, RequestCareRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddDbContext<KoiShopV1DbContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContextFactory<KoiShopV1DbContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddIdentity<User, IdentityRole>(options =>
             {

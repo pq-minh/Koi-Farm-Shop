@@ -19,20 +19,23 @@ namespace KoiShop.Application.Dtos
         public string? Weight { get; set; }
 
         public string? Size { get; set; }
-        public string? Age { get; set; }
+
         public string? Origin { get; set; }
 
         public string? Gender { get; set; }
+
+        public string? Age { get; set; }
 
         public string? Certificate { get; set; }
 
         public string? Image { get; set; }
 
-        public int? BatchTypeId { get; set; }
+        public int? FishTypeId { get; set; }
+
+        public string TypeFish { get; set; }
 
         public double? Price { get; set; }
 
         public string? Status { get; set; }
-        public string? TypeBatch { get; set; }
     }
 }

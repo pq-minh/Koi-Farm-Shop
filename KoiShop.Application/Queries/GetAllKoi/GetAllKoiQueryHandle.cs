@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 namespace KoiShop.Application.Queries.GetAllKoi
 {
     public class GetAllKoiQueryHandle(
-         IKoiRepository koiRepository   
+         IFishRepository koiRepository   
         ) : IRequestHandler<GetAllKoiQuery, IEnumerable<Koi>>
     {
         public async Task<IEnumerable<Koi>> Handle(GetAllKoiQuery request, CancellationToken cancellationToken)
         {
-           var koi = await koiRepository.GetAllKoi();
+           var koi = await koiRepository.GetAllFish<Koi>();
             return koi;
         }
     }

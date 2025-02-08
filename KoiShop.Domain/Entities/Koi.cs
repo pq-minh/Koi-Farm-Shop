@@ -33,7 +33,7 @@ public partial class Koi
 
     public string? Certificate { get; set; }
 
-    public virtual KoiCategory? FishType { get; set; }
+    public virtual FishCategory? FishType { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 

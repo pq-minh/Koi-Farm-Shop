@@ -20,8 +20,8 @@ namespace KoiShop.Application.Profiles
                 .ForMember(dest => dest.TypeFish, opt => opt
                 .MapFrom(src => src.FishType != null && src.FishType.TypeFish != null ? src.FishType.TypeFish : string.Empty));
             CreateMap<BatchKoi, BatchKoiDto>()
-                .ForMember(d => d.TypeBatch, o => o
-                .MapFrom(src => src.BatchType != null && src.BatchType.TypeBatch != null ? src.BatchType.TypeBatch : string.Empty));
+                .ForMember(d => d.TypeFish, o => o
+                .MapFrom(src => src.FishType != null && src.FishType.TypeFish != null ? src.FishType.TypeFish : string.Empty));
             CreateMap<CartItem, CartDtos>();
             CreateMap<CartDtoV1, CartItem>();
             CreateMap<CartDtoV2, CartItem>();
@@ -64,7 +64,6 @@ namespace KoiShop.Application.Profiles
             CreateMap<Review, ReviewDtoComment>();
             CreateMap<ReviewDtos, Review>();
             CreateMap<ReviewAllDto, Review>();
-            CreateMap<ReviewDtos, Review>();
             CreateMap<OrderDetailDtoV1, OrderDetail>();
             CreateMap<Request, RequestCareDtos>()
                 .ForMember(dest => dest.KoiName, opt => opt.MapFrom(src => src.Package != null && src.Package.Koi != null ? src.Package.Koi.Name : string.Empty))

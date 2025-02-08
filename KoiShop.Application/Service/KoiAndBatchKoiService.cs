@@ -3,6 +3,7 @@ using KoiShop.Application.Dtos;
 using KoiShop.Application.Interfaces;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
+using KoiShop.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,11 @@ namespace KoiShop.Application.Service
         private readonly IMapper _mapper;
         private readonly IKoiService _koiService;
         private readonly IBatchKoiService _batchKoiService;
-        private readonly IKoiRepository _koiRepository;
+        private readonly IFishRepository _koiRepository;
         private readonly IBatchKoiRepository _batchKoiRepository;
         private readonly IUserStore<User> _userStore;
         private readonly IUserContext _userContext;
-        public KoiAndBatchKoiService(IMapper mapper, IKoiService koiService, IBatchKoiService batchKoiService, IKoiRepository koiRepository, IBatchKoiRepository batchKoiRepository, IUserContext userContext, IUserStore<User> userStore)
+        public KoiAndBatchKoiService(IMapper mapper, IKoiService koiService, IBatchKoiService batchKoiService, IFishRepository koiRepository, IBatchKoiRepository batchKoiRepository, IUserContext userContext, IUserStore<User> userStore)
         {
             _mapper = mapper;
             _koiService = koiService;
@@ -61,9 +62,9 @@ namespace KoiShop.Application.Service
             {
                 return null;
             }
-            var koi = koiId.HasValue? await _koiRepository.GetKoiSold(koiId.Value): null;
+            var koi = koiId.HasValue? await _koiRepository.GetFishByIdFromType<Koi>(koiId.Value, Variables.STATUS_FISH_SOLD): null;
 
-            var batchKoi = batchKoiId.HasValue? await _batchKoiRepository.GetBatchKoiSold(batchKoiId.Value): null;
+            var batchKoi = batchKoiId.HasValue? await _koiRepository.GetFishByIdFromType<BatchKoi>(batchKoiId.Value,Variables.STATUS_FISH_SOLD): null;
 
             var koiDto = koi != null ? _mapper.Map<KoiDto>(koi) : null;
             var batchKoiDto = batchKoi != null ? _mapper.Map<BatchKoiDto>(batchKoi) : null;
@@ -84,9 +85,9 @@ namespace KoiShop.Application.Service
             {
                 return null;
             }
-            var koi = koiId.HasValue ? await _koiRepository.GetKoiSold(koiId.Value) : null;
+            var koi = koiId.HasValue ? await _koiRepository.GetFishByIdFromType<Koi>(koiId.Value, Variables.STATUS_FISH_ONSALE) : null;
 
-            var batchKoi = batchKoiId.HasValue ? await _batchKoiRepository.GetBatchKoiSold(batchKoiId.Value) : null;
+            var batchKoi = batchKoiId.HasValue ? await _koiRepository.GetFishByIdFromType<BatchKoi>(batchKoiId.Value,Variables.STATUS_FISH_ONSALE) : null;
 
             var koiDto = koi != null ? _mapper.Map<KoiDto>(koi) : null;
             var batchKoiDto = batchKoi != null ? _mapper.Map<BatchKoiDto>(batchKoi) : null;

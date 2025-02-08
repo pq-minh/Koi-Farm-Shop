@@ -11,13 +11,11 @@ namespace KoiShop.Infrastructure.Persistence
 
         public virtual DbSet<BatchKoi> BatchKois { get; set; }
 
-        public virtual DbSet<BatchKoiCategory> BatchKoiCategories { get; set; }
-
         public virtual DbSet<Discount> Discounts { get; set; }
 
         public virtual DbSet<Koi> Kois { get; set; }
 
-        public virtual DbSet<KoiCategory> KoiCategories { get; set; }
+        public virtual DbSet<FishCategory> FishCategories { get; set; }
 
         public virtual DbSet<Order> Orders { get; set; }
 
@@ -142,8 +140,8 @@ namespace KoiShop.Infrastructure.Persistence
 
                 entity.Property(e => e.BatchKoiId)
                     .ValueGeneratedOnAdd()
-                    .HasColumnName("BatchKoiID");
-                entity.Property(e => e.BatchTypeId).HasColumnName("BatchTypeID");
+                    .HasColumnName("BatchKoiId");
+                entity.Property(e => e.FishTypeId).HasColumnName("FishTypeID");
                 entity.Property(e => e.Certificate).HasColumnType("text");
                 entity.Property(e => e.Description).HasColumnName("Description").IsUnicode(true);
                 entity.Property(e => e.Gender)
@@ -170,25 +168,11 @@ namespace KoiShop.Infrastructure.Persistence
                     .IsUnicode(true);
                 entity.Property(e => e.Weight).HasColumnName("weight").IsUnicode(true);
 
-                entity.HasOne(d => d.BatchType).WithMany(p => p.BatchKois)
-                    .HasForeignKey(d => d.BatchTypeId)
+                entity.HasOne(d => d.FishType).WithMany(p => p.BatchKois)
+                    .HasForeignKey(d => d.FishTypeId)
                     .HasConstraintName("FK__BatchKoi__BatchT__4D94879B");
                 entity.HasOne(d => d.User).WithMany(p => p.BatchKois)
                     .HasForeignKey(d => d.UserId);
-            });
-
-            modelBuilder.Entity<BatchKoiCategory>(entity =>
-            {
-                entity.HasKey(e => e.BatchTypeId).HasName("PK__BatchKoi__752A87CE3D96F085");
-
-                entity.ToTable("BatchKoiCategory");
-
-                entity.Property(e => e.BatchTypeId)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("BatchTypeID");
-                entity.Property(e => e.TypeBatch)
-                    .HasMaxLength(200)
-                    .IsUnicode(true);
             });
 
             modelBuilder.Entity<Discount>(entity =>
@@ -216,7 +200,7 @@ namespace KoiShop.Infrastructure.Persistence
 
                 entity.Property(e => e.KoiId)
                     .ValueGeneratedOnAdd()
-                    .HasColumnName("KoiID");
+                    .HasColumnName("KoiId");
                 entity.Property(e => e.Certificate).HasColumnType("text");
                 entity.Property(e => e.Description).HasColumnName("Description").IsUnicode(true);
                 entity.Property(e => e.FishTypeId).HasColumnName("FishTypeID");
@@ -244,18 +228,28 @@ namespace KoiShop.Infrastructure.Persistence
                     .HasForeignKey(d => d.UserId);
             });
 
-            modelBuilder.Entity<KoiCategory>(entity =>
+            modelBuilder.Entity<FishCategory>(entity =>
             {
-                entity.HasKey(e => e.FishTypeId).HasName("PK__KoiCateg__3D3EB8EE1589D08A");
+                entity.HasKey(e => e.FishTypeId).HasName("PK_FishCategory");
 
-                entity.ToTable("KoiCategory");
+                entity.ToTable("FishCategory");
 
                 entity.Property(e => e.FishTypeId)
                     .ValueGeneratedOnAdd()
                     .HasColumnName("FishTypeID");
+
                 entity.Property(e => e.TypeFish)
                     .HasMaxLength(200)
                     .IsUnicode(true);
+
+                entity.HasMany(e => e.Kois)
+                    .WithOne(e => e.FishType)
+                    .HasForeignKey(e => e.FishTypeId);
+
+                entity.HasMany(e => e.BatchKois)
+                    .WithOne(e => e.FishType)
+                    .HasForeignKey(e => e.FishTypeId);
+
             });
 
             modelBuilder.Entity<Order>(entity =>

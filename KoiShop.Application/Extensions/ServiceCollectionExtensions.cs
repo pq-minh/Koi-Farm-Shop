@@ -5,6 +5,7 @@ using KoiShop.Application.JwtToken;
 using KoiShop.Application.Profiles;
 using KoiShop.Application.Service;
 using KoiShop.Application.Users;
+using KoiShop.Domain.Respositories;
 using Microsoft.Extensions.DependencyInjection;
 using static KoiShop.Application.Users.UserContext;
 

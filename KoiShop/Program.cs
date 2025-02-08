@@ -1,7 +1,13 @@
 ﻿using KoiShop.Application.Extensions;
+using KoiShop.Application.Interfaces;
+using KoiShop.Application.Service;
 using KoiShop.Infrastructure.Extensions;
+using KoiShop.Infrastructure.Persistence;
 using KoiShop.Infrastructure.Presenters;
 using KoiShop.Infrastructure.Seeder;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
+using System.IO.Compression;
 
 namespace KoiShop
 {
@@ -28,6 +34,19 @@ namespace KoiShop
             builder.Services.AddApplication();
             builder.Services.AddPresentations(builder.Configuration);
 
+            builder.Services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true; // Bật nén cho HTTPS
+                options.Providers.Add<BrotliCompressionProvider>(); // Thêm Brotli
+                options.Providers.Add<GzipCompressionProvider>(); // Nếu muốn hỗ trợ cả Gzip
+            });
+
+            // Tuỳ chỉnh mức độ nén Brotli
+            builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Optimal; // Mức nén tối ưu
+            });
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -35,6 +54,8 @@ namespace KoiShop
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseResponseCompression();
 
             var scope = app.Services.CreateScope();
             var seeder = scope.ServiceProvider.GetRequiredService<IUserSeeder>();

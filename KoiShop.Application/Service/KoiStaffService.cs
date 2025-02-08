@@ -4,6 +4,7 @@ using KoiShop.Application.Interfaces;
 using KoiShop.Application.Users;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
+using KoiShop.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -19,11 +20,11 @@ namespace KoiShop.Application.Service
     public class KoiStaffService : IKoiStaffService
     {
         private readonly IMapper _mapper;
-        private readonly IKoiRepository _koiRepository;
+        private readonly IFishRepository _koiRepository;
         private readonly FirebaseService _firebaseService;
         List<string> koiStatus = new() { "OnSale", "Sold", "Pending", "Cancel" };
 
-        public KoiStaffService(IKoiRepository koiRepository, FirebaseService firebaseService, IMapper mapper)
+        public KoiStaffService(IFishRepository koiRepository, FirebaseService firebaseService, IMapper mapper)
         {
             _koiRepository = koiRepository;
             _firebaseService = firebaseService;
@@ -34,22 +35,22 @@ namespace KoiShop.Application.Service
         // Koi Methods =============================================================================================
         public async Task<IEnumerable<Koi>> GetAllKoiStaff()
         {
-            return await _koiRepository.GetKois();
+            return await _koiRepository.GetAllFish<Koi>();
         }
 
-        public async Task<Koi> GetKoiById(int koiId)
+        public async Task<Koi?> GetKoiById(int koiId)
         {
-            return await _koiRepository.GetKoiById(koiId);
+            return await _koiRepository.GetFishByIdFromType<Koi>(koiId, Variables.STATUS_FISH_ALL);
         }
 
-        public async Task<bool> AddKoi(AddKoiDto koiDto)
+        public async Task<bool> AddFish(AddKoiDto koiDto)
         {
 
             if (koiDto == null) return false;
 
             if (!koiStatus.Contains(koiDto.Status)) return false;
 
-            var allCates = await _koiRepository.GetAllKoiCategories();
+            var allCates = await _koiRepository.GetAllFishCategories();
 
             bool exist = false;
             foreach (var cate in allCates)
@@ -83,20 +84,20 @@ namespace KoiShop.Application.Service
                 Certificate = cerImageUrl
             };
 
-            return await _koiRepository.AddKoi(koi);
+            return await _koiRepository.AddFish(koi);
         }
 
-        public async Task<bool> UpdateKoi(UpdateKoiDto koiDto)
+        public async Task<bool> UpdateFish(UpdateKoiDto koiDto)
         {
 
             if (koiDto == null) return false;
 
-            var currentKoi = await _koiRepository.GetKoiById(koiDto.KoiId);
+            var currentKoi = await _koiRepository.GetFishByIdFromType<Koi>(koiDto.KoiId, Variables.STATUS_FISH_ALL);
             if (currentKoi == null) return false;
 
             if (koiDto.FishTypeId.HasValue)
             {
-                var allCates = await _koiRepository.GetAllKoiCategories();
+                var allCates = await _koiRepository.GetAllFishCategories();
 
                 bool exist = false;
                 foreach (var cate in allCates)
@@ -141,7 +142,7 @@ namespace KoiShop.Application.Service
                     currentKoi.Certificate = koiCer;
             }
 
-            return await _koiRepository.UpdateKoi(currentKoi);
+            return await _koiRepository.UpdateFish(currentKoi);
         }
 
 
@@ -170,28 +171,28 @@ namespace KoiShop.Application.Service
         }
 
 
-        public async Task<bool> UpdateKoiStatus(int koiId, string status)
+        public async Task<bool> UpdateFishStatus(int koiId, string status)
         {
 
             if (!koiStatus.Contains(status)) return false;
 
-            var koi = await _koiRepository.GetKoiById(koiId);
+            var koi = await _koiRepository.GetFishByIdFromType<Koi>(koiId, Variables.STATUS_FISH_ALL);
             if (koi == null) return false;
 
             koi.Status = status;
 
-            return await _koiRepository.UpdateKoi(koi);
+            return await _koiRepository.UpdateFish(koi);
         }
 
-        // KoiCategory Methods ======================================================================================
-        public async Task<IEnumerable<KoiCategory>> GetAllKoiCategory()
+        // FishCategory Methods ======================================================================================
+        public async Task<IEnumerable<FishCategory>> GetAllFishCategory()
         {
-            return await _koiRepository.GetAllKoiCategories();
+            return await _koiRepository.GetAllFishCategories();
         }
 
-        public async Task<List<Koi>> GetKoisInKoiCategory(int fishTypeId)
+        public async Task<IEnumerable<Koi>> GetKoisInFishCategory(int fishTypeId)
         {
-            return await _koiRepository.GetKoisInKoiCategory(fishTypeId);
+            return await _koiRepository.GetFishCategory<Koi>(fishTypeId);
         }
 
     }

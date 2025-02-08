@@ -35,6 +35,6 @@ namespace KoiShop.Domain.Constant
         public string? PhoneNumber {  get; set; }
 
         // Thông tin loại cá
-        public virtual KoiCategory? FishType { get; set; }
+        public virtual FishCategory? FishType { get; set; }
     }
 }

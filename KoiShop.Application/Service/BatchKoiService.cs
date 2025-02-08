@@ -4,6 +4,7 @@ using KoiShop.Application.Dtos.KoiDtos;
 using KoiShop.Application.Interfaces;
 using KoiShop.Domain.Entities;
 using KoiShop.Domain.Respositories;
+using KoiShop.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -17,25 +18,27 @@ namespace KoiShop.Application.Service
     {
         private readonly IMapper _mapper;
         private readonly IBatchKoiRepository _batchKoiRepository;
+        private readonly IFishRepository _koiRepository;
 
-        public BatchKoiService(IBatchKoiRepository batchKoiRepository, IMapper mapper)
+        public BatchKoiService(IBatchKoiRepository batchKoiRepository, IFishRepository koiRepository, IMapper mapper)
         {
+            _koiRepository = koiRepository;
             _batchKoiRepository = batchKoiRepository;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<BatchKoiDto>> GetAllBatchKoi()
         {
-            var allBatch = await _batchKoiRepository.GetAllBatch();
+            var allBatch = await _koiRepository.GetFishFormType<BatchKoi>(Variables.STATUS_FISH_ALL);
             var allBatchDto = _mapper.Map<IEnumerable<BatchKoiDto>>(allBatch);
             return allBatchDto;
         }
 
         public async Task<BatchKoiDto> GetBatchKoi(int id)
         {
-            var koi = await _batchKoiRepository.GetBatchKoi(id);
-            var koidto = _mapper.Map<BatchKoiDto>(koi);
-            return koidto;
+            var batchKoi = await _koiRepository.GetFishByIdFromType<BatchKoi>(id,Variables.STATUS_FISH_ONSALE);
+            var batchKoidto = _mapper.Map<BatchKoiDto>(batchKoi);
+            return batchKoidto;
         }
 
         public async Task<IEnumerable<BatchKoiDto>> GetAllBatchKoiWithCondition(KoiFilterDto koiFilterDto)

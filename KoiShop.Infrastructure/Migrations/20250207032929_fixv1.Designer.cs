@@ -4,6 +4,7 @@ using KoiShop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KoiShop.Infrastructure.Migrations
 {
     [DbContext(typeof(KoiShopV1DbContext))]
-    partial class KoiShopV1DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250207032929_fixv1")]
+    partial class fixv1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,7 +75,7 @@ namespace KoiShop.Infrastructure.Migrations
                     b.Property<int>("BatchKoiId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("BatchKoiId");
+                        .HasColumnName("Id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BatchKoiId"));
 
@@ -250,13 +253,16 @@ namespace KoiShop.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FishTypeId"));
 
+                    b.Property<int>("BatchTypeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("TypeFish")
                         .HasMaxLength(200)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(200)");
 
                     b.HasKey("FishTypeId")
-                        .HasName("PK_FishCategory");
+                        .HasName("PK__BatchKoi__752A87CE3D96F085");
 
                     b.ToTable("FishCategory", (string)null);
                 });
@@ -266,7 +272,7 @@ namespace KoiShop.Infrastructure.Migrations
                     b.Property<int>("KoiId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("KoiId");
+                        .HasColumnName("Id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KoiId"));
 

@@ -44,7 +44,7 @@ namespace KoiShop.Controllers
             if (koiDto == null)
                 return BadRequest("Koi information is missing or invalid.");
 
-            var result = await _koiService.AddKoi(koiDto);
+            var result = await _koiService.AddFish(koiDto);
             return result ? Ok("Koi added successfully.") : BadRequest("Failed to add Koi.");
         }
 
@@ -53,7 +53,7 @@ namespace KoiShop.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateKoi([FromForm] UpdateKoiDto koiDto)
         {
-            var result = await _koiService.UpdateKoi(koiDto);
+            var result = await _koiService.UpdateFish(koiDto);
             return result ? Ok("Koi updated successfully.") : BadRequest("Failed to update Koi.");
         }
 
@@ -64,10 +64,11 @@ namespace KoiShop.Controllers
             if (string.IsNullOrWhiteSpace(status))
                 return BadRequest("Invalid status.");
 
-            var result = await _koiService.UpdateKoiStatus(koiId, status);
+            var result = await _koiService.UpdateFishStatus(koiId, status);
             return result ? Ok("Koi status updated successfully.") : BadRequest("Failed to update Koi status.");
         }
 
+        /*
         [HttpGet("category")]
         public async Task<IActionResult> GetAllKoiCategory()
         {
@@ -76,5 +77,6 @@ namespace KoiShop.Controllers
                 return NotFound();
             return Ok(allCategories);
         }
+        */
     }
 }
