@@ -18,6 +18,7 @@ using System.Runtime.CompilerServices;
 using KoiShop.Application.Dtos.OrderDtos;
 using System.Numerics;
 using KoiShop.Application.Dtos.Payments;
+using KoiShop.Infrastructure.Data;
 
 namespace KoiShop.Application.Service
 {
@@ -72,15 +73,12 @@ namespace KoiShop.Application.Service
         }
         public async Task<IEnumerable<OrderDetailDtoV2>> GetOrderDetailById(int? id)
         {
-            if (_userContext.GetCurrentUser() == null || _userStore == null)
-            {
+            if (!CheckLogin())
                 throw new ArgumentException("User context or user store is not valid.");
-            }
-            var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null || id == null)
-            {
+
+            if (id == null)
                 return Enumerable.Empty<OrderDetailDtoV2>();
-            }
+
             var orderDetail = await _orderRepository.GetOrderDetailById((int)id);
             var orderDetailDto = _mapper.Map<IEnumerable<OrderDetailDtoV2>>(orderDetail);
             return orderDetailDto;
@@ -108,34 +106,27 @@ namespace KoiShop.Application.Service
 
         public async Task<OrderEnum> AddOrders(List<CartDtoV2> carts, string method, int? discountId, string? phoneNumber, string? address, VnPaymentResponseFromFe request)
         {
-            if (_userContext.GetCurrentUser() == null || _userStore == null)
-            {
+
+            if (!CheckLogin())
                 return OrderEnum.NotLoggedInYet;
-            }
-            var userId = _userContext.GetCurrentUser().Id;
-            if (userId == null)
-            {
-                return OrderEnum.UserNotAuthenticated;
-            }
-            foreach (var cart in carts)
-            {
-                if ((cart.KoiId == null && cart.BatchKoiId == null) || (cart.KoiId.HasValue && cart.KoiId <= 0) || (cart.BatchKoiId.HasValue && cart.BatchKoiId <= 0) ||
-                    (cart.KoiId.HasValue && cart.BatchKoiId.HasValue))
-                {
-                    return OrderEnum.InvalidParameters;
-                }
-            }
+
+            if (!CheckParamasters(carts))
+                return OrderEnum.InvalidParameters;
+
             if (phoneNumber == null || address.IsNullOrEmpty() || !IsPhoneNumberValid(phoneNumber, "VN"))
             {
                 return OrderEnum.InvalidTypeParameters;
             }
-            string[] methodCheck = { "offline", "online"};
-            if ((method == "online" && request == null) || !methodCheck.Contains(method))
+
+            string[] methodCheck = { Variables.TYPE_PAY_ONLINE, Variables.TYPE_PAY_OFFLINE };
+            if ((method == Variables.TYPE_PAY_ONLINE && request == null) || !methodCheck.Contains(method))
             {
                 return OrderEnum.InvalidParameters;
             }
+
             var cartItems = _mapper.Map<List<CartItem>>(carts);
             var order = await _orderRepository.AddToOrder(cartItems, discountId, phoneNumber, address);
+
             if (order)
             {
                 var orderDetail = await _orderRepository.AddToOrderDetailFromCart(cartItems);
@@ -148,11 +139,11 @@ namespace KoiShop.Application.Service
                         if (koiandBatchStatus)
                         {
                             var payment = await _orderRepository.AddPayment(method);
-                            if (payment && method == "offline")
+                            if (payment && method == Variables.TYPE_PAY_OFFLINE)
                             {
                                 return OrderEnum.Success;
                             }
-                            else if (method == "online")
+                            else if (method == Variables.TYPE_PAY_ONLINE)
                             {
                                 var response = _vnPayService.ExecutePayment(request);
                                 if (response == null || !response.Success)
@@ -191,6 +182,27 @@ namespace KoiShop.Application.Service
             }
             else
                 return OrderEnum.Fail;
+        }
+
+        private bool CheckLogin()
+        {
+            if (_userContext.GetCurrentUser() == null || _userStore == null)
+                return false;
+
+            return true;
+        }
+
+        private bool CheckParamasters(List<CartDtoV2> carts)
+        {
+            foreach (var cart in carts)
+            {
+                if ((cart.KoiId == null && cart.BatchKoiId == null) || (cart.KoiId.HasValue && cart.KoiId <= 0) || (cart.BatchKoiId.HasValue && cart.BatchKoiId <= 0) ||
+                    (cart.KoiId.HasValue && cart.BatchKoiId.HasValue))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public async Task<PaymentDto> PayByVnpay(VnPaymentResponseFromFe request)

@@ -13,5 +13,8 @@ namespace KoiShop.Infrastructure.Data
         public const string STATUS_FISH_SOLD = "Sold";
         public const string TYPE_FISH_KOI = "Koi";
         public const string TYPE_FISH_BATCH = "Batch";
+        public const string TYPE_PAY_ONLINE = "online";
+        public const string TYPE_PAY_OFFLINE = "offline";
+
     }
 }
