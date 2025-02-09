@@ -1,6 +1,7 @@
 ﻿using KoiShop.Application.Extensions;
 using KoiShop.Application.Interfaces;
 using KoiShop.Application.Service;
+using KoiShop.Application.ServiceCatching;
 using KoiShop.Infrastructure.Extensions;
 using KoiShop.Infrastructure.Persistence;
 using KoiShop.Infrastructure.Presenters;
@@ -33,6 +34,8 @@ namespace KoiShop
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplication();
             builder.Services.AddPresentations(builder.Configuration);
+            builder.Services.AddMemoryCache();
+            builder.Services.AddSingleton<MemoryCacheService>();
 
             builder.Services.AddResponseCompression(options =>
             {
@@ -56,6 +59,7 @@ namespace KoiShop
             }
 
             app.UseResponseCompression();
+            app.UseMiddleware<CacheInvalidMiddleware>();
 
             var scope = app.Services.CreateScope();
             var seeder = scope.ServiceProvider.GetRequiredService<IUserSeeder>();

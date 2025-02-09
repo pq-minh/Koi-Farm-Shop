@@ -18,7 +18,7 @@ namespace KoiShop.Application.Profiles
         {
             CreateMap<Koi, KoiDto>()
                 .ForMember(dest => dest.TypeFish, opt => opt
-                .MapFrom(src => src.FishType != null && src.FishType.TypeFish != null ? src.FishType.TypeFish : string.Empty));
+                .MapFrom(src => src.FishType != null && src.FishType.TypeFish != null ? src.FishType.TypeFish : string.Empty)).ReverseMap();
             CreateMap<BatchKoi, BatchKoiDto>()
                 .ForMember(d => d.TypeFish, o => o
                 .MapFrom(src => src.FishType != null && src.FishType.TypeFish != null ? src.FishType.TypeFish : string.Empty));

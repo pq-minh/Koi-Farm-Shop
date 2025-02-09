@@ -4,6 +4,7 @@ using KoiShop.Application.Interfaces;
 using KoiShop.Application.JwtToken;
 using KoiShop.Application.Profiles;
 using KoiShop.Application.Service;
+using KoiShop.Application.ServiceCatching;
 using KoiShop.Application.Users;
 using KoiShop.Domain.Respositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,8 @@ namespace KoiShop.Application.Extensions
         {
             services.AddAutoMapper(typeof(MapProfile));
             services.AddScoped<IKoiService, KoiService>();
+            services.AddScoped<IFishCachingService, FishCachingService>();
+            services.AddSingleton<IMemoryCacheService, MemoryCacheService>();
             services.AddScoped<IKoiStaffService, KoiStaffService>();
             services.AddScoped<IBatchKoiService, BatchKoiService>();
             services.AddScoped<IBatchKoiStaffService, BatchKoiStaffService>();

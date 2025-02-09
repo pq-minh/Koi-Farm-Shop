@@ -2,6 +2,7 @@
 using KoiShop.Application.Dtos;
 using KoiShop.Application.Interfaces;
 using KoiShop.Application.Queries.GetAllKoi;
+using KoiShop.Domain.Respositories;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,21 +14,24 @@ namespace KoiShop.Controllers
     public class KoiController : ControllerBase
     {
         private readonly IKoiService _koiService;
-        public KoiController(IKoiService koiService)
+        private readonly IFishCachingService _fishCachingService;
+
+        public KoiController(IKoiService koiService, IFishCachingService fishCachingService)
         {
             _koiService = koiService;
+            _fishCachingService = fishCachingService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetKois()
         {
-                var allKoi = await _koiService.GetAllKoi();
+                var allKoi = await _fishCachingService.GetFishOnSale();
                 return Ok(allKoi);
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetKoi(int id)
         {
-            var koi = await _koiService.GetKoi(id);
+            var koi = await _fishCachingService.GetFishIdOnsale(id);
             return Ok(koi);
         }
         [HttpGet("modify")]  //có 2 cách viết thêm tham số 
